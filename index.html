@@ -107,9 +107,33 @@
             color: var(--secondary);
         }
 
+        
+
         @media (max-width: 600px) {
             .grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Remove default link styling */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block; /* Makes the entire area clickable */
+        }
+
+        /* Optional: Enhanced hover effect */
+        .card-link:hover .card {
+            border-color: var(--accent);
+            background: rgba(37, 99, 235, 0.05); /* Light tint of your accent color */
+            transform: translateY(-4px);
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Dark mode specific tint */
+        @media (prefers-color-scheme: dark) {
+            .card-link:hover .card {
+                background: rgba(56, 189, 248, 0.1);
             }
         }
     </style>
