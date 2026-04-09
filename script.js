@@ -2,6 +2,7 @@
 const STATS_CACHE_KEY = 'github_stats_cache';
 const PRS_CACHE_KEY = 'github_prs_cache';
 const CACHE_EXPIRY = 3600000; // 1 hour
+const REPOS_CACHE_KEY = 'github_repos_cache';
 
 /**
  * Generic Cache Helpers
@@ -208,10 +209,56 @@ function setupSidebar() {
     });
 }
 
+/**
+ * Fetch and Render Project Stars
+ */
+async function fetchProjectStars() {
+    const username = 'Evilpasture';
+    const projectCards = document.querySelectorAll('.card-link[data-repo]');
+    
+    // 1. Check Cache
+    const cached = getCachedData(REPOS_CACHE_KEY);
+    if (cached) {
+        renderStars(cached);
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+        if (!response.ok) throw new Error('Repo API Error');
+
+        const data = await response.json();
+        
+        // Create a simple map of { repo_name: star_count }
+        const starMap = {};
+        data.forEach(repo => {
+            starMap[repo.name.toLowerCase()] = repo.stargazers_count;
+        });
+
+        setCachedData(REPOS_CACHE_KEY, starMap);
+        renderStars(starMap);
+
+    } catch (err) {
+        console.error('Stars Error:', err);
+    }
+}
+
+function renderStars(starMap) {
+    const projectCards = document.querySelectorAll('.card-link[data-repo]');
+    projectCards.forEach(card => {
+        const repoName = card.getAttribute('data-repo').toLowerCase();
+        const badge = card.querySelector('.star-badge');
+        if (badge && starMap[repoName] !== undefined) {
+            badge.innerHTML = `󰓈 ${starMap[repoName]}`; // Using Nerd Font Star icon
+        }
+    });
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     fetchGitHubStats();
     fetchMergedPRs();
     setupDiscordCopy();
     setupSidebar();
+    fetchProjectStars(); 
 });

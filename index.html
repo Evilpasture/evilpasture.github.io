@@ -83,24 +83,35 @@
             <section id="projects">
                 <h2>Core Projects</h2>
                 <div class="grid">
-                    <a href="https://github.com/Evilpasture/culverin" class="card-link">
+                    <!-- Add data-repo attribute here -->
+                    <a href="https://github.com/Evilpasture/culverin" class="card-link" data-repo="culverin">
                         <div class="card">
-                            <h3>Culverin</h3>
+                            <div class="card-header">
+                                <h3>Culverin</h3>
+                                <span class="star-badge">--</span>
+                            </div>
                             <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.
                             </p>
                         </div>
                     </a>
-                    <a href="https://github.com/Evilpasture/hypergl" class="card-link">
+
+                    <a href="https://github.com/Evilpasture/hypergl" class="card-link" data-repo="hypergl">
                         <div class="card">
-                            <h3>HyperGL</h3>
+                            <div class="card-header">
+                                <h3>HyperGL</h3>
+                                <span class="star-badge">--</span>
+                            </div>
                             <p>Custom OpenGL-based rendering engine and performance heatmap analyzer.</p>
                         </div>
                     </a>
-                    <a href="https://github.com/Evilpasture/mag-mutex" class="card-link">
+
+                    <a href="https://github.com/Evilpasture/mag-mutex" class="card-link" data-repo="mag-mutex">
                         <div class="card">
-                            <h3>MagMutex</h3>
-                            <p>
-                                A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.
+                            <div class="card-header">
+                                <h3>MagMutex</h3>
+                                <span class="star-badge">--</span>
+                            </div>
+                            <p>A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.
                             </p>
                         </div>
                     </a>
@@ -114,7 +125,8 @@
                             <span class="log-date">󰃭 April 9, 2026</span>
                             <span class="log-tag">C</span>
                         </div>
-                        <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a></h3>
+                        <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a>
+                        </h3>
                         <p>The creation of one of the fastest mutexes in C23.</p>
                     </article>
                 </div>
