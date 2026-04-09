@@ -176,9 +176,42 @@ function setupDiscordCopy() {
     });
 }
 
-// Initialization
+/**
+ * Sidebar Toggle Logic
+ */
+function setupSidebar() {
+    const sidebar = document.getElementById('sideNav');
+    const overlay = document.getElementById('overlay');
+    const openBtn = document.getElementById('sidebarOpen');
+    const closeBtn = document.getElementById('sidebarClose');
+    const navLinks = document.querySelectorAll('.nav-item');
+
+    const toggleSidebar = (state) => {
+        sidebar.classList.toggle('active', state);
+        overlay.classList.toggle('active', state);
+        // Prevent body scrolling when menu is open
+        document.body.style.overflow = state ? 'hidden' : '';
+    };
+
+    openBtn.addEventListener('click', () => toggleSidebar(true));
+    closeBtn.addEventListener('click', () => toggleSidebar(false));
+    overlay.addEventListener('click', () => toggleSidebar(false));
+
+    // Close sidebar when a link is clicked
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => toggleSidebar(false));
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') toggleSidebar(false);
+    });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchGitHubStats();
     fetchMergedPRs();
     setupDiscordCopy();
+    setupSidebar();
 });

@@ -10,6 +10,35 @@
 </head>
 
 <body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarOpen" title="Open Navigation">
+        <span>󰍜</span> <!-- Nerd Font Menu Icon -->
+    </button>
+
+    <!-- The Sidebar -->
+    <nav class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <span class="side-nav-title">Navigation</span>
+            <button class="side-nav-close" id="sidebarClose">󰅖</button>
+        </div>
+
+        <ul class="side-nav-links">
+            <li><a href="#about" class="nav-item"><span>󰋜</span> Home / About</a></li>
+            <li><a href="#expertise" class="nav-item"><span>󰒓</span> Technical Skills</a></li>
+            <li><a href="#projects" class="nav-item"><span>󰚝</span> Core Projects</a></li>
+            <li><a href="#logs" class="nav-item"><span>󰏚</span> Technical Logs</a></li>
+            <li class="nav-divider"></li>
+            <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item"><span></span> GitHub
+                    Profile</a></li>
+        </ul>
+
+        <div class="side-nav-footer">
+            <p>Evilpasture 2026</p>
+        </div>
+    </nav>
+
+    <!-- Dimmed Overlay -->
+    <div class="overlay" id="overlay"></div>
 
     <div class="container">
         <header>
@@ -77,15 +106,19 @@
                     </a>
                 </div>
             </section>
-            <article class="log-item">
-                <div class="log-meta">
-                    <span class="log-date">󰃭 April 9, 2026</span>
-                    <span class="log-tag">C</span>
+            <section id="logs">
+                <h2>Technical Logs</h2>
+                <div class="log-list">
+                    <article class="log-item">
+                        <div class="log-meta">
+                            <span class="log-date">󰃭 April 9, 2026</span>
+                            <span class="log-tag">C</span>
+                        </div>
+                        <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a></h3>
+                        <p>The creation of one of the fastest mutexes in C23.</p>
+                    </article>
                 </div>
-                <!-- Point to the log-viewer and specify the file name (without .md) -->
-                <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a></h3>
-                <p>The creation of one of the fastest mutex in C23.</p>
-            </article>
+            </section>
         </main>
 
         <aside>
