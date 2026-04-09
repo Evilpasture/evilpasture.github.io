@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,21 @@
     <!-- Add languages you use -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <link rel="icon" type="image/png" href="res/logo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="log_style.css">
 </head>
+
 <body>
     <div class="container" style="grid-template-columns: 1fr;"> <!-- Single column for reading -->
-        <header>
-            <a href="index.html" style="text-decoration: none; color: var(--accent);">← Back to Home</a>
+        <!-- In log-viewer.html -->
+        <header class="article-header">
+            <div id="author-container" class="author-card">
+                <!-- JS will inject avatar and name here -->
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-text"></div>
+            </div>
+            <a href="index.html" class="back-link">← Back to Home</a>
         </header>
 
         <main id="content" class="prose">
@@ -28,35 +39,7 @@
         </footer>
     </div>
 
-    <script>
-        async function loadMarkdown() {
-            const params = new URLSearchParams(window.location.search);
-            const file = params.get('file');
-            const contentDiv = document.getElementById('content');
-
-            if (!file) {
-                contentDiv.innerHTML = "<h1>Log not found</h1>";
-                return;
-            }
-
-            try {
-                const response = await fetch(`logs/${file}.md`);
-                if (!response.ok) throw new Error("File not found");
-                
-                const markdown = await response.text();
-                // Render Markdown
-                contentDiv.innerHTML = marked.parse(markdown);
-                // Trigger Syntax Highlighting
-                Prism.highlightAll();
-                // Update Page Title
-                const firstH1 = contentDiv.querySelector('h1');
-                if (firstH1) document.title = firstH1.innerText + " | Evilpasture";
-                
-            } catch (err) {
-                contentDiv.innerHTML = `<h1>Error</h1><p>${err.message}</p>`;
-            }
-        }
-        loadMarkdown();
-    </script>
+    <script src="load_markdown.js"></script>
 </body>
+
 </html>

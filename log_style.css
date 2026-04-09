@@ -1,0 +1,51 @@
+.article-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--primary);
+    margin-bottom: 2rem;
+}
+
+.author-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: bold;
+    color: var(--accent);
+    font-family: 'Courier New', monospace;
+}
+
+.commit-date {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Simple loading state */
+.skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #333;
+}
+
+.skeleton-text {
+    width: 100px;
+    height: 10px;
+    background: #333;
+}
