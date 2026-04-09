@@ -1,198 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to my page! | Evilpasture/Mai Huy Hiếu</title>
-    <style>
-        :root {
-            --bg: #ffffff;
-            --text: #1a1a1a;
-            --accent: #2563eb;
-            --secondary: #64748b;
-            --border: #e2e8f0;
-            --sidebar-bg: #f8fafc;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;
-                --text: #f1f5f9;
-                --accent: #38bdf8;
-                --secondary: #94a3b8;
-                --border: #334155;
-                --sidebar-bg: #1e293b;
-            }
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            background: var(--bg);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 3rem;
-        }
-
-        header {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .banner {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            margin-bottom: 1.5rem;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            color: var(--secondary);
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
-        }
-
-        section {
-            margin-bottom: 2.5rem;
-        }
-
-        h2 {
-            border-bottom: 2px solid var(--accent);
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .card {
-            padding: 1rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            transition: transform 0.2s;
-            height: 100%;
-        }
-
-        .tech-stack span {
-            display: inline-block;
-            background: var(--border);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            margin: 2px;
-            font-family: monospace;
-        }
-
-        /* Sidebar Styling */
-        aside {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .sidebar-block {
-            background: var(--sidebar-bg);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .sidebar-block h3 {
-            margin-top: 0;
-            font-size: 1rem;
-            color: var(--accent);
-            text-transform: uppercase;
-        }
-
-        .github-stats-img {
-            width: 100%;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-
-        .pr-list {
-            list-style: none;
-            padding: 0;
-            font-size: 0.85rem;
-        }
-
-        .pr-item {
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .pr-item:last-child { border: none; }
-
-        .pr-item a {
-            color: var(--text);
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-        }
-
-        .pr-item a:hover { color: var(--accent); }
-
-        .pr-repo {
-            color: var(--secondary);
-            font-size: 0.75rem;
-            font-family: monospace;
-        }
-
-        footer {
-            grid-column: 1 / -1;
-            margin-top: 3rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--secondary);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 950px) {
-            .container { grid-template-columns: 1fr; }
-            aside { order: 2; }
-            main { order: 1; }
-        }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        .card-link { text-decoration: none; color: inherit; display: block; }
-        .card-link:hover .card {
-            border-color: var(--accent);
-            background: rgba(37, 99, 235, 0.05);
-            transform: translateY(-4px);
-            transition: all 0.2s ease-in-out;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <div class="container">
@@ -240,7 +53,6 @@
         <aside>
             <div class="sidebar-block">
                 <h3>GitHub Activity</h3>
-                <!-- Dynamic Stats Card -->
                 <img class="github-stats-img" 
                      src="https://github-readme-stats.vercel.app/api?username=Evilpasture&show_icons=true&theme=transparent&hide_border=true&title_color=2563eb&icon_color=2563eb&text_color=64748b" 
                      alt="GitHub Stats">
@@ -252,7 +64,7 @@
             <div class="sidebar-block">
                 <h3>Open Source Contributions</h3>
                 <div id="pr-container">
-                    <p style="font-size: 0.8rem; color: var(--secondary);">Fetching merged PRs...</p>
+                    <p class="loading-text">Fetching merged PRs...</p>
                     <ul class="pr-list" id="pr-list"></ul>
                 </div>
             </div>
@@ -263,41 +75,6 @@
         </footer>
     </div>
 
-    <script>
-        async function fetchMergedPRs() {
-            const username = 'Evilpasture';
-            // GitHub API Search: PRs by user, merged, NOT in their own repo
-            const url = `https://api.github.com/search/issues?q=author:${username}+type:pr+is:merged+-user:${username}&per_page=5`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const list = document.getElementById('pr-list');
-                const container = document.getElementById('pr-container');
-
-                if (data.items && data.items.length > 0) {
-                    container.querySelector('p').remove();
-                    data.items.forEach(pr => {
-                        const repoName = pr.repository_url.split('/').slice(-2).join('/');
-                        const li = document.createElement('li');
-                        li.className = 'pr-item';
-                        li.innerHTML = `
-                            <a href="${pr.html_url}" target="_blank">${pr.title}</a>
-                            <span class="pr-repo">${repoName}</span>
-                        `;
-                        list.appendChild(li);
-                    });
-                } else {
-                    container.innerHTML = '<p style="font-size: 0.8rem;">No external merged PRs found.</p>';
-                }
-            } catch (error) {
-                console.error('Error fetching PRs:', error);
-                document.getElementById('pr-container').innerHTML = '<p>Failed to load PRs.</p>';
-            }
-        }
-
-        fetchMergedPRs();
-    </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
