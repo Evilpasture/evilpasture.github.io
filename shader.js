@@ -110,4 +110,4 @@ function initLightShader() {
     }
     requestAnimationFrame(render);
 }
-document.addEventListener('DOMContentLoaded', initLightShader);
+console.log("Shader engine ready, but idle."); 
