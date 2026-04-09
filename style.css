@@ -155,24 +155,63 @@
 /* =========================================
    2. BASE & LAYOUT
    ========================================= */
+html {
+    /* Set a fallback color so it's never white */
+    background-color: var(--bg); 
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    /* This prevents the "white flash" on scroll */
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'JetBrainsMono NF', monospace;
     line-height: 1.6;
     color: var(--text);
-    background: var(--bg);
+    background-color: transparent !important; 
     margin: 0;
-    padding: 2rem;
+    padding: 1rem; 
     display: flex;
     justify-content: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh; 
+    perspective: 1200px;
+    overflow-x: hidden; 
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Change z-index to -1 and ensure body is transparent */
+    z-index: -1; 
+    pointer-events: none;
+    display: block;
 }
 
 .container {
-    max-width: 1100px;
-    width: 100%;
+    max-width: 1400px; 
+    width: 98%; 
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 340px; 
     gap: 3rem;
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 5rem; /* Space at the bottom so you can see the shader */
+
+    /* The Glass Effect */
+    background-color: color-mix(in srgb, var(--bg), transparent 10%);
+    backdrop-filter: blur(12px); 
+    border: 1px solid var(--border);
+
+    /* Hardware warping */
+    transform: rotateX(1deg) rotateY(-0.5deg) scale(0.99);
+    transform-style: preserve-3d;
+    filter: url(#crt-warp) contrast(1.1) brightness(1.1);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 section {
@@ -570,9 +609,11 @@ footer {
     }
 }
 
-@media (max-width: 600px) {
-    .grid {
-        grid-template-columns: 1fr;
+@media (max-width: 1100px) {
+    .container {
+        grid-template-columns: 1fr; /* Stack sidebar below content */
+        max-width: 900px;
+        transform: none; /* Disable 3D warp on mobile for readability */
     }
 }
 
@@ -761,4 +802,72 @@ footer {
 #modeToggle:hover {
     border-color: var(--accent);
     background: var(--accent-faded);
+}
+
+/* =========================================
+   10. HARDWARE & CRT EMULATION
+   ========================================= */
+
+/* The WebGL Canvas */
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; 
+    pointer-events: none;
+}
+
+/* =========================================
+   9. HARDWARE & CRT EMULATION
+   ========================================= */
+body {
+    /* Use the browser's native transparency mix */
+    background-color: transparent; 
+    perspective: 1200px;
+}
+
+.container {
+    /* Slightly see-through so the background mesh shows through */
+    background-color: color-mix(in srgb, var(--bg), transparent 10%);
+    backdrop-filter: blur(8px); /* The 'Glass' effect */
+    
+    transform: rotateX(1deg) rotateY(-0.5deg);
+    transform-style: preserve-3d;
+    
+    /* Keep the DOM effects - they are very light on the GPU */
+    filter: url(#crt-warp) contrast(1.05);
+    border: 1px solid var(--border);
+}
+
+/* Subtle jitter for the tech feel */
+h1, h2, .nav-item {
+    text-shadow: 1px 0 rgba(255,0,0,0.2), -1px 0 rgba(0,255,255,0.2);
+}
+
+@keyframes microTremor {
+    0%, 95% { transform: translate(0,0); }
+    96% { transform: translate(0.4px, -0.2px); }
+    98% { transform: translate(-0.2px, 0.4px); }
+}
+
+/* Physical Aperture Grille Overlay */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 150vw;
+    height: 150vh;
+    pointer-events: none;
+    z-index: 9999;
+    /* This creates the 'scanline' gap over the DOM */
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.08) 0px,
+        rgba(0, 0, 0, 0.08) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    opacity: 0.4;
 }

@@ -10,6 +10,14 @@
 </head>
 
 <body>
+    <svg style="display:none;">
+        <defs>
+            <filter id="crt-warp">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="2" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
     <!-- Sidebar Toggle Button -->
     <button class="sidebar-toggle" id="sidebarOpen" title="Open Navigation">
         <span>󰍜</span> <!-- Nerd Font Menu Icon -->
@@ -33,25 +41,25 @@
         </ul>
 
         <div class="side-nav-settings">
-    <span class="side-nav-title">Personalization</span>
-    
-    <div class="setting-item">
-        <span>󰏘 Theme</span>
-        <select id="themeSelect">
-            <option value="default">Default Blue</option>
-            <option value="dracula">Dracula Purple</option>
-            <option value="gruvbox">Gruvbox Retro</option>
-            <option value="terminal">Terminal Green</option>
-        </select>
-    </div>
+            <span class="side-nav-title">Personalization</span>
 
-    <div class="setting-item">
-        <span>󰔎 Appearance</span>
-        <button id="modeToggle" title="Toggle Light/Dark Mode">
-            <span id="modeIcon">󰖔</span>
-        </button>
-    </div>
-</div>
+            <div class="setting-item">
+                <span>󰏘 Theme</span>
+                <select id="themeSelect">
+                    <option value="default">Default Blue</option>
+                    <option value="dracula">Dracula Purple</option>
+                    <option value="gruvbox">Gruvbox Retro</option>
+                    <option value="terminal">Terminal Green</option>
+                </select>
+            </div>
+
+            <div class="setting-item">
+                <span>󰔎 Appearance</span>
+                <button id="modeToggle" title="Toggle Light/Dark Mode">
+                    <span id="modeIcon">󰖔</span>
+                </button>
+            </div>
+        </div>
 
         <div class="side-nav-footer">
             <p>Evilpasture 2026</p>
@@ -208,7 +216,20 @@
         </footer>
     </div>
 
+    <!-- Add the Shader and UI scripts -->
     <script src="script.js"></script>
+    <script src="shader.js"></script>
+    
+    <!-- Add the SVG filter needed for the warp effect -->
+    <svg style="display:none;">
+        <defs>
+            <filter id="crt-warp">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="2" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+    <div class="crt-overlay"></div>
 </body>
 
 </html>
