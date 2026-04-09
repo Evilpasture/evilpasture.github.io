@@ -1,0 +1,35 @@
+{
+    "stats": {
+        "commits": 1451,
+        "repos": 13,
+        "followers": 1,
+        "since": "2025"
+    },
+    "prs": [
+        {
+            "title": "Optimize DVec3::StoreDouble3 with platform-specific SIMD stores",
+            "url": "https://github.com/jrouwe/JoltPhysics/pull/1963",
+            "repo": "jrouwe/JoltPhysics"
+        },
+        {
+            "title": "Fix heap-buffer-overflow and SIMD alignment in ContactConstraintManager",
+            "url": "https://github.com/jrouwe/JoltPhysics/pull/1917",
+            "repo": "jrouwe/JoltPhysics"
+        }
+    ],
+    "stars": {
+        "culverin": 5,
+        "evilpasture": 0,
+        "evilpasture.github.io": 0,
+        "gemini-with-gui": 0,
+        "hypergl": 1,
+        "joltc": 0,
+        "joltphysics": 0,
+        "mag-mutex": 0,
+        "nogil-swarm": 0,
+        "nvim-config": 0,
+        "rps": 0,
+        "sound-dsl": 0,
+        "uni-assignments": 0
+    }
+}
