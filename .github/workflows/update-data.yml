@@ -37,5 +37,19 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage the file
           git add data.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update data.json" && git push)
+          
+          # Only commit if there are actual changes
+          if git diff --staged --quiet; then
+            echo "No changes to data.json, skipping push."
+          else
+            git commit -m "chore: update data.json"
+            
+            # Rebase pulls the remote changes and puts your new commit on top
+            # This prevents the "divergent branches" error
+            git pull --rebase origin main
+            
+            git push origin main
+          fi
