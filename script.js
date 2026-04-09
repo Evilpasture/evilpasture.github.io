@@ -54,27 +54,34 @@ async function fetchGitHubStats() {
     const container = document.getElementById('github-stats-container');
 
     try {
-        const response = await fetch(`https://api.github.com/users/${username}`);
-        if (!response.ok) throw new Error('Stats fetch failed');
-        
-        const data = await response.json();
+        // We run both fetches in parallel for better performance
+        const [userResponse, commitResponse] = await Promise.all([
+            fetch(`https://api.github.com/users/${username}`),
+            // The search API counts every commit authored by you across all public repos
+            fetch(`https://api.github.com/search/commits?q=author:${username}`)
+        ]);
 
-        // Calculate account age
-        const joinedDate = new Date(data.created_at).getFullYear();
+        if (!userResponse.ok || !commitResponse.ok) throw new Error('GitHub API error');
+        
+        const userData = await userResponse.json();
+        const commitData = await commitResponse.json();
+
+        const joinedDate = new Date(userData.created_at).getFullYear();
+        const totalCommits = commitData.total_count; // This is the "magic" number
         
         container.innerHTML = `
             <div class="stats-grid">
                 <div class="stat-item">
-                    <span class="stat-value">${data.public_repos}</span>
+                    <span class="stat-value">${totalCommits}</span>
+                    <span class="stat-label">Total Commits</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${userData.public_repos}</span>
                     <span class="stat-label">Repositories</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">${data.followers}</span>
+                    <span class="stat-value">${userData.followers}</span>
                     <span class="stat-label">Followers</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">${data.public_gists}</span>
-                    <span class="stat-label">Gists</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-value">${joinedDate}</span>

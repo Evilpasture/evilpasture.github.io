@@ -197,8 +197,8 @@ footer {
 /* Custom Stats Styling */
 .stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr; /* 2x2 layout */
+    gap: 12px;
     margin-top: 10px;
 }
 
