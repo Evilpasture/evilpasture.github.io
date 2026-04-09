@@ -106,9 +106,62 @@ function setupSidebar() {
     document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', () => toggle(false)));
 }
 
-// Initialize on load
+/**
+ * Theme & Mode System
+ */
+function setupThemeSystem() {
+    const themeSelect = document.getElementById('themeSelect');
+    const modeToggle = document.getElementById('modeToggle');
+    const modeIcon = document.getElementById('modeIcon');
+    const htmlEl = document.documentElement;
+
+    // 1. Load saved preferences
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    const savedMode = localStorage.getItem('mode') || 'auto';
+
+    htmlEl.setAttribute('data-theme', savedTheme);
+    themeSelect.value = savedTheme;
+
+    if (savedMode !== 'auto') {
+        htmlEl.setAttribute('data-mode', savedMode);
+        updateModeIcon(savedMode);
+    }
+
+    // 2. Handle Theme Change
+    themeSelect.addEventListener('change', (e) => {
+        const theme = e.target.value;
+        htmlEl.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    });
+
+    // 3. Handle Mode Toggle (Cycle: auto -> dark -> light)
+    modeToggle.addEventListener('click', () => {
+        const currentMode = htmlEl.getAttribute('data-mode');
+        let nextMode;
+
+        if (!currentMode) {
+            nextMode = 'dark'; // From auto to dark
+        } else if (currentMode === 'dark') {
+            nextMode = 'light';
+        } else {
+            nextMode = 'dark'; // Toggle between dark/light
+        }
+
+        htmlEl.setAttribute('data-mode', nextMode);
+        localStorage.setItem('mode', nextMode);
+        updateModeIcon(nextMode);
+    });
+
+    function updateModeIcon(mode) {
+        // Nerd Font Icons: 󰖨 is Sun, 󰖔 is Moon
+        modeIcon.innerText = mode === 'light' ? '󰖨' : '󰖔';
+    }
+}
+
+// Ensure this is inside your DOMContentLoaded listener:
 document.addEventListener('DOMContentLoaded', () => {
     initGitHubData();
-    setupDiscordCopy();
     setupSidebar();
+    setupDiscordCopy();
+    setupThemeSystem();
 });

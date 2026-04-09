@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="terminal" data-mode="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -31,6 +31,27 @@
             <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item"><span></span> GitHub
                     Profile</a></li>
         </ul>
+
+        <div class="side-nav-settings">
+    <span class="side-nav-title">Personalization</span>
+    
+    <div class="setting-item">
+        <span>󰏘 Theme</span>
+        <select id="themeSelect">
+            <option value="default">Default Blue</option>
+            <option value="dracula">Dracula Purple</option>
+            <option value="gruvbox">Gruvbox Retro</option>
+            <option value="terminal">Terminal Green</option>
+        </select>
+    </div>
+
+    <div class="setting-item">
+        <span>󰔎 Appearance</span>
+        <button id="modeToggle" title="Toggle Light/Dark Mode">
+            <span id="modeIcon">󰖔</span>
+        </button>
+    </div>
+</div>
 
         <div class="side-nav-footer">
             <p>Evilpasture 2026</p>
