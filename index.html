@@ -1,14 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evilpasture</title>
-    </head>
-<body>
-    
-    <h1>Under development</h1>
-    <p>This is the start of my web page.</p>
+    <title>Welcome to my page! | Evilpasture/Mai Huy Hiếu</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --accent: #2563eb;
+            --secondary: #64748b;
+            --border: #e2e8f0;
+        }
 
-    </body>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --text: #f1f5f9;
+                --accent: #38bdf8;
+                --secondary: #94a3b8;
+                --border: #334155;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .banner {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        section {
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .tech-stack span {
+            display: inline-block;
+            background: var(--border);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin: 2px;
+            font-family: monospace;
+        }
+
+        footer {
+            margin-top: 5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="banner.jpg" alt="Developer Banner" class="banner">
+        <h1>Mai Huy Hiếu</h1>
+        <p class="subtitle">Data Science Student & Systems Programmer!!!</p>
+    </header>
+
+    <section id="about">
+        <h2>About</h2>
+        <p>Focused on high-performance software, graphics engineering, and hardware-sympathetic design. Currently
+            exploring C23, Vulkan memory management, and physics engine optimization.</p>
+    </section>
+
+    <div class="grid">
+        <section id="expertise">
+            <h2>Technical Skills</h2>
+            <div class="tech-stack">
+                <span>C23</span> <span>C++20</span> <span>Python.h</span>
+                <span>Vulkan</span> <span>OpenGL</span> <span>SIMD</span>
+                <span>NeoVim</span> <span>Windows/MacOS</span>
+            </div>
+        </section>
+
+        <section id="education">
+            <h2>Education</h2>
+            <div>
+                <strong>B.S. in Data Science</strong><br>
+                <small>First Year Undergraduate</small>
+            </div>
+        </section>
+    </div>
+
+    <section id="projects">
+        <h2>Core Projects</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Culverin</h3>
+                <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.</p>
+            </div>
+            <div class="card">
+                <h3>HyperGL</h3>
+                <p>Custom OpenGL-based rendering engine and performance heatmap analyzer.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Built with raw HTML/CSS. Hosted on GitHub Pages.</p>
+    </footer>
+
+</body>
+
 </html>
