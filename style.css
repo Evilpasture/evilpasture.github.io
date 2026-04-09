@@ -193,3 +193,33 @@ footer {
         background: rgba(56, 189, 248, 0.1);
     }
 }
+
+/* Custom Stats Styling */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.stat-item {
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--secondary);
+    letter-spacing: 0.5px;
+}

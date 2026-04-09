@@ -49,5 +49,46 @@ async function fetchMergedPRs() {
     }
 }
 
-// Initial Call
-document.addEventListener('DOMContentLoaded', fetchMergedPRs);
+async function fetchGitHubStats() {
+    const username = 'Evilpasture';
+    const container = document.getElementById('github-stats-container');
+
+    try {
+        const response = await fetch(`https://api.github.com/users/${username}`);
+        if (!response.ok) throw new Error('Stats fetch failed');
+        
+        const data = await response.json();
+
+        // Calculate account age
+        const joinedDate = new Date(data.created_at).getFullYear();
+        
+        container.innerHTML = `
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">${data.public_repos}</span>
+                    <span class="stat-label">Repositories</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${data.followers}</span>
+                    <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${data.public_gists}</span>
+                    <span class="stat-label">Gists</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${joinedDate}</span>
+                    <span class="stat-label">User Since</span>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<p class="loading-text">Stats currently unavailable</p>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchGitHubStats();
+    fetchMergedPRs();
+});

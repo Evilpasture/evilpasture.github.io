@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to my page! | Evilpasture/Mai Huy Hiếu</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div class="container">
@@ -18,7 +20,8 @@
         <main>
             <section id="about">
                 <h2>About</h2>
-                <p>Focused on high-performance software, graphics engineering, and hardware-sympathetic design. Currently
+                <p>Focused on high-performance software, graphics engineering, and hardware-sympathetic design.
+                    Currently
                     exploring C23, Vulkan memory management, and physics engine optimization.</p>
             </section>
 
@@ -37,7 +40,8 @@
                     <a href="https://github.com/Evilpasture/culverin" class="card-link">
                         <div class="card">
                             <h3>Culverin</h3>
-                            <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.</p>
+                            <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.
+                            </p>
                         </div>
                     </a>
                     <a href="https://github.com/Evilpasture/hypergl" class="card-link">
@@ -53,12 +57,10 @@
         <aside>
             <div class="sidebar-block">
                 <h3>GitHub Activity</h3>
-                <img class="github-stats-img" 
-                     src="https://github-readme-stats.vercel.app/api?username=Evilpasture&show_icons=true&theme=transparent&hide_border=true&title_color=2563eb&icon_color=2563eb&text_color=64748b" 
-                     alt="GitHub Stats">
-                <img class="github-stats-img" 
-                     src="https://github-readme-stats.vercel.app/api/top-langs/?username=Evilpasture&layout=compact&theme=transparent&hide_border=true&title_color=2563eb&text_color=64748b" 
-                     alt="Top Languages">
+                <div id="github-stats-container">
+                    <p class="loading-text">Loading stats...</p>
+                    <!-- Stats will be injected here -->
+                </div>
             </div>
 
             <div class="sidebar-block">
@@ -77,4 +79,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
