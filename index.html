@@ -12,6 +12,7 @@
             --accent: #2563eb;
             --secondary: #64748b;
             --border: #e2e8f0;
+            --sidebar-bg: #f8fafc;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -21,6 +22,7 @@
                 --accent: #38bdf8;
                 --secondary: #94a3b8;
                 --border: #334155;
+                --sidebar-bg: #1e293b;
             }
         }
 
@@ -29,14 +31,24 @@
             line-height: 1.6;
             color: var(--text);
             background: var(--bg);
-            max-width: 850px;
-            margin: 0 auto;
+            margin: 0;
             padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 3rem;
         }
 
         header {
+            grid-column: 1 / -1;
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1rem;
         }
 
         .banner {
@@ -75,7 +87,7 @@
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
         }
 
         .card {
@@ -83,11 +95,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             transition: transform 0.2s;
-        }
-
-        .card:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
+            height: 100%;
         }
 
         .tech-stack span {
@@ -100,101 +108,196 @@
             font-family: monospace;
         }
 
+        /* Sidebar Styling */
+        aside {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .sidebar-block {
+            background: var(--sidebar-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .sidebar-block h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .github-stats-img {
+            width: 100%;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .pr-list {
+            list-style: none;
+            padding: 0;
+            font-size: 0.85rem;
+        }
+
+        .pr-item {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pr-item:last-child { border: none; }
+
+        .pr-item a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+        }
+
+        .pr-item a:hover { color: var(--accent); }
+
+        .pr-repo {
+            color: var(--secondary);
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
         footer {
-            margin-top: 5rem;
+            grid-column: 1 / -1;
+            margin-top: 3rem;
             text-align: center;
             font-size: 0.9rem;
             color: var(--secondary);
         }
 
-        
+        /* Responsive adjustments */
+        @media (max-width: 950px) {
+            .container { grid-template-columns: 1fr; }
+            aside { order: 2; }
+            main { order: 1; }
+        }
 
         @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+            .grid { grid-template-columns: 1fr; }
         }
 
-        /* Remove default link styling */
-        .card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block; /* Makes the entire area clickable */
-        }
-
-        /* Optional: Enhanced hover effect */
+        .card-link { text-decoration: none; color: inherit; display: block; }
         .card-link:hover .card {
             border-color: var(--accent);
-            background: rgba(37, 99, 235, 0.05); /* Light tint of your accent color */
+            background: rgba(37, 99, 235, 0.05);
             transform: translateY(-4px);
             transition: all 0.2s ease-in-out;
-        }
-
-        /* Dark mode specific tint */
-        @media (prefers-color-scheme: dark) {
-            .card-link:hover .card {
-                background: rgba(56, 189, 248, 0.1);
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <header>
-        <img src="banner.jpg" alt="Developer Banner" class="banner">
-        <h1>Mai Huy Hiếu</h1>
-        <p class="subtitle">Data Science Student & Systems Programmer!!!</p>
-    </header>
+    <div class="container">
+        <header>
+            <img src="banner.jpg" alt="Developer Banner" class="banner">
+            <h1>Mai Huy Hiếu</h1>
+            <p class="subtitle">Data Science Student & Systems Programmer!!!</p>
+        </header>
 
-    <section id="about">
-        <h2>About</h2>
-        <p>Focused on high-performance software, graphics engineering, and hardware-sympathetic design. Currently
-            exploring C23, Vulkan memory management, and physics engine optimization.</p>
-    </section>
+        <main>
+            <section id="about">
+                <h2>About</h2>
+                <p>Focused on high-performance software, graphics engineering, and hardware-sympathetic design. Currently
+                    exploring C23, Vulkan memory management, and physics engine optimization.</p>
+            </section>
 
-    <div class="grid">
-        <section id="expertise">
-            <h2>Technical Skills</h2>
-            <div class="tech-stack">
-                <span>C23</span> <span>C++20</span> <span>Python.h</span>
-                <span>Vulkan</span> <span>OpenGL</span> <span>SIMD</span>
-                <span>NeoVim</span> <span>Windows/MacOS</span>
+            <section id="expertise">
+                <h2>Technical Skills</h2>
+                <div class="tech-stack">
+                    <span>C23</span> <span>C++20</span> <span>Python.h</span>
+                    <span>Vulkan</span> <span>OpenGL</span> <span>SIMD</span>
+                    <span>NeoVim</span> <span>Windows/MacOS</span>
+                </div>
+            </section>
+
+            <section id="projects">
+                <h2>Core Projects</h2>
+                <div class="grid">
+                    <a href="https://github.com/Evilpasture/culverin" class="card-link">
+                        <div class="card">
+                            <h3>Culverin</h3>
+                            <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.</p>
+                        </div>
+                    </a>
+                    <a href="https://github.com/Evilpasture/hypergl" class="card-link">
+                        <div class="card">
+                            <h3>HyperGL</h3>
+                            <p>Custom OpenGL-based rendering engine and performance heatmap analyzer.</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <aside>
+            <div class="sidebar-block">
+                <h3>GitHub Activity</h3>
+                <!-- Dynamic Stats Card -->
+                <img class="github-stats-img" 
+                     src="https://github-readme-stats.vercel.app/api?username=Evilpasture&show_icons=true&theme=transparent&hide_border=true&title_color=2563eb&icon_color=2563eb&text_color=64748b" 
+                     alt="GitHub Stats">
+                <img class="github-stats-img" 
+                     src="https://github-readme-stats.vercel.app/api/top-langs/?username=Evilpasture&layout=compact&theme=transparent&hide_border=true&title_color=2563eb&text_color=64748b" 
+                     alt="Top Languages">
             </div>
-        </section>
 
-        <section id="education">
-            <h2>Education</h2>
-            <div>
-                <strong>B.S. in Data Science</strong><br>
-                <small>First Year Undergraduate</small>
+            <div class="sidebar-block">
+                <h3>Open Source Contributions</h3>
+                <div id="pr-container">
+                    <p style="font-size: 0.8rem; color: var(--secondary);">Fetching merged PRs...</p>
+                    <ul class="pr-list" id="pr-list"></ul>
+                </div>
             </div>
-        </section>
+        </aside>
+
+        <footer>
+            <p>Built with raw HTML/CSS. Hosted on GitHub Pages.</p>
+        </footer>
     </div>
 
-    <section id="projects">
-    <h2>Core Projects</h2>
-    <div class="grid">
-        <a href="https://github.com/Evilpasture/culverin" class="card-link">
-            <div class="card">
-                <h3>Culverin</h3>
-                <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.</p>
-            </div>
-        </a>
+    <script>
+        async function fetchMergedPRs() {
+            const username = 'Evilpasture';
+            // GitHub API Search: PRs by user, merged, NOT in their own repo
+            const url = `https://api.github.com/search/issues?q=author:${username}+type:pr+is:merged+-user:${username}&per_page=5`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const list = document.getElementById('pr-list');
+                const container = document.getElementById('pr-container');
 
-        <a href="https://github.com/Evilpasture/hypergl" class="card-link">
-            <div class="card">
-                <h3>HyperGL</h3>
-                <p>Custom OpenGL-based rendering engine and performance heatmap analyzer.</p>
-            </div>
-        </a>
-    </div>
-</section>
+                if (data.items && data.items.length > 0) {
+                    container.querySelector('p').remove();
+                    data.items.forEach(pr => {
+                        const repoName = pr.repository_url.split('/').slice(-2).join('/');
+                        const li = document.createElement('li');
+                        li.className = 'pr-item';
+                        li.innerHTML = `
+                            <a href="${pr.html_url}" target="_blank">${pr.title}</a>
+                            <span class="pr-repo">${repoName}</span>
+                        `;
+                        list.appendChild(li);
+                    });
+                } else {
+                    container.innerHTML = '<p style="font-size: 0.8rem;">No external merged PRs found.</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching PRs:', error);
+                document.getElementById('pr-container').innerHTML = '<p>Failed to load PRs.</p>';
+            }
+        }
 
-    <footer>
-        <p>Built with raw HTML/CSS. Hosted on GitHub Pages.</p>
-    </footer>
-
+        fetchMergedPRs();
+    </script>
 </body>
 
 </html>
