@@ -286,3 +286,21 @@ footer {
     color: var(--bg);
     /* Flips text color to background color on hover */
 }
+
+.discord-handle {
+    cursor: pointer;
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--accent);
+    transition: all 0.2s ease;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.discord-handle:hover {
+    background: var(--border);
+}
+
+.discord-handle.copied {
+    color: #10b981; /* Success Green */
+}
