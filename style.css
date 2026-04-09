@@ -1,3 +1,13 @@
+/* =========================================
+   1. FONTS & VARIABLES
+   ========================================= */
+@font-face {
+    font-family: 'JetBrainsMono NF';
+    src: url('fonts/JetBrainsMonoNerdFontMono-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --bg: #ffffff;
     --text: #1a1a1a;
@@ -18,8 +28,11 @@
     }
 }
 
+/* =========================================
+   2. BASE & LAYOUT
+   ========================================= */
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'JetBrainsMono NF', monospace;
     line-height: 1.6;
     color: var(--text);
     background: var(--bg);
@@ -37,6 +50,13 @@ body {
     gap: 3rem;
 }
 
+section {
+    margin-bottom: 2.5rem;
+}
+
+/* =========================================
+   3. TYPOGRAPHY & HEADER
+   ========================================= */
 header {
     grid-column: 1 / -1;
     text-align: center;
@@ -57,16 +77,6 @@ h1 {
     letter-spacing: -1px;
 }
 
-.subtitle {
-    color: var(--secondary);
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
-}
-
-section {
-    margin-bottom: 2.5rem;
-}
-
 h2 {
     border-bottom: 2px solid var(--accent);
     display: inline-block;
@@ -76,10 +86,77 @@ h2 {
     letter-spacing: 1px;
 }
 
+.subtitle {
+    color: var(--secondary);
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.github-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-family: monospace;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 4px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.github-link:hover {
+    background: var(--accent);
+    color: var(--bg);
+}
+
+/* =========================================
+   4. MAIN CONTENT COMPONENTS
+   ========================================= */
+/* Tech Stack */
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1rem;
+}
+
+.tech-stack span {
+    font-family: 'JetBrainsMono NF', 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--sidebar-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: default;
+    font-variant-ligatures: normal;
+}
+
+.tech-stack span:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(37, 99, 235, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Project Cards */
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .card {
@@ -88,19 +165,26 @@ h2 {
     border-radius: 8px;
     transition: transform 0.2s;
     height: 100%;
+    box-sizing: border-box;
 }
 
-.tech-stack span {
-    display: inline-block;
-    background: var(--border);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    margin: 2px;
-    font-family: monospace;
+.card-link:hover .card {
+    border-color: var(--accent);
+    background: rgba(37, 99, 235, 0.05);
+    transform: translateY(-4px);
+    transition: all 0.2s ease-in-out;
 }
 
-/* Sidebar Styling */
+@media (prefers-color-scheme: dark) {
+    .tech-stack span:hover,
+    .card-link:hover .card {
+        background: rgba(56, 189, 248, 0.1);
+    }
+}
+
+/* =========================================
+   5. SIDEBAR WIDGETS
+   ========================================= */
 aside {
     display: flex;
     flex-direction: column;
@@ -121,12 +205,90 @@ aside {
     text-transform: uppercase;
 }
 
-.github-stats-img {
-    width: 100%;
-    border-radius: 6px;
+/* Generic Utilities */
+.loading-text {
+    font-size: 0.8rem;
+    color: var(--secondary);
+}
+
+/* GitHub Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
     margin-top: 10px;
 }
 
+.stat-item {
+    background: var(--bg);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--secondary);
+    letter-spacing: 0.5px;
+}
+
+/* Contact Grid & Discord Copy */
+.contact-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.contact-row {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.contact-item-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.contact-value {
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.contact-row:hover {
+    border-color: var(--accent);
+    background: rgba(37, 99, 235, 0.03);
+    transform: translateX(4px);
+}
+
+.discord-handle.copied .contact-value {
+    color: #10b981; /* Success Green */
+}
+
+@media (prefers-color-scheme: dark) {
+    .contact-row:hover {
+        background: rgba(56, 189, 248, 0.05);
+    }
+}
+
+/* PR List */
 .pr-list {
     list-style: none;
     padding: 0;
@@ -160,11 +322,9 @@ aside {
     font-family: monospace;
 }
 
-.loading-text {
-    font-size: 0.8rem;
-    color: var(--secondary);
-}
-
+/* =========================================
+   6. FOOTER
+   ========================================= */
 footer {
     grid-column: 1 / -1;
     margin-top: 3rem;
@@ -173,7 +333,9 @@ footer {
     color: var(--secondary);
 }
 
-/* Responsive adjustments */
+/* =========================================
+   7. RESPONSIVE QUERIES
+   ========================================= */
 @media (max-width: 950px) {
     .container {
         grid-template-columns: 1fr;
@@ -192,115 +354,4 @@ footer {
     .grid {
         grid-template-columns: 1fr;
     }
-}
-
-.card-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.card-link:hover .card {
-    border-color: var(--accent);
-    background: rgba(37, 99, 235, 0.05);
-    transform: translateY(-4px);
-    transition: all 0.2s ease-in-out;
-}
-
-@media (prefers-color-scheme: dark) {
-    .card-link:hover .card {
-        background: rgba(56, 189, 248, 0.1);
-    }
-}
-
-/* Custom Stats Styling */
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* 2x2 layout */
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.stat-item {
-    background: var(--bg);
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    text-align: center;
-}
-
-.stat-value {
-    display: block;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--accent);
-}
-
-.stat-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: var(--secondary);
-    letter-spacing: 0.5px;
-}
-
-.contact-item {
-    background: var(--bg);
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.discord-handle {
-    font-family: monospace;
-    font-size: 1rem;
-    color: var(--text);
-    font-weight: 600;
-}
-
-/* Subtle hover effect to show it's interactable */
-.contact-item:hover {
-    border-color: var(--accent);
-    cursor: default;
-}
-
-.github-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-family: monospace;
-    font-weight: bold;
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 4px 12px;
-    border: 1px solid var(--accent);
-    border-radius: 20px;
-    transition: all 0.2s;
-}
-
-.github-link:hover {
-    background: var(--accent);
-    color: var(--bg);
-    /* Flips text color to background color on hover */
-}
-
-.discord-handle {
-    cursor: pointer;
-    font-family: monospace;
-    font-weight: bold;
-    color: var(--accent);
-    transition: all 0.2s ease;
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-
-.discord-handle:hover {
-    background: var(--border);
-}
-
-.discord-handle.copied {
-    color: #10b981; /* Success Green */
 }

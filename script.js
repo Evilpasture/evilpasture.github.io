@@ -9,7 +9,7 @@ const CACHE_EXPIRY = 3600000; // 1 hour
 function getCachedData(key) {
     const cached = localStorage.getItem(key);
     if (!cached) return null;
-    
+
     const { timestamp, data } = JSON.parse(cached);
     if (Date.now() - timestamp > CACHE_EXPIRY) {
         localStorage.removeItem(key);
@@ -113,7 +113,7 @@ async function fetchMergedPRs() {
 
     try {
         const response = await fetch(`https://api.github.com/search/issues?q=author:${username}+type:pr+is:merged+-user:${username}&per_page=5`);
-        
+
         if (response.status === 403) {
             container.innerHTML = '<p class="loading-text">Rate limit exceeded.</p>';
             return;
@@ -160,13 +160,14 @@ function setupDiscordCopy() {
         try {
             const textToCopy = handle.getAttribute('data-handle') || handle.innerText.replace('@', '');
             await navigator.clipboard.writeText(textToCopy);
-            
-            const originalText = handle.innerHTML;
-            handle.innerText = 'Copied!';
+
+            // Inside your setupDiscordCopy() function, find the text update part:
+            const originalText = handle.querySelector('.contact-value').innerText;
+            handle.querySelector('.contact-value').innerText = 'Copied!';
             handle.classList.add('copied');
-            
+
             setTimeout(() => {
-                handle.innerHTML = originalText;
+                handle.querySelector('.contact-value').innerText = originalText;
                 handle.classList.remove('copied');
             }, 2000);
         } catch (err) {
