@@ -223,3 +223,27 @@ footer {
     color: var(--secondary);
     letter-spacing: 0.5px;
 }
+
+.contact-item {
+    background: var(--bg);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.discord-handle {
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* Subtle hover effect to show it's interactable */
+.contact-item:hover {
+    border-color: var(--accent);
+    cursor: default;
+}
