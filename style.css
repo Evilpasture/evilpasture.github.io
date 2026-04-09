@@ -139,7 +139,9 @@ aside {
     border-bottom: 1px solid var(--border);
 }
 
-.pr-item:last-child { border: none; }
+.pr-item:last-child {
+    border: none;
+}
 
 .pr-item a {
     color: var(--text);
@@ -148,7 +150,9 @@ aside {
     display: block;
 }
 
-.pr-item a:hover { color: var(--accent); }
+.pr-item a:hover {
+    color: var(--accent);
+}
 
 .pr-repo {
     color: var(--secondary);
@@ -171,16 +175,31 @@ footer {
 
 /* Responsive adjustments */
 @media (max-width: 950px) {
-    .container { grid-template-columns: 1fr; }
-    aside { order: 2; }
-    main { order: 1; }
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    aside {
+        order: 2;
+    }
+
+    main {
+        order: 1;
+    }
 }
 
 @media (max-width: 600px) {
-    .grid { grid-template-columns: 1fr; }
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.card-link { text-decoration: none; color: inherit; display: block; }
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .card-link:hover .card {
     border-color: var(--accent);
     background: rgba(37, 99, 235, 0.05);
@@ -197,7 +216,8 @@ footer {
 /* Custom Stats Styling */
 .stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2x2 layout */
+    grid-template-columns: 1fr 1fr;
+    /* 2x2 layout */
     gap: 12px;
     margin-top: 10px;
 }
@@ -246,4 +266,23 @@ footer {
 .contact-item:hover {
     border-color: var(--accent);
     cursor: default;
+}
+
+.github-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-family: monospace;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 4px 12px;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.github-link:hover {
+    background: var(--accent);
+    color: var(--bg);
+    /* Flips text color to background color on hover */
 }
