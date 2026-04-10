@@ -27,17 +27,17 @@ PROJECT_CONFIG: dict[str, dict[str, str | list[str]]] = {
     "culverin": {
         "title": "Culverin",
         "desc": "Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.",
-        "tech": ["C++23", "Python", "SIMD"]
+        "tech": ["C23", "C++23", "Python", "SIMD"]
     },
     "hypergl": {
         "title": "HyperGL",
         "desc": "Custom OpenGL-based rendering engine and performance heatmap analyzer.",
-        "tech": ["OpenGL", "C++", "GLSL"]
+        "tech": ["OpenGL", "C", "Python", "GLSL"]
     },
     "mag-mutex": {
         "title": "MagMutex",
         "desc": "A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.",
-        "tech": ["C23", "Atomics", "Locking"]
+        "tech": ["C23", "Atomics", "Locking", "Concurrency"]
     }
 }
 
