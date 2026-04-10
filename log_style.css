@@ -128,58 +128,80 @@
 }
 
 /* --- Global Reset for the Log Viewer --- */
+/* 1. The Container: Matches your main page width */
 .log-container {
-    width: 100% !important;
-    max-width: 900px;
+    max-width: 1400px; /* Same as your index.html */
+    width: 95%;
     margin: 0 auto;
-    overflow-x: hidden; /* Prevent the container itself from scrolling */
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
 }
 
-/* --- Typography Scaling & Scroll Fixes --- */
-@media (max-width: 650px) {
-    /* 1. Scale text smaller */
+/* 2. The Header: Spans the full width of the container */
+.article-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3rem;
+}
+
+/* 3. The Content: This is what we constrain for readability */
+.prose {
+    width: 100%;
+    max-width: 1000px; /* Increased from 800px so it feels less thin */
+    margin: 0 auto;    /* Centers the reading area */
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+/* 4. Desktop Code Blocks: Let them be slightly wider than the text */
+@media (min-width: 1100px) {
+    .prose pre {
+        width: 110%; /* Makes code blocks pop out slightly from the text */
+        margin-left: -5%; 
+        padding: 1.5rem;
+    }
+}
+
+/* 5. Mobile Adjustments (The "Lag & Scroll" Fixes) */
+@media (max-width: 950px) {
     :root {
-        font-size: 14px; /* Drops the base scale from 16px */
+        font-size: 14px; /* Scaled down text for mobile */
+    }
+
+    .log-container {
+        width: 100%;
+        padding: 0 1.2rem;
     }
 
     .prose {
-        font-size: 0.95rem; /* Further scale down body text */
-        line-height: 1.6;
-        word-wrap: break-word; /* Force long words to break */
-        overflow-wrap: break-word;
+        max-width: 100%; /* Use full width on mobile */
+        font-size: 1rem;
     }
 
-    .prose h1 { font-size: 1.8rem; }
-    .prose h2 { font-size: 1.4rem; }
-    .prose h3 { font-size: 1.2rem; }
-
-    /* 2. Fix the Header */
+    /* Reset the Desktop "pop out" for mobile */
+    @media (min-width: 0px) {
+        .prose pre {
+            width: 100% !important;
+            margin-left: 0 !important;
+            white-space: pre-wrap; /* Wrap code on small screens */
+            word-break: break-all;
+        }
+    }
+    
     .article-header {
         flex-direction: column;
         align-items: flex-start;
-        padding: 1rem 0;
+        gap: 1.5rem;
+    }
+
+    .back-link {
         width: 100%;
-    }
-
-    /* 3. Aggressive Code Block Fix */
-    .prose pre, 
-    .prose code[class*="language-"], 
-    pre[class*="language-"] {
-        font-size: 0.8rem !important; /* Smaller code font */
-        margin: 1rem -1rem !important; /* Negative margin to let code breathe */
-        width: calc(100% + 2rem) !important; /* Fill the whole screen width */
-        border-radius: 0 !important;
-        border-left: none;
-        border-right: none;
-        white-space: pre-wrap !important; /* Force code to wrap instead of scroll */
-        word-break: break-all !important;
-        overflow-x: hidden !important; /* Kill the horizontal scroll */
-    }
-
-    /* 4. Fix images/tables */
-    .prose img, .prose table {
-        max-width: 100% !important;
-        height: auto;
+        text-align: center;
+        order: -1;
     }
 }
