@@ -185,43 +185,40 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* Change z-index to -1 and ensure body is transparent */
     z-index: -1; 
     pointer-events: none;
     display: block;
+    /* Optional: Slight fade so it's not too distracting */
+    opacity: 0.8; 
 }
 
 .container {
-    max-width: 1400px;
-    width: 100%;
+    max-width: 1100px; /* Reduced from 1400px */
+    width: 90%;        /* Allows 5% gutter on each side */
+    margin: 2rem auto; /* Centers it and adds space at top/bottom */
     display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 2rem;
-    padding: 2rem;
-    background-color: var(--bg); /* Solid background by default */
-    border: 1px solid var(--border);
-    box-sizing: border-box;
+    grid-template-columns: 1fr 320px; 
+    gap: 3rem;
+    padding: 3rem;
+    border-radius: 20px;
     
-    /* KILL THESE FOR PERFORMANCE ON MOBILE */
-    transform: none !important;
-    filter: none !important;
-    backdrop-filter: none !important;
+    /* Hardware acceleration & Visibility */
+    background-color: color-mix(in srgb, var(--bg), transparent 10%);
+    backdrop-filter: blur(10px); 
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    
+    box-sizing: border-box;
 }
 
-@media (min-width: 1024px) {
-    body {
-        background-color: transparent !important;
-        perspective: 1200px;
-    }
+/* Mobile: Stretch to edges again */
+@media (max-width: 950px) {
     .container {
-        background-color: color-mix(in srgb, var(--bg), transparent 10%);
-        backdrop-filter: blur(8px);
-        transform: rotateX(1deg) rotateY(-0.5deg);
-        filter: url(#crt-warp) contrast(1.05);
-    }
-    /* Only allow the vibrating text on powerful machines */
-    h1, h2, .nav-item {
-        text-shadow: 1px 0 rgba(255,0,0,0.2), -1px 0 rgba(0,255,255,0.2);
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
     }
 }
 
@@ -830,17 +827,6 @@ footer {
 /* =========================================
    10. HARDWARE & CRT EMULATION
    ========================================= */
-
-/* The WebGL Canvas */
-#bg-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1; 
-    pointer-events: none;
-}
 
 /* The WebGL Canvas's shadow */
 body {
