@@ -206,6 +206,9 @@ body {
     padding: 3rem;
     border-radius: 20px;
 
+    perspective: 1200px;
+    transform-style: preserve-3d;
+
     /* Hardware acceleration & Visibility */
     background-color: color-mix(in srgb, var(--bg), transparent 10%);
     backdrop-filter: blur(10px);
@@ -1024,7 +1027,6 @@ footer {
 body {
     /* Use the browser's native transparency mix */
     background-color: transparent;
-    perspective: 1200px;
 }
 
 .container {
@@ -1340,20 +1342,18 @@ h2,
 }
 
 /* =========================================
-   11. MODAL SYSTEM (LICENSE POP-UP)
+   11. UNIFIED MODAL SYSTEM
    ========================================= */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    z-index: 3000; /* Must be higher than sidebar */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 999999 !important ;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -1366,52 +1366,74 @@ h2,
 
 .modal-window {
     width: 90%;
-    max-width: 700px;
-    max-height: 80vh;
+    max-width: 500px; /* Default for system messages */
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     transform: translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-top: 0; /* Override terminal window margin */
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .modal-overlay.active .modal-window {
     transform: translateY(0);
 }
 
-.modal-close {
-    background: none;
-    border: none;
-    color: var(--secondary);
-    cursor: pointer;
-    font-family: 'JetBrainsMono NF', monospace;
-    font-size: 1.2rem;
-    transition: color 0.2s;
-    padding: 0;
-}
-
-.modal-close:hover {
-    color: var(--accent);
+/* Add this class via JS for wider content */
+.modal-window.large {
+    max-width: 700px;
 }
 
 .modal-content {
+    background: var(--bg);
+    max-height: 70vh;
     overflow-y: auto;
-    background: var(--code-bg);
-    border-top: 1px solid var(--border);
+    color: var(--text);
     padding: 1.5rem;
-    
-    /* Custom scrollbar for terminal */
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) var(--code-bg);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    /* Add this line */
+    font-family: 'JetBrainsMono NF', monospace; 
 }
 
-#licenseText {
+#modalBody pre {
     margin: 0;
     white-space: pre-wrap;
     font-family: 'JetBrainsMono NF', monospace;
     font-size: 0.85rem;
     color: var(--secondary);
-    line-height: 1.5;
+}
+
+.modal-close {
+    background: none !important; /* Forces the removal of the white/default background */
+    border: none !important;     /* Removes the box border */
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'JetBrainsMono NF', monospace;
+    font-size: 1.2rem;           /* Adjust size to match the icon */
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--accent); /* Changes color on hover to show interaction */
+}
+
+/* Force all elements inside the modal to use the Nerd Font */
+.modal-window, 
+.modal-window * {
+    font-family: 'JetBrainsMono NF', monospace !important;
+}
+
+.modal-content span {
+    font-family: 'JetBrainsMono NF', monospace !important;
+    font-weight: normal !important;
 }
 
 /* =========================================

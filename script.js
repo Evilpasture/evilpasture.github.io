@@ -8,8 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUptimeCounter();
     setupThemeSystem();
     setupEffectsSystem();
-    setupLicenseModal();
-    setupTerminalEasterEgg(); 
+    setupLicenseButton();
+    ModalManager.init();
+    setupTerminalEasterEgg();
 });
 
 /**
@@ -103,7 +104,7 @@ function setupDiscordCopy() {
     handle.addEventListener('click', async () => {
         const valSpan = handle.querySelector('.contact-value');
         const textToCopy = handle.getAttribute('data-handle') || valSpan.innerText.replace('@', '');
-        
+
         try {
             await navigator.clipboard.writeText(textToCopy);
             const originalText = valSpan.innerText;
@@ -204,14 +205,14 @@ function setupEffectsSystem() {
 
     const isMobile = window.innerWidth < 950;
     const savedState = localStorage.getItem('visualEffects') || (isMobile ? 'off' : 'on');
-    
+
     htmlEl.setAttribute('data-effects', savedState);
     icon.innerText = savedState === 'on' ? '󰄬' : '󰅖';
 
     toggle.addEventListener('click', () => {
         const currentState = htmlEl.getAttribute('data-effects');
         const newState = currentState === 'on' ? 'off' : 'on';
-        
+
         htmlEl.setAttribute('data-effects', newState);
         localStorage.setItem('visualEffects', newState);
         icon.innerText = newState === 'on' ? '󰄬' : '󰅖';
@@ -219,68 +220,71 @@ function setupEffectsSystem() {
 }
 
 /**
- * 5. License Modal System
+ * 5. Unified Modal Manager
  */
-function setupLicenseModal() {
-    const licenseBtn = document.getElementById('licenseBtn');
-    const modal = document.getElementById('licenseModal');
-    const closeBtn = document.getElementById('closeLicenseBtn');
-    const licenseText = document.getElementById('licenseText');
-    const sidebar = document.getElementById('sideNav');
-    const overlay = document.getElementById('overlay');
-
-    if (!licenseBtn || !modal) return;
-
-    let isLoaded = false;
-
-    const openModal = async (e) => {
-        e.preventDefault();
+const ModalManager = {
+    init() {
+        this.modal = document.getElementById('unifiedModal');
+        if (!this.modal) return;
         
-        // 1. Close sidebar if it's open
-        if (sidebar) sidebar.classList.remove('active');
-        if (overlay) overlay.classList.remove('active');
-        
-        // 2. Lock body scroll
-        document.body.style.overflow = 'hidden';
-        
-        // 3. Show Modal
-        modal.classList.add('active');
+        this.titleEl = document.getElementById('modalTitle');
+        this.bodyEl = document.getElementById('modalBody');
+        this.closeBtn = document.getElementById('modalCloseBtn');
+        this.window = this.modal.querySelector('.modal-window');
 
-        // 4. Fetch License (Only fetch once per page load)
-        if (!isLoaded) {
-            try {
-                // Fetch the LICENSE file directly from the root directory
-                const response = await fetch('LICENSE');
-                if (!response.ok) throw new Error('License file not found in repository.');
-                
-                const text = await response.text();
-                licenseText.textContent = text;
-                licenseText.classList.remove('loading-text');
-                isLoaded = true;
-            } catch (err) {
-                licenseText.textContent = `[ERROR]: ${err.message}\nMake sure a file named 'LICENSE' exists in the root of your GitHub repo.`;
-                licenseText.style.color = 'var(--accent)'; // Highlight error
+        this.closeBtn.addEventListener('click', () => this.hide());
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) this.hide();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+                this.hide();
             }
+        });
+    },
+    show(title, content, options = {}) {
+        console.log(`Attempting to show modal: ${title}`); // ADD THIS
+        if (!this.modal) {
+            console.error("Modal element not found!"); // ADD THIS
+            return;
         }
-    };
+        
+        this.titleEl.innerText = title;
+        this.bodyEl.innerHTML = content;
+        this.window.classList.toggle('large', !!options.large);
+        
+        document.body.style.overflow = 'hidden';
+        this.modal.classList.add('active');
+    },
+    hide() {
+        if (!this.modal) return;
+        
+        this.modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
 
-    const closeModal = () => {
-        modal.classList.remove('active');
-        document.body.style.overflow = ''; // Unlock body scroll
-    };
+function setupLicenseButton() {
+    const licenseBtn = document.getElementById('licenseBtn');
+    if (!licenseBtn) return;
 
-    // Event Listeners
-    licenseBtn.addEventListener('click', openModal);
-    closeBtn?.addEventListener('click', closeModal);
+    let licenseContent = '<p class="loading-text">Fetching license...</p>';
     
-    // Close when clicking outside the modal window
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-
-    // Close on Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    // Pre-fetch the license to make the modal feel instant
+    (async () => {
+        try {
+            const response = await fetch('LICENSE');
+            if (!response.ok) throw new Error('File not found in repo.');
+            const text = await response.text();
+            licenseContent = `<pre>${text}</pre>`;
+        } catch (err) {
+            licenseContent = `<p>Error: Could not load LICENSE file.</p>`;
+        }
+    })();
+    
+    licenseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        ModalManager.show('cat LICENSE', licenseContent, { large: true });
     });
 }
 
@@ -296,33 +300,33 @@ function setupTerminalEasterEgg() {
 
     // --- 1. Opcode Definition (Enum) ---
     const OP = Object.freeze({
-        NOP:          0x00,
-        QUIT:         0x01,
-        SET_THEME:    0x02,
-        TOGGLE_GUI:   0x03,
+        NOP: 0x00,
+        QUIT: 0x01,
+        SET_THEME: 0x02,
+        TOGGLE_GUI: 0x03,
         SHOW_LICENSE: 0x04,
-        SUDO:         0x05,
-        HELP:         0x06,
-        WHOAMI:       0x07
+        SUDO: 0x05,
+        HELP: 0x06,
+        WHOAMI: 0x07
     });
 
     // --- 2. String to Opcode Mapping ---
     const COMMAND_MAP = {
-        'q':       OP.QUIT,
-        'quit':    OP.QUIT,
-        'exit':    OP.QUIT,
-        'theme':   OP.SET_THEME,
-        'gui':     OP.TOGGLE_GUI,
+        'q': OP.QUIT,
+        'quit': OP.QUIT,
+        'exit': OP.QUIT,
+        'theme': OP.SET_THEME,
+        'gui': OP.TOGGLE_GUI,
         'license': OP.SHOW_LICENSE,
-        'sudo':    OP.SUDO,
-        'help':    OP.HELP,
-        'whoami':  OP.WHOAMI
+        'sudo': OP.SUDO,
+        'help': OP.HELP,
+        'whoami': OP.WHOAMI
     };
 
     // --- 3. Global Input Listeners ---
     document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-        
+
         if (e.key === ':' && !isTyping) {
             e.preventDefault();
             cmdBar.classList.add('active');
@@ -335,11 +339,13 @@ function setupTerminalEasterEgg() {
 
     cmdInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            const [rawCmd, arg] = cmdInput.value.trim().toLowerCase().split(' ');
+            e.preventDefault();
+            const val = cmdInput.value.trim().toLowerCase();
+            const [rawCmd, arg] = val.split(' ');
             const opcode = COMMAND_MAP[rawCmd] || OP.NOP;
             
             dispatch(opcode, arg);
-            closeCmd();
+            closeCmd(); 
         }
     });
 
@@ -352,15 +358,19 @@ function setupTerminalEasterEgg() {
     function dispatch(opcode, arg) {
         switch (opcode) {
             case OP.QUIT:
-                break; // Handled by closeCmd()
+                break;
 
             case OP.SET_THEME:
                 const validThemes = ['default', 'dracula', 'gruvbox', 'terminal'];
                 if (validThemes.includes(arg)) {
                     htmlEl.setAttribute('data-theme', arg);
                     localStorage.setItem('theme', arg);
-                    const selector = document.getElementById('themeSelect');
-                    if (selector) selector.value = arg;
+                    // Update the custom dropdown text if it exists
+                    const label = document.getElementById('currentThemeName');
+                    if (label) {
+                        const opt = document.querySelector(`.option[data-value="${arg}"]`);
+                        if (opt) label.innerText = opt.innerText;
+                    }
                 }
                 break;
 
@@ -373,15 +383,28 @@ function setupTerminalEasterEgg() {
                 break;
 
             case OP.SHOW_LICENSE:
+                // We can now call the manager directly or trigger the button
                 document.getElementById('licenseBtn')?.click();
                 break;
 
+
             case OP.SUDO:
-                alert("Nice try. Evilpasture is the only root user here.");
+                ModalManager.show("ACCESS_DENIED",
+                    "<span style='color:var(--accent)'>󰀦 Critical Error:</span><br>Nice try. Evilpasture is the only root user here.");
                 break;
 
             case OP.HELP:
-                alert("OPCODES: theme [default|dracula|gruvbox|terminal], gui, license, sudo, whoami, q");
+                console.log("Dispatching HELP command...");
+                ModalManager.show("COMMAND_INDEX", `
+                    <div style="text-align:left; font-family:monospace;">
+                        <p>󰅂 theme [name]</p>
+                        <p>󰅂 gui (toggle shaders)</p>
+                        <p>󰅂 license</p>
+                        <p>󰅂 whoami</p>
+                        <p>󰅂 sudo</p>
+                        <p>󰅂 q (exit console)</p>
+                    </div>
+                `);
                 break;
 
             case OP.WHOAMI:
@@ -391,7 +414,7 @@ function setupTerminalEasterEgg() {
             case OP.NOP:
             default:
                 if (cmdInput.value.length > 0) {
-                    console.warn(`0x${opcode.toString(16).toUpperCase().padStart(2, '0')} // ERR_UNKNOWN_OPCODE`);
+                    ModalManager.show("EXEC_ERROR", `Command not found: <span style="color:var(--accent)">${cmdInput.value}</span>`);
                 }
                 break;
         }
