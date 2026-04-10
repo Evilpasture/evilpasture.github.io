@@ -51,7 +51,6 @@ async function loadMarkdown() {
         return;
     }
 
-    // Call the new author fetcher
     fetchLastCommitInfo(file);
 
     try {
@@ -59,8 +58,15 @@ async function loadMarkdown() {
         if (!response.ok) throw new Error("File not found");
 
         const markdown = await response.text();
+        
+        // 1. Render Markdown
         contentDiv.innerHTML = marked.parse(markdown);
-        Prism.highlightAll();
+
+        // 2. TRIGGER HIGHLIGHTING
+        // We use highlightAllUnder to ensure Prism looks inside the #content div
+        if (window.Prism) {
+            Prism.highlightAllUnder(contentDiv);
+        }
         
         const firstH1 = contentDiv.querySelector('h1');
         if (firstH1) document.title = firstH1.innerText + " | Evilpasture";
