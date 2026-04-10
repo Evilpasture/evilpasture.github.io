@@ -35,7 +35,7 @@ async function fetchLastCommitInfo(file) {
         }
     } catch (err) {
         console.error("Failed to fetch author:", err);
-        // Fallback if GitHub API fails (e.g. rate limit)
+        // Clear skeleton and show fallback
         authorContainer.innerHTML = `<span class="author-name">${GITHUB_USERNAME}</span>`;
     }
 }
