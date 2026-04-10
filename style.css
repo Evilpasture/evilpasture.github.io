@@ -1460,6 +1460,26 @@ h2,
     border: 1px solid var(--border);
 }
 
+/* Apply to the entire site */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 4px;
+    border: 2px solid var(--bg);
+}
+
 /* =========================================
    12. TERMINAL EASTER EGG (CMD LINE)
    ========================================= */
