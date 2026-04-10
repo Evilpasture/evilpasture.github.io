@@ -79,35 +79,86 @@
 
         <main>
             <section id="about">
-                <h2>About</h2>
-                <p>Hello! My legal name is Mai Huy Hiếu! But you can call me whatever you like, for example my user
-                    handles.</p>
-                <p>Focused on high-performance software, graphics engineering, and
-                    hardware-sympathetic-to-the-point-of-obsession design.
-                    Currently
-                    exploring C23, Vulkan memory management, physics engine optimization and high-contention concurrency
-                    atomics.
-                    I am a very passionate and dedicated software engineer on my own projects. It feels like creating my
-                    own world where I am responsible for myself.
-                    I like to contribute to open source. As you can see in the sidebar, I already have some
-                    contributions in Jolt Physics, a very well known physics library used in Godot.
-                    If you want to talk just hit me up in Discord! I will always get in touch.</p>
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="terminal-title">user@evilpasture: ~/bio</div>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="about-grid">
+                            <!-- Status Column -->
+                            <div class="about-status">
+                                <div class="status-item">
+                                    <span class="label">NAME:</span>
+                                    <span class="value">Mai Huy Hiếu</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">ROLE:</span>
+                                    <span class="value">Software Engineer</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">FOCUS:</span>
+                                    <span class="value">High-Perf / Graphics</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="label">STATUS:</span>
+                                    <span class="value pulse-text">ALLOCATED</span>
+                                </div>
+                            </div>
+
+                            <!-- Text Column -->
+                            <div class="about-text">
+                                <p><span class="prompt">></span> Focused on high-performance software, graphics
+                                    engineering, and hardware-sympathetic design. Currently exploring C23, Vulkan memory
+                                    management, and high-contention atomics.</p>
+                                <p><span class="prompt">></span> Totally assionate about creating my own worlds through code.
+                                    Active contributor to open-source libraries like <a
+                                        href="https://github.com/jrouwe/JoltPhysics" class="inline-link">Jolt
+                                        Physics</a>.</p>
+                                <p><span class="prompt">></span> Hit me up on Discord for technical discussions or
+                                    collaboration. Or just talk. Don't worry, I won't bite.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section id="expertise">
-                <h2>Technical Skills</h2>
-                <div class="tech-stack">
-                    <span> C23</span>
-                    <span> C++23</span>
-                    <span> Python.h</span>
-                    <span>󰝨 Vulkan</span>
-                    <span>󰟆 OpenGL</span>
-                    <span>󰓅 SIMD</span>
-                    <span> NeoVim</span>
-                    <span> Windows</span>
-                    <span> MacOS</span>
-                </div>
-            </section>
+    <h2>Technical Capabilities</h2>
+    <div class="expertise-grid">
+        <!-- Low Level & Standards -->
+        <div class="expertise-card">
+            <div class="card-label">0x01 // CORE_LOGIC</div>
+            <ul class="skill-list">
+                <li><span class="icon"></span> C23 <small>Atomics, VLA, Threading</small></li>
+                <li><span class="icon"></span> C++23 <small>Concepts, Ranges, Coroutines</small></li>
+                <li><span class="icon"></span> Python.h <small>C-Extensions, GIL-Free</small></li>
+            </ul>
+        </div>
+
+        <!-- Graphics & Hardware -->
+        <div class="expertise-card">
+            <div class="card-label">0x02 // COMPUTE_GRAPHICS</div>
+            <ul class="skill-list">
+                <li><span class="icon">󰝨</span> Vulkan <small>Memory Management, Pipelines</small></li>
+                <li><span class="icon">󰟆</span> OpenGL <small>Shader Optimization, AZDO</small></li>
+                <li><span class="icon">󰓅</span> SIMD <small>AVX-512, SSE, NEON</small></li>
+            </ul>
+        </div>
+
+        <!-- Environment -->
+        <div class="expertise-card">
+            <div class="card-label">0x03 // ENVIRONMENT</div>
+            <ul class="skill-list">
+                <li><span class="icon"></span> NeoVim <small>Custom Lua Toolchain</small></li>
+                <li><span class="icon"></span> Windows <small>Win32 API, Performance Counters</small></li>
+                <li><span class="icon"></span> MacOS <small>Darwin / Metal Interop</small></li>
+            </ul>
+        </div>
+    </div>
+</section>
 
             <section id="projects">
                 <h2>Core Projects</h2>
@@ -210,16 +261,41 @@
         </aside>
 
         <footer>
-            <p>Built with HTML/CSS/JS. Hosted on GitHub Pages.</p>
-            <a href="https://github.com/Evilpasture/evilpasture.github.io"
-                style="color: var(--secondary); font-size: 0.8rem;">[ View Site Source ]</a>
-        </footer>
+    <div class="footer-telemetry">
+        <div class="telemetry-item">
+            <span class="label">ENGINE:</span>
+            <span class="value">V8-NATIVE</span>
+        </div>
+        <div class="telemetry-item">
+            <span class="label">MEMORY:</span>
+            <span class="value">STABLE</span>
+        </div>
+        <div class="telemetry-item">
+            <span class="label">SESSION-UPTIME:</span>
+            <span class="value" id="uptime-counter">00:00:00</span>
+        </div>
+        <div class="telemetry-item">
+            <span class="label">STATUS:</span>
+            <span class="value status-ok">󰄬 READY</span>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="source-code">
+            <span class="icon"></span>
+            <a href="https://github.com/Evilpasture/evilpasture.github.io" target="_blank">
+                [ ./index.html ]
+            </a>
+        </div>
+        <p class="copyright">EVILPASTURE // 2026</p>
+    </div>
+</footer>
     </div>
 
     <!-- Add the Shader and UI scripts -->
     <script src="script.js"></script>
     <script src="shader.js"></script>
-    
+
     <!-- Add the SVG filter needed for the warp effect -->
     <svg style="display:none;">
         <defs>
