@@ -525,7 +525,13 @@ async function openFileExplorer(repo) {
     ModalManager.show("FILE_EXPLORER", `<p>Connecting to GitHub API for ${repo}...</p>`);
 
     try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, { headers });
+        const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+        const repoData = await repoRes.json();
+        const defaultBranch = repoData.default_branch; // This will be 'main', 'master', or custom
+        const response = await fetch(
+            `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`,
+            { headers }
+        );
         if (response.status === 403) throw new Error("API rate limit reached.");
         if (!response.ok) {
             let errorData;
