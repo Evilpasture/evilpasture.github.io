@@ -1505,3 +1505,39 @@ h2,
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
 }
+
+/* File Explorer Styles */
+.explorer-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'JetBrainsMono NF', monospace;
+}
+
+.explorer-item {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+}
+
+.explorer-item:hover {
+    background: var(--accent-faded);
+}
+
+.explorer-item .icon {
+    color: var(--accent);
+}
+
+.explorer-content {
+    background: #1e1e1e; /* Code background */
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    color: #d4d4d4;
+    border: 1px solid var(--border);
+}

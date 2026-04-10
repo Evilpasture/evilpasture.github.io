@@ -454,16 +454,90 @@ function setupProjectPreviews() {
                         <div class="tech-stack">
                             ${info.tech.map(t => `<span>${t}</span>`).join('')}
                         </div>
-                        <div style="margin-top: 20px;">
-                            <a href="${info.link}" target="_blank" class="github-link">View Repository</a>
+                        <div style="margin-top: 20px; display:flex; gap:10px;">
+                            <a href="${info.link}" target="_blank" class="github-link">GitHub</a>
+                            <!-- NEW BUTTON -->
+                            <button class="github-link" onclick="openFileExplorer('${repo}')">Browse Code</button>
                         </div>
                     </div>
                 `;
-
                 ModalManager.show(info.title, html, { large: true });
             } catch (err) {
                 ModalManager.show("ERROR", `<p>Could not load project details: ${err.message}</p>`);
             }
         });
     });
+}
+
+/**
+ * Interactive File Explorer
+ * Uses on-demand fetching to keep data.json lightweight.
+ */
+async function openFileExplorer(repo) {
+    const owner = "Evilpasture";
+    // NOTE: If you hit rate limits, you must pass a Personal Access Token in the headers
+    const headers = { 'Accept': 'application/vnd.github.v3+json' };
+    
+    ModalManager.show("FILE_EXPLORER", `<p>Connecting to GitHub API for ${repo}...</p>`);
+
+    try {
+        // 1. Fetch the tree
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, { headers });
+        // Handle Rate Limiting Specifically
+        if (response.status === 403) {
+            ModalManager.show("ERROR", `
+                <p>GitHub API rate limit reached.</p>
+                <p style="font-size: 0.8rem; color: var(--secondary);">Requests are limited to 60 per hour for unauthenticated users. Please try again in a bit, or view the repo on <a href="https://github.com/${owner}/${repo}" target="_blank">GitHub</a> directly.</p>
+            `);
+            return;
+        }
+        if (!response.ok) throw new Error("Could not fetch repo tree");
+        
+        const data = await response.json();
+
+        // 2. Render Tree
+        // Filter out non-code files (like .png, .jpg) to keep the list clean
+        const treeHtml = data.tree
+            .filter(item => item.type === 'blob' && !item.path.match(/\.(png|jpg|gif|pdf)$/i))
+            .map(item => `
+                <li class="explorer-item" data-url="${item.url}" data-path="${item.path}">
+                    <span class="icon">󰈔</span> ${item.path}
+                </li>
+            `).join('');
+
+        const containerHtml = `
+            <div class="explorer-container">
+                <ul class="explorer-tree" style="max-height: 50vh; overflow-y: auto;">
+                    ${treeHtml}
+                </ul>
+            </div>
+        `;
+
+        ModalManager.show(`${repo}/tree/main`, containerHtml, { large: true });
+
+        // 3. Setup click for files
+        document.querySelectorAll('.explorer-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const url = item.getAttribute('data-url');
+                const path = item.getAttribute('data-path');
+                
+                // Show "Loading File"
+                ModalManager.show(path, `<p>Loading contents...</p>`, { large: true });
+                
+                const fileRes = await fetch(url, { headers });
+                const fileData = await fileRes.json();
+                
+                // Decode Base64 content safely
+                try {
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    ModalManager.show(path, `<pre class="explorer-content"><code>${content}</code></pre>`, { large: true });
+                } catch(e) {
+                    ModalManager.show("ERROR", "Could not decode file content.");
+                }
+            });
+        });
+
+    } catch (err) {
+        ModalManager.show("ERROR", `<p>Failed to load explorer: ${err.message}</p>`);
+    }
 }
