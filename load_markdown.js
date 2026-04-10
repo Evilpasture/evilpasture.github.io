@@ -9,15 +9,15 @@ async function fetchLastCommitInfo(file) {
     try {
         // Fetch commit history for this specific file
         const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/commits?path=${filePath}&per_page=1`);
-        
+
         if (!response.ok) throw new Error("API Limit or Repo not found");
-        
+
         const commits = await response.json();
 
         if (commits.length > 0) {
             const lastCommit = commits[0];
-            const author = lastCommit.author; // This is the GitHub User object
-            const commitDetails = lastCommit.commit.author; // This contains the date
+            const author = lastCommit.author;
+            const commitDetails = lastCommit.commit.author;
 
             const date = new Date(commitDetails.date).toLocaleDateString(undefined, {
                 year: 'numeric',
@@ -25,12 +25,15 @@ async function fetchLastCommitInfo(file) {
                 day: 'numeric'
             });
 
+            // Wrap the whole content in an <a> tag
             authorContainer.innerHTML = `
-                <img src="${author.avatar_url}" class="author-avatar" alt="Avatar">
-                <div class="author-info">
-                    <span class="author-name">${author.login}</span>
-                    <span class="commit-date">Last updated: ${date}</span>
-                </div>
+                <a href="${author.html_url}" target="_blank" rel="noopener" class="author-link">
+                    <img src="${author.avatar_url}" class="author-avatar" alt="Avatar">
+                    <div class="author-info">
+                        <span class="author-name">${author.login} 󰓈</span>
+                        <span class="commit-date">Last updated: ${date}</span>
+                    </div>
+                </a>
             `;
         }
     } catch (err) {
@@ -58,7 +61,7 @@ async function loadMarkdown() {
         if (!response.ok) throw new Error("File not found");
 
         const markdown = await response.text();
-        
+
         // 1. Render Markdown
         contentDiv.innerHTML = marked.parse(markdown);
 
@@ -67,7 +70,7 @@ async function loadMarkdown() {
         if (window.Prism) {
             Prism.highlightAllUnder(contentDiv);
         }
-        
+
         const firstH1 = contentDiv.querySelector('h1');
         if (firstH1) document.title = firstH1.innerText + " | Evilpasture";
 

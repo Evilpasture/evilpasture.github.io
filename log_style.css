@@ -283,3 +283,41 @@
 .token.atrule, .token.attr-value, .token.keyword { color: #bd93f9; }
 .token.function, .token.class-name { color: #38bdf8; }
 .token.regex, .token.important, .token.variable { color: #feca57; }
+
+/* --- Author Link Interactivity --- */
+.author-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Keep text colors from theme */
+    padding: 6px 12px;
+    margin-left: -12px; /* Pull back to align with text */
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+.author-link:hover {
+    background: var(--accent-faded);
+    border-color: var(--border);
+    transform: translateY(-2px);
+}
+
+.author-link:hover .author-avatar {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-faded);
+}
+
+.author-link:hover .author-name {
+    color: var(--accent);
+}
+
+/* Ensure avatar still looks right inside the link */
+.author-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    transition: border-color 0.2s;
+}
