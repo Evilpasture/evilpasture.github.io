@@ -35,7 +35,9 @@ async function initGitHubData() {
                 <div class="stats-grid">
                     ${Object.entries(data.stats).map(([key, val]) => `
                         <div class="stat-item">
-                            <span class="stat-value">${val}</span>
+                            <span class="stat-value">
+                                ${key === 'since' ? val.split('T')[0] : val}
+                            </span>
                             <span class="stat-label">${key}</span>
                         </div>
                     `).join('')}
@@ -227,7 +229,7 @@ const ModalManager = {
     init() {
         this.modal = document.getElementById('unifiedModal');
         if (!this.modal) return;
-        
+
         this.titleEl = document.getElementById('modalTitle');
         this.bodyEl = document.getElementById('modalBody');
         this.closeBtn = document.getElementById('modalCloseBtn');
@@ -249,17 +251,17 @@ const ModalManager = {
             console.error("Modal element not found!"); // ADD THIS
             return;
         }
-        
+
         this.titleEl.innerText = title;
         this.bodyEl.innerHTML = content;
         this.window.classList.toggle('large', !!options.large);
-        
+
         document.body.style.overflow = 'hidden';
         this.modal.classList.add('active');
     },
     hide() {
         if (!this.modal) return;
-        
+
         this.modal.classList.remove('active');
         document.body.style.overflow = '';
     }
@@ -270,7 +272,7 @@ function setupLicenseButton() {
     if (!licenseBtn) return;
 
     let licenseContent = '<p class="loading-text">Fetching license...</p>';
-    
+
     // Pre-fetch the license to make the modal feel instant
     (async () => {
         try {
@@ -282,7 +284,7 @@ function setupLicenseButton() {
             licenseContent = `<p>Error: Could not load LICENSE file.</p>`;
         }
     })();
-    
+
     licenseBtn.addEventListener('click', (e) => {
         e.preventDefault();
         ModalManager.show('cat LICENSE', licenseContent, { large: true });
@@ -344,9 +346,9 @@ function setupTerminalEasterEgg() {
             const val = cmdInput.value.trim().toLowerCase();
             const [rawCmd, arg] = val.split(' ');
             const opcode = COMMAND_MAP[rawCmd] || OP.NOP;
-            
+
             dispatch(opcode, arg);
-            closeCmd(); 
+            closeCmd();
         }
     });
 
@@ -427,12 +429,12 @@ function setupTerminalEasterEgg() {
  */
 function setupProjectPreviews() {
     const cards = document.querySelectorAll('.card-link');
-    
+
     cards.forEach(card => {
         card.addEventListener('click', async (e) => {
             e.preventDefault(); // Stop navigation
             const repo = card.getAttribute('data-repo');
-            
+
             // Show a "Loading" state immediately
             ModalManager.show(repo.toUpperCase(), '<p>Loading project metadata...</p>');
 
@@ -457,7 +459,7 @@ function setupProjectPreviews() {
                         </div>
                     </div>
                 `;
-                
+
                 ModalManager.show(info.title, html, { large: true });
             } catch (err) {
                 ModalManager.show("ERROR", `<p>Could not load project details: ${err.message}</p>`);

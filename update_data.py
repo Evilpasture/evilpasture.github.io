@@ -80,7 +80,7 @@ def main():
                 "commits": commits.get('total_count', 0),
                 "repos": user.get('public_repos', 0),
                 "followers": user.get('followers', 0),
-                "since": user.get('created_at', "2024")[:4]
+                "since": user.get('created_at', "2025-01-01T00:00:00Z")
             },
             "prs": [
                 {
