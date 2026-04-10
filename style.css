@@ -290,9 +290,20 @@ h2 {
 }
 
 /* --- Enhanced Terminal Header --- */
-.terminal-header {
-    text-align: left; /* Aligned left looks more like a log */
+/* Specific to the Main Page Header */
+header.terminal-header {
     margin-bottom: 3rem;
+    text-align: left;
+}
+
+/* Generic Terminal Header (used in Windows and Modals) */
+.terminal-header {
+    background: var(--border);
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Removed margin-bottom here so it doesn't affect modals */
 }
 
 .banner-frame {
