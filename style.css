@@ -908,7 +908,9 @@ footer {
     border-color: var(--accent);
 }
 
-#modeToggle {
+/* Update the existing #modeToggle block to look like this: */
+
+#modeToggle, #effectsToggle {
     background: var(--bg);
     color: var(--accent);
     border: 1px solid var(--border);
@@ -919,7 +921,7 @@ footer {
     transition: all 0.2s ease;
 }
 
-#modeToggle:hover {
+#modeToggle:hover, #effectsToggle:hover {
     border-color: var(--accent);
     background: var(--accent-faded);
 }

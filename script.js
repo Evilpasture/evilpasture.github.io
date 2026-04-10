@@ -174,6 +174,10 @@ function setupThemeSystem() {
 
 function startUptimeCounter() {
     const counterEl = document.getElementById('uptime-counter');
+    
+    // GUARD CLAUSE: If the element doesn't exist (e.g., in log-viewer), exit silently.
+    if (!counterEl) return;
+
     const startTime = Date.now();
 
     setInterval(() => {
@@ -252,6 +256,29 @@ function setupThemeSystem() {
     }
 }
 
+function setupEffectsToggle() {
+    const toggle = document.getElementById('effectsToggle');
+    const icon = document.getElementById('effectsIcon');
+    const htmlEl = document.documentElement;
+
+    // Default to 'off' if mobile, 'on' if desktop
+    const isMobile = window.innerWidth < 950;
+    const savedState = localStorage.getItem('visualEffects') || (isMobile ? 'off' : 'on');
+    
+    // Set initial state
+    htmlEl.setAttribute('data-effects', savedState);
+    icon.innerText = savedState === 'on' ? '󰄬' : '󰅖';
+
+    toggle.addEventListener('click', () => {
+        const currentState = htmlEl.getAttribute('data-effects');
+        const newState = currentState === 'on' ? 'off' : 'on';
+        
+        htmlEl.setAttribute('data-effects', newState);
+        localStorage.setItem('visualEffects', newState);
+        icon.innerText = newState === 'on' ? '󰄬' : '󰅖';
+    });
+}
+
 // Ensure this is inside your DOMContentLoaded listener:
 document.addEventListener('DOMContentLoaded', () => {
     initGitHubData();
@@ -259,4 +286,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDiscordCopy();
     setupThemeSystem();
     startUptimeCounter();
+    setupEffectsToggle()
 });
