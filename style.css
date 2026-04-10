@@ -630,6 +630,16 @@ footer {
     }
 }
 
+/* This prevents grid items from pushing the parent container wider than 100% */
+.container > * {
+    min-width: 0;
+}
+
+/* Ensure box-sizing is applied everywhere to prevent padding from adding to width */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* =========================================
    8. SIDEBAR (DRAWER) SYSTEM
    ========================================= */
@@ -832,9 +842,7 @@ footer {
     pointer-events: none;
 }
 
-/* =========================================
-   9. HARDWARE & CRT EMULATION
-   ========================================= */
+/* The WebGL Canvas's shadow */
 body {
     /* Use the browser's native transparency mix */
     background-color: transparent; 

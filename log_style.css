@@ -127,16 +127,59 @@
     100% { opacity: 0.5; }
 }
 
+/* --- Global Reset for the Log Viewer --- */
 .log-container {
-    grid-template-columns: 1fr; /* Force single column always for reading */
-    max-width: 900px; /* Narrower than main page for better readability */
+    width: 100% !important;
+    max-width: 900px;
     margin: 0 auto;
+    overflow-x: hidden; /* Prevent the container itself from scrolling */
+    box-sizing: border-box;
 }
 
-@media (max-width: 950px) {
-    .log-container {
+/* --- Typography Scaling & Scroll Fixes --- */
+@media (max-width: 650px) {
+    /* 1. Scale text smaller */
+    :root {
+        font-size: 14px; /* Drops the base scale from 16px */
+    }
+
+    .prose {
+        font-size: 0.95rem; /* Further scale down body text */
+        line-height: 1.6;
+        word-wrap: break-word; /* Force long words to break */
+        overflow-wrap: break-word;
+    }
+
+    .prose h1 { font-size: 1.8rem; }
+    .prose h2 { font-size: 1.4rem; }
+    .prose h3 { font-size: 1.2rem; }
+
+    /* 2. Fix the Header */
+    .article-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 0;
         width: 100%;
-        border: none;
-        padding: 1rem;
+    }
+
+    /* 3. Aggressive Code Block Fix */
+    .prose pre, 
+    .prose code[class*="language-"], 
+    pre[class*="language-"] {
+        font-size: 0.8rem !important; /* Smaller code font */
+        margin: 1rem -1rem !important; /* Negative margin to let code breathe */
+        width: calc(100% + 2rem) !important; /* Fill the whole screen width */
+        border-radius: 0 !important;
+        border-left: none;
+        border-right: none;
+        white-space: pre-wrap !important; /* Force code to wrap instead of scroll */
+        word-break: break-all !important;
+        overflow-x: hidden !important; /* Kill the horizontal scroll */
+    }
+
+    /* 4. Fix images/tables */
+    .prose img, .prose table {
+        max-width: 100% !important;
+        height: auto;
     }
 }
