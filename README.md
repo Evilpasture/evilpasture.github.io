@@ -20,8 +20,12 @@ My personal portfolio and technical log. Built with a focus on performance, mini
 ├── log-viewer.html     # Dynamic Markdown renderer shell
 ├── style.css           # Global styles & layout
 ├── script.js           # GitHub API logic & UI interactions
+├── data.json           # GitHub API data
+├── log_style.css       # Custom CSS for Markdown rendering
+├── load_markdown.js    # Markdown rendering logic
 ├── logs/               # Technical blog posts (.md)
 ├── fonts/              # Self-hosted JetBrains Mono NF
+├── res/                # Image assets
 └── LICENSE             # MIT License
 ```
 
