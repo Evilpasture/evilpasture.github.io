@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * 1. GitHub Stats & Projects
  */
+window.PROJECT_LIST = []; 
+
 async function initGitHubData() {
     const statsContainer = document.getElementById('github-stats-container');
     const prList = document.getElementById('pr-list');
@@ -64,6 +66,7 @@ async function initGitHubData() {
                 }
             });
         }
+        window.PROJECT_LIST = Object.keys(data.projects);
     } catch (err) {
         console.warn('GitHub Data Sync:', err.message);
         if (statsContainer) statsContainer.innerHTML = '<p class="loading-text">Stats unavailable</p>';
@@ -313,7 +316,8 @@ function setupTerminalEasterEgg() {
         SHOW_LICENSE: 0x04,
         SUDO: 0x05,
         HELP: 0x06,
-        WHOAMI: 0x07
+        WHOAMI: 0x07,
+        EXPLORE: 0x08 // New Opcode
     });
 
     // --- 2. String to Opcode Mapping ---
@@ -326,20 +330,19 @@ function setupTerminalEasterEgg() {
         'license': OP.SHOW_LICENSE,
         'sudo': OP.SUDO,
         'help': OP.HELP,
-        'whoami': OP.WHOAMI
+        'whoami': OP.WHOAMI,
+        'explore': OP.EXPLORE // New Mapping
     };
 
-    // --- 3. Global Input Listeners ---
+    // ... (Keep existing Global Input Listeners) ...
     document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-
         if (e.key === ':' && !isTyping) {
             e.preventDefault();
             cmdBar.classList.add('active');
             cmdInput.value = '';
             cmdInput.focus();
         }
-
         if (e.key === 'Escape') closeCmd();
     });
 
@@ -349,7 +352,6 @@ function setupTerminalEasterEgg() {
             const val = cmdInput.value.trim().toLowerCase();
             const [rawCmd, arg] = val.split(' ');
             const opcode = COMMAND_MAP[rawCmd] || OP.NOP;
-
             dispatch(opcode, arg);
             closeCmd();
         }
@@ -364,6 +366,7 @@ function setupTerminalEasterEgg() {
     function dispatch(opcode, arg) {
         switch (opcode) {
             case OP.QUIT:
+                closeCmd();
                 break;
 
             case OP.SET_THEME:
@@ -371,7 +374,6 @@ function setupTerminalEasterEgg() {
                 if (validThemes.includes(arg)) {
                     htmlEl.setAttribute('data-theme', arg);
                     localStorage.setItem('theme', arg);
-                    // Update the custom dropdown text if it exists
                     const label = document.getElementById('currentThemeName');
                     if (label) {
                         const opt = document.querySelector(`.option[data-value="${arg}"]`);
@@ -389,10 +391,44 @@ function setupTerminalEasterEgg() {
                 break;
 
             case OP.SHOW_LICENSE:
-                // We can now call the manager directly or trigger the button
                 document.getElementById('licenseBtn')?.click();
                 break;
 
+            case OP.EXPLORE:
+                if (!arg) {
+                    ModalManager.show("USAGE", "Usage: explore [repo-name]");
+                    return;
+                }
+
+                // 1. Direct match check
+                if (window.PROJECT_LIST.includes(arg)) {
+                    openFileExplorer(arg);
+                } else {
+                    // 2. Fuzzy match logic
+                    let closestMatch = null;
+                    let minDistance = 3; // Threshold: only suggest if distance is small
+
+                    window.PROJECT_LIST.forEach(repo => {
+                        const dist = getLevenshteinDistance(arg, repo);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            closestMatch = repo;
+                        }
+                    });
+
+                    if (closestMatch) {
+                        ModalManager.show("NOT_FOUND", `
+                            <p>Repository <strong>${arg}</strong> not found.</p>
+                            <p>Did you mean <strong>${closestMatch}</strong>?</p>
+                            <button class="github-link" onclick="openFileExplorer('${closestMatch}'); document.getElementById('modalCloseBtn').click();">
+                                Run 'explore ${closestMatch}'
+                            </button>
+                        `);
+                    } else {
+                        ModalManager.show("EXEC_ERROR", `Repository <strong>${arg}</strong> does not exist.`);
+                    }
+                }
+                break;
 
             case OP.SUDO:
                 ModalManager.show("ACCESS_DENIED",
@@ -400,15 +436,15 @@ function setupTerminalEasterEgg() {
                 break;
 
             case OP.HELP:
-                console.log("Dispatching HELP command...");
                 ModalManager.show("COMMAND_INDEX", `
                     <div style="text-align:left; font-family:monospace;">
                         <p>󰅂 theme [name]</p>
-                        <p>󰅂 gui (toggle shaders)</p>
+                        <p>󰅂 explore [repo]</p>
+                        <p>󰅂 gui</p>
                         <p>󰅂 license</p>
                         <p>󰅂 whoami</p>
                         <p>󰅂 sudo</p>
-                        <p>󰅂 q (exit console)</p>
+                        <p>󰅂 q</p>
                     </div>
                 `);
                 break;
@@ -538,4 +574,23 @@ async function openFileExplorer(repo) {
     } catch (err) {
         ModalManager.show("ERROR", `<p>Failed to load explorer: ${err.message}</p>`);
     }
+}
+
+/**
+ * Calculates Levenshtein Distance to find string similarity
+ */
+function getLevenshteinDistance(a, b) {
+    const tmp = [];
+    for (let i = 0; i <= a.length; i++) tmp[i] = [i];
+    for (let j = 0; j <= b.length; j++) tmp[0][j] = j;
+    for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+            tmp[i][j] = Math.min(
+                tmp[i - 1][j] + 1, 
+                tmp[i][j - 1] + 1, 
+                tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+            );
+        }
+    }
+    return tmp[a.length][b.length];
 }
