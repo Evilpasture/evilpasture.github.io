@@ -59,6 +59,14 @@
                     <span id="modeIcon">󰖔</span>
                 </button>
             </div>
+
+            <!-- Inside <div class="side-nav-settings"> in index.html -->
+            <div class="setting-item">
+                <span>󰀱 Effects</span>
+                <button id="effectsToggle" title="Toggle Visual Effects">
+                    <span id="effectsIcon">󰄬</span>
+                </button>
+            </div>
         </div>
 
         <div class="side-nav-footer">
@@ -113,7 +121,8 @@
                                 <p><span class="prompt">></span> Focused on high-performance software, graphics
                                     engineering, and hardware-sympathetic design. Currently exploring C23, Vulkan memory
                                     management, and high-contention atomics.</p>
-                                <p><span class="prompt">></span> Totally assionate about creating my own worlds through code.
+                                <p><span class="prompt">></span> Totally assionate about creating my own worlds through
+                                    code.
                                     Active contributor to open-source libraries like <a
                                         href="https://github.com/jrouwe/JoltPhysics" class="inline-link">Jolt
                                         Physics</a>.</p>
@@ -126,39 +135,39 @@
             </section>
 
             <section id="expertise">
-    <h2>Technical Capabilities</h2>
-    <div class="expertise-grid">
-        <!-- Low Level & Standards -->
-        <div class="expertise-card">
-            <div class="card-label">0x01 // CORE_LOGIC</div>
-            <ul class="skill-list">
-                <li><span class="icon"></span> C23 <small>Atomics, VLA, Threading</small></li>
-                <li><span class="icon"></span> C++23 <small>Concepts, Ranges, Coroutines</small></li>
-                <li><span class="icon"></span> Python.h <small>C-Extensions, GIL-Free</small></li>
-            </ul>
-        </div>
+                <h2>Technical Capabilities</h2>
+                <div class="expertise-grid">
+                    <!-- Low Level & Standards -->
+                    <div class="expertise-card">
+                        <div class="card-label">0x01 // CORE_LOGIC</div>
+                        <ul class="skill-list">
+                            <li><span class="icon"></span> C23 <small>Atomics, VLA, Threading</small></li>
+                            <li><span class="icon"></span> C++23 <small>Concepts, Ranges, Coroutines</small></li>
+                            <li><span class="icon"></span> Python.h <small>C-Extensions, GIL-Free</small></li>
+                        </ul>
+                    </div>
 
-        <!-- Graphics & Hardware -->
-        <div class="expertise-card">
-            <div class="card-label">0x02 // COMPUTE_GRAPHICS</div>
-            <ul class="skill-list">
-                <li><span class="icon">󰝨</span> Vulkan <small>Memory Management, Pipelines</small></li>
-                <li><span class="icon">󰟆</span> OpenGL <small>Shader Optimization, AZDO</small></li>
-                <li><span class="icon">󰓅</span> SIMD <small>AVX-512, SSE, NEON</small></li>
-            </ul>
-        </div>
+                    <!-- Graphics & Hardware -->
+                    <div class="expertise-card">
+                        <div class="card-label">0x02 // COMPUTE_GRAPHICS</div>
+                        <ul class="skill-list">
+                            <li><span class="icon">󰝨</span> Vulkan <small>Memory Management, Pipelines</small></li>
+                            <li><span class="icon">󰟆</span> OpenGL <small>Shader Optimization, AZDO</small></li>
+                            <li><span class="icon">󰓅</span> SIMD <small>AVX-512, SSE, NEON</small></li>
+                        </ul>
+                    </div>
 
-        <!-- Environment -->
-        <div class="expertise-card">
-            <div class="card-label">0x03 // ENVIRONMENT</div>
-            <ul class="skill-list">
-                <li><span class="icon"></span> NeoVim <small>Custom Lua Toolchain</small></li>
-                <li><span class="icon"></span> Windows <small>Win32 API, Performance Counters</small></li>
-                <li><span class="icon"></span> MacOS <small>Darwin / Metal Interop</small></li>
-            </ul>
-        </div>
-    </div>
-</section>
+                    <!-- Environment -->
+                    <div class="expertise-card">
+                        <div class="card-label">0x03 // ENVIRONMENT</div>
+                        <ul class="skill-list">
+                            <li><span class="icon"></span> NeoVim <small>Custom Lua Toolchain</small></li>
+                            <li><span class="icon"></span> Windows <small>Win32 API, Performance Counters</small></li>
+                            <li><span class="icon"></span> MacOS <small>Darwin / Metal Interop</small></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
             <section id="projects">
                 <h2>Core Projects</h2>
@@ -261,35 +270,35 @@
         </aside>
 
         <footer>
-    <div class="footer-telemetry">
-        <div class="telemetry-item">
-            <span class="label">ENGINE:</span>
-            <span class="value">V8-NATIVE</span>
-        </div>
-        <div class="telemetry-item">
-            <span class="label">MEMORY:</span>
-            <span class="value">STABLE</span>
-        </div>
-        <div class="telemetry-item">
-            <span class="label">SESSION-UPTIME:</span>
-            <span class="value" id="uptime-counter">00:00:00</span>
-        </div>
-        <div class="telemetry-item">
-            <span class="label">STATUS:</span>
-            <span class="value status-ok">󰄬 READY</span>
-        </div>
-    </div>
+            <div class="footer-telemetry">
+                <div class="telemetry-item">
+                    <span class="label">ENGINE:</span>
+                    <span class="value">V8-NATIVE</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">MEMORY:</span>
+                    <span class="value">STABLE</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">SESSION-UPTIME:</span>
+                    <span class="value" id="uptime-counter">00:00:00</span>
+                </div>
+                <div class="telemetry-item">
+                    <span class="label">STATUS:</span>
+                    <span class="value status-ok">󰄬 READY</span>
+                </div>
+            </div>
 
-    <div class="footer-bottom">
-        <div class="source-code">
-            <span class="icon"></span>
-            <a href="https://github.com/Evilpasture/evilpasture.github.io" target="_blank">
-                [ ./index.html ]
-            </a>
-        </div>
-        <p class="copyright">EVILPASTURE // 2026</p>
-    </div>
-</footer>
+            <div class="footer-bottom">
+                <div class="source-code">
+                    <span class="icon"></span>
+                    <a href="https://github.com/Evilpasture/evilpasture.github.io" target="_blank">
+                        [ ./index.html ]
+                    </a>
+                </div>
+                <p class="copyright">EVILPASTURE // 2026</p>
+            </div>
+        </footer>
     </div>
 
     <!-- Add the Shader and UI scripts -->

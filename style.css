@@ -157,7 +157,7 @@
    ========================================= */
 html {
     /* Set a fallback color so it's never white */
-    background-color: var(--bg); 
+    background-color: var(--bg);
     height: 100%;
     margin: 0;
     padding: 0;
@@ -169,7 +169,8 @@ body {
     font-family: 'JetBrainsMono NF', monospace;
     line-height: 1.6;
     color: var(--text);
-    background-color: var(--bg) !important; /* Switch from transparent to solid */
+    background-color: var(--bg) !important;
+    /* Switch from transparent to solid */
     margin: 0;
     padding: 0;
     display: flex;
@@ -185,29 +186,32 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1; 
+    z-index: -1;
     pointer-events: none;
     display: block;
     /* Optional: Slight fade so it's not too distracting */
-    opacity: 0.8; 
+    opacity: 0.8;
 }
 
 .container {
-    max-width: 1100px; /* Reduced from 1400px */
-    width: 90%;        /* Allows 5% gutter on each side */
-    margin: 2rem auto; /* Centers it and adds space at top/bottom */
+    max-width: 1100px;
+    /* Reduced from 1400px */
+    width: 90%;
+    /* Allows 5% gutter on each side */
+    margin: 2rem auto;
+    /* Centers it and adds space at top/bottom */
     display: grid;
-    grid-template-columns: 1fr 320px; 
+    grid-template-columns: 1fr 320px;
     gap: 3rem;
     padding: 3rem;
     border-radius: 20px;
-    
+
     /* Hardware acceleration & Visibility */
     background-color: color-mix(in srgb, var(--bg), transparent 10%);
-    backdrop-filter: blur(10px); 
+    backdrop-filter: blur(10px);
     border: 1px solid var(--border);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+
     box-sizing: border-box;
 }
 
@@ -435,13 +439,27 @@ h2 {
     margin: 0 auto;
 }
 
-.prose h1 { font-size: 2.2rem; margin-top: 2rem; color: var(--accent); }
-.prose h2 { font-size: 1.6rem; margin-top: 1.5rem; border-bottom: 1px solid var(--border); width: 100%; }
-.prose p { margin-bottom: 1.2rem; line-height: 1.8; }
+.prose h1 {
+    font-size: 2.2rem;
+    margin-top: 2rem;
+    color: var(--accent);
+}
+
+.prose h2 {
+    font-size: 1.6rem;
+    margin-top: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    width: 100%;
+}
+
+.prose p {
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+}
 
 /* Code Block Styling */
 .prose pre {
-    background: var(--code-bg) !important; 
+    background: var(--code-bg) !important;
     padding: 1rem;
     border-radius: 8px;
     overflow-x: auto;
@@ -453,7 +471,7 @@ h2 {
     font-size: 0.9rem;
 }
 
-.prose :not(pre) > code {
+.prose :not(pre)>code {
     background: var(--sidebar-bg);
     padding: 2px 5px;
     border-radius: 4px;
@@ -631,7 +649,8 @@ footer {
 }
 
 .status-ok {
-    color: #22c55e !important; /* Force green for "Ready" */
+    color: #22c55e !important;
+    /* Force green for "Ready" */
 }
 
 .footer-bottom {
@@ -671,6 +690,7 @@ footer {
         gap: 0.5rem 1.5rem;
         justify-content: flex-start;
     }
+
     .footer-bottom {
         flex-direction: column;
         gap: 1rem;
@@ -685,9 +705,11 @@ footer {
     .container {
         grid-template-columns: 1fr;
     }
+
     aside {
         order: 2;
     }
+
     main {
         order: 1;
     }
@@ -695,19 +717,23 @@ footer {
 
 @media (max-width: 1100px) {
     .container {
-        grid-template-columns: 1fr; /* Stack sidebar below content */
+        grid-template-columns: 1fr;
+        /* Stack sidebar below content */
         max-width: 900px;
-        transform: none; /* Disable 3D warp on mobile for readability */
+        transform: none;
+        /* Disable 3D warp on mobile for readability */
     }
 }
 
 /* This prevents grid items from pushing the parent container wider than 100% */
-.container > * {
+.container>* {
     min-width: 0;
 }
 
 /* Ensure box-sizing is applied everywhere to prevent padding from adding to width */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -905,52 +931,79 @@ footer {
 /* The WebGL Canvas's shadow */
 body {
     /* Use the browser's native transparency mix */
-    background-color: transparent; 
+    background-color: transparent;
     perspective: 1200px;
 }
 
 .container {
-    /* Slightly see-through so the background mesh shows through */
     background-color: color-mix(in srgb, var(--bg), transparent 10%);
-    backdrop-filter: blur(8px); /* The 'Glass' effect */
-    
+    backdrop-filter: blur(8px);
     transform: rotateX(1deg) rotateY(-0.5deg);
     transform-style: preserve-3d;
-    
-    /* Keep the DOM effects - they are very light on the GPU */
-    filter: url(#crt-warp) contrast(1.05);
     border: 1px solid var(--border);
+    /* Remove the default filter: url(#crt-warp) from here */
+}
+
+html[data-effects="on"] .container {
+    filter: url(#crt-warp) contrast(1.05);
+}
+
+html[data-effects="off"] .container {
+    transform: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    background-color: var(--bg);
+    /* Solid background */
+}
+
+html[data-effects="off"] .crt-overlay,
+html[data-effects="off"] #bg-canvas {
+    display: none !important;
 }
 
 /* Subtle jitter for the tech feel */
-h1, h2, .nav-item {
-    text-shadow: 1px 0 rgba(255,0,0,0.2), -1px 0 rgba(0,255,255,0.2);
+h1,
+h2,
+.nav-item {
+    text-shadow: 1px 0 rgba(255, 0, 0, 0.2), -1px 0 rgba(0, 255, 255, 0.2);
 }
 
 @keyframes microTremor {
-    0%, 95% { transform: translate(0,0); }
-    96% { transform: translate(0.4px, -0.2px); }
-    98% { transform: translate(-0.2px, 0.4px); }
+
+    0%,
+    95% {
+        transform: translate(0, 0);
+    }
+
+    96% {
+        transform: translate(0.4px, -0.2px);
+    }
+
+    98% {
+        transform: translate(-0.2px, 0.4px);
+    }
 }
 
 /* Physical Aperture Grille Overlay */
 .crt-overlay {
     display: none;
 }
+
 @media (min-width: 1024px) {
     .crt-overlay {
         display: block;
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         pointer-events: none;
         z-index: 9999;
-        background: repeating-linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.05) 0px,
-            rgba(0, 0, 0, 0.05) 1px,
-            transparent 1px,
-            transparent 2px
-        );
+        background: repeating-linear-gradient(0deg,
+                rgba(0, 0, 0, 0.05) 0px,
+                rgba(0, 0, 0, 0.05) 1px,
+                transparent 1px,
+                transparent 2px);
         opacity: 0.3;
     }
 }
@@ -959,8 +1012,10 @@ h1, h2, .nav-item {
     .container {
         grid-template-columns: 1fr;
         padding: 1rem;
-        border: none; /* Removing borders saves draw calls on some mobile GPUs */
+        border: none;
+        /* Removing borders saves draw calls on some mobile GPUs */
     }
+
     header .banner {
         border-radius: 0;
     }
@@ -973,7 +1028,7 @@ h1, h2, .nav-item {
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     margin-top: 1.5rem;
 }
 
@@ -1063,9 +1118,17 @@ h1, h2, .nav-item {
 }
 
 @keyframes simple-pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 /* --- Mobile Responsive --- */
@@ -1073,6 +1136,7 @@ h1, h2, .nav-item {
     .about-grid {
         grid-template-columns: 1fr;
     }
+
     .about-status {
         border-right: none;
         border-bottom: 1px dashed var(--border);
@@ -1082,6 +1146,7 @@ h1, h2, .nav-item {
         flex-wrap: wrap;
         gap: 1rem;
     }
+
     .status-item {
         flex: 1 1 120px;
     }
@@ -1107,7 +1172,7 @@ h1, h2, .nav-item {
 .expertise-card:hover {
     border-color: var(--accent);
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .card-label {
@@ -1166,8 +1231,13 @@ h1, h2, .nav-item {
 }
 
 @keyframes blink {
-    from { opacity: 0.3; }
-    to { opacity: 1; }
+    from {
+        opacity: 0.3;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Mobile Fixes */

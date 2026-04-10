@@ -47,7 +47,7 @@ async function initGitHubData() {
         if (prList && data.prs) {
             // Use optional chaining (?.) to safely remove loading text if it exists
             prContainer?.querySelector('.loading-text')?.remove();
-            
+
             prList.innerHTML = data.prs.map(pr => `
                 <li class="pr-item">
                     <a href="${pr.url}" target="_blank" rel="noopener">${pr.title}</a>
@@ -61,7 +61,7 @@ async function initGitHubData() {
             projectCards.forEach(card => {
                 const repoAttr = card.getAttribute('data-repo');
                 if (!repoAttr) return;
-                
+
                 const repoName = repoAttr.toLowerCase();
                 const badge = card.querySelector('.star-badge');
                 if (badge && data.stars[repoName] !== undefined) {
@@ -107,7 +107,7 @@ function setupSidebar() {
     const overlay = document.getElementById('overlay');
     const openBtn = document.getElementById('sidebarOpen');
     const closeBtn = document.getElementById('sidebarClose');
-    
+
     const toggle = (s) => {
         sidebar.classList.toggle('active', s);
         overlay.classList.toggle('active', s);
@@ -183,6 +183,73 @@ function startUptimeCounter() {
         const s = Math.floor((delta % 60000) / 1000).toString().padStart(2, '0');
         counterEl.innerText = `${h}:${m}:${s}`;
     }, 1000);
+}
+
+function setupThemeSystem() {
+    const themeSelect = document.getElementById('themeSelect');
+    const modeToggle = document.getElementById('modeToggle');
+    const modeIcon = document.getElementById('modeIcon');
+
+    // New Elements
+    const effectsToggle = document.getElementById('effectsToggle');
+    const effectsIcon = document.getElementById('effectsIcon');
+    const htmlEl = document.documentElement;
+
+    // 1. Load saved preferences or auto-detect mobile
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    const savedMode = localStorage.getItem('mode') || 'auto';
+
+    // Auto-disable effects if screen is small (mobile) AND no preference is saved
+    const isMobile = window.innerWidth < 950;
+    const savedEffects = localStorage.getItem('visualEffects');
+    const initialEffects = savedEffects ? savedEffects : (isMobile ? 'off' : 'on');
+
+    // Apply initial states
+    htmlEl.setAttribute('data-theme', savedTheme);
+    htmlEl.setAttribute('data-effects', initialEffects);
+    themeSelect.value = savedTheme;
+    updateEffectsUI(initialEffects);
+
+    if (savedMode !== 'auto') {
+        htmlEl.setAttribute('data-mode', savedMode);
+        updateModeIcon(savedMode);
+    }
+
+    // 2. Theme/Mode Listeners (Your existing code...)
+    themeSelect.addEventListener('change', (e) => {
+        localStorage.setItem('theme', e.target.value);
+        htmlEl.setAttribute('data-theme', e.target.value);
+    });
+
+    modeToggle.addEventListener('click', () => {
+        const nextMode = htmlEl.getAttribute('data-mode') === 'light' ? 'dark' : 'light';
+        htmlEl.setAttribute('data-mode', nextMode);
+        localStorage.setItem('mode', nextMode);
+        updateModeIcon(nextMode);
+    });
+
+    // 3. Visual Effects Toggle Logic
+    effectsToggle.addEventListener('click', () => {
+        const current = htmlEl.getAttribute('data-effects');
+        const next = current === 'on' ? 'off' : 'on';
+
+        htmlEl.setAttribute('data-effects', next);
+        localStorage.setItem('visualEffects', next);
+        updateEffectsUI(next);
+
+        // Force a page refresh or notify the shader script if necessary
+        // In our case, the CSS handles the hiding, and shader.js can check the attribute
+    });
+
+    function updateEffectsUI(state) {
+        // Nerd Font: 󰄬 (Check) for ON, 󰅖 (X) for OFF
+        effectsIcon.innerText = state === 'on' ? '󰄬' : '󰅖';
+        effectsToggle.style.opacity = state === 'on' ? '1' : '0.5';
+    }
+
+    function updateModeIcon(mode) {
+        modeIcon.innerText = mode === 'light' ? '󰖨' : '󰖔';
+    }
 }
 
 // Ensure this is inside your DOMContentLoaded listener:

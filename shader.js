@@ -52,9 +52,9 @@ const meshFragmentShader = `
 
 function initLightShader() {
     const canvas = document.getElementById('bg-canvas') || document.createElement('canvas');
-    if (!canvas.id) { 
-        canvas.id = 'bg-canvas'; 
-        document.body.prepend(canvas); 
+    if (!canvas.id) {
+        canvas.id = 'bg-canvas';
+        document.body.prepend(canvas);
     }
 
     const gl = canvas.getContext('webgl');
@@ -73,7 +73,7 @@ function initLightShader() {
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    const vertices = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
@@ -91,21 +91,27 @@ function initLightShader() {
     function parseColor(color) {
         if (color.startsWith('rgb')) {
             const vals = color.match(/\d+/g).map(Number);
-            return [vals[0]/255, vals[1]/255, vals[2]/255];
+            return [vals[0] / 255, vals[1] / 255, vals[2] / 255];
         }
         const hex = color.replace('#', '');
         const b = parseInt(hex, 16);
-        return [((b >> 16) & 255)/255, ((b >> 8) & 255)/255, (b & 255)/255];
+        return [((b >> 16) & 255) / 255, ((b >> 8) & 255) / 255, (b & 255) / 255];
     }
 
     function render(time) {
+        // Check if the user turned off effects
+        if (document.documentElement.getAttribute('data-effects') === 'off') {
+            // Stop the loop and return
+            requestAnimationFrame(render);
+            return;
+        }
         // High-performance: scale down the resolution on mobile to save GPU
         const quality = window.innerWidth < 950 ? 0.5 : 1.0;
-        const displayWidth  = Math.floor(window.innerWidth * quality);
+        const displayWidth = Math.floor(window.innerWidth * quality);
         const displayHeight = Math.floor(window.innerHeight * quality);
 
         if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-            canvas.width  = displayWidth;
+            canvas.width = displayWidth;
             canvas.height = displayHeight;
             gl.viewport(0, 0, canvas.width, canvas.height);
         }
