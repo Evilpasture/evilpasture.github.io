@@ -10,14 +10,6 @@
 </head>
 
 <body>
-    <svg style="display:none;">
-        <defs>
-            <filter id="crt-warp">
-                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="2" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-        </defs>
-    </svg>
     <!-- Sidebar Toggle Button -->
     <button class="sidebar-toggle" id="sidebarOpen" title="Open Navigation">
         <span>󰍜</span> <!-- Nerd Font Menu Icon -->
@@ -85,11 +77,25 @@
     <div class="overlay" id="overlay"></div>
 
     <div class="container">
-        <header>
-            <img src="res/banner.jpg" alt="Developer Banner" class="banner">
-            <h1>Evilpasture</h1>
-            <p class="subtitle">Data Science Student & Systems Programmer!!!</p>
-            <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
+        <header class="terminal-header">
+            <div class="banner-frame">
+                <img src="res/banner.jpg" alt="Developer Banner" class="banner">
+            </div>
+
+            <div class="header-content">
+                <div class="prompt-container">
+                    <span class="prompt">$</span> <span class="cmd-text">whoami</span>
+                </div>
+
+                <h1 class="glitch" data-text="Evilpasture">Evilpasture</h1>
+
+                <p class="subtitle">Data Science Student // Systems Programmer!!!</p>
+
+                <div class="header-actions">
+                    <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
+                    <span class="status-badge"><span class="blink">●</span> ACCESS GRANTED</span>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -125,9 +131,12 @@
 
                             <!-- Text Column -->
                             <div class="about-text">
-                                <p><span class="prompt">></span> Focused on high-performance software, graphics
-                                    engineering, and hardware-sympathetic design. Currently exploring C23, Vulkan memory
-                                    management, and high-contention atomics.</p>
+                                <p><span class="prompt">></span> Focused on <strong>high-performance</strong> software,
+                                    graphics
+                                    engineering, and hardware-sympathetic design. Currently exploring
+                                    <strong>C23</strong>, Vulkan <strong>memory
+                                        management</strong>, and <strong>high-contention atomics</strong>.
+                                </p>
                                 <p><span class="prompt">></span> Contributing to open source with my projects and
                                     others.
                                     Active contributor to open-source libraries like <a
@@ -312,15 +321,6 @@
     <script src="script.js"></script>
     <script src="shader.js"></script>
 
-    <!-- Add the SVG filter needed for the warp effect -->
-    <svg style="display:none;">
-        <defs>
-            <filter id="crt-warp">
-                <feTurbulence type="fractalNoise" baseFrequency="0.01 0.05" numOctaves="2" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-        </defs>
-    </svg>
     <div class="crt-overlay"></div>
     <!-- Command Line Easter Egg -->
     <div id="cmd-bar" class="cmd-bar">
