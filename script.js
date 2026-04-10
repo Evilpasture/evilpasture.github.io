@@ -12,12 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ModalManager.init();
     setupTerminalEasterEgg();
     setupProjectPreviews();
+    initVimNavigation();
 });
 
 /**
  * 1. GitHub Stats & Projects
  */
-window.PROJECT_LIST = []; 
+window.PROJECT_LIST = [];
 
 async function initGitHubData() {
     const statsContainer = document.getElementById('github-stats-container');
@@ -153,7 +154,7 @@ function setupThemeSystem() {
     // --- A. Handle Custom Div Dropdown (index.html) ---
     const dropdown = document.getElementById('themeDropdown');
     const currentNameLabel = document.getElementById('currentThemeName');
-    
+
     if (dropdown) {
         const options = dropdown.querySelectorAll('.option');
         const trigger = dropdown.querySelector('.select-trigger');
@@ -252,7 +253,7 @@ const ModalManager = {
         });
     },
     show(title, content, options = {}) {
-        console.log(`Attempting to show modal: ${title}`); 
+        console.log(`Attempting to show modal: ${title}`);
         if (!this.modal) {
             console.error("Modal element not found!");
             return;
@@ -317,7 +318,9 @@ function setupTerminalEasterEgg() {
         SUDO: 0x05,
         HELP: 0x06,
         WHOAMI: 0x07,
-        EXPLORE: 0x08 // New Opcode
+        EXPLORE: 0x08,
+        VIM_TOGGLE: 0x09,
+        MAN: 0x0A
     });
 
     // --- 2. String to Opcode Mapping ---
@@ -331,7 +334,9 @@ function setupTerminalEasterEgg() {
         'sudo': OP.SUDO,
         'help': OP.HELP,
         'whoami': OP.WHOAMI,
-        'explore': OP.EXPLORE // New Mapping
+        'explore': OP.EXPLORE,
+        'nvim': OP.VIM_TOGGLE,
+        'man': OP.MAN,
     };
 
     // ... (Keep existing Global Input Listeners) ...
@@ -399,34 +404,11 @@ function setupTerminalEasterEgg() {
                     ModalManager.show("USAGE", "Usage: explore [repo-name]");
                     return;
                 }
-
-                // 1. Direct match check
-                if (window.PROJECT_LIST.includes(arg)) {
-                    openFileExplorer(arg);
+                const matchExplore = findBestRepoMatch(arg);
+                if (matchExplore) {
+                    openFileExplorer(matchExplore);
                 } else {
-                    // 2. Fuzzy match logic
-                    let closestMatch = null;
-                    let minDistance = 3; // Threshold: only suggest if distance is small
-
-                    window.PROJECT_LIST.forEach(repo => {
-                        const dist = getLevenshteinDistance(arg, repo);
-                        if (dist < minDistance) {
-                            minDistance = dist;
-                            closestMatch = repo;
-                        }
-                    });
-
-                    if (closestMatch) {
-                        ModalManager.show("NOT_FOUND", `
-                            <p>Repository <strong>${arg}</strong> not found.</p>
-                            <p>Did you mean <strong>${closestMatch}</strong>?</p>
-                            <button class="github-link" onclick="openFileExplorer('${closestMatch}'); document.getElementById('modalCloseBtn').click();">
-                                Run 'explore ${closestMatch}'
-                            </button>
-                        `);
-                    } else {
-                        ModalManager.show("EXEC_ERROR", `Repository <strong>${arg}</strong> does not exist.`);
-                    }
+                    ModalManager.show("EXEC_ERROR", `Repository <strong>${arg}</strong> does not exist.`);
                 }
                 break;
 
@@ -451,6 +433,30 @@ function setupTerminalEasterEgg() {
 
             case OP.WHOAMI:
                 window.location.hash = "about";
+                break;
+
+            case OP.VIM_TOGGLE:
+                const isVimEnabled = localStorage.getItem('vimMode') === 'true';
+                const newState = !isVimEnabled;
+                localStorage.setItem('vimMode', newState);
+
+                // Add this line:
+                window.dispatchEvent(new Event('vimModeChange'));
+
+                ModalManager.show("VIM_MODE", `Vim navigation is now: <b>${newState ? 'ENABLED' : 'DISABLED'}</b>`);
+                break;
+
+            case OP.MAN:
+                if (!arg) {
+                    ModalManager.show("USAGE", "Usage: man [repo-name]");
+                    return;
+                }
+                const match = findBestRepoMatch(arg);
+                if (match) {
+                    showReadme(match);
+                } else {
+                    ModalManager.show("EXEC_ERROR", `Repository <strong>${arg}</strong> does not exist.`);
+                }
                 break;
 
             case OP.NOP:
@@ -515,16 +521,44 @@ function setupProjectPreviews() {
 async function openFileExplorer(repo) {
     const owner = "Evilpasture";
     const headers = { 'Accept': 'application/vnd.github.v3+json' };
-    
+
     ModalManager.show("FILE_EXPLORER", `<p>Connecting to GitHub API for ${repo}...</p>`);
 
     try {
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`, { headers });
         if (response.status === 403) throw new Error("API rate limit reached.");
-        if (!response.ok) throw new Error("Could not fetch repo tree");
-        
+        if (!response.ok) {
+            let errorData;
+            try {
+                // Attempt to parse the GitHub error response
+                errorData = await response.json();
+            } catch (e) {
+                errorData = { message: "Unknown error occurred" };
+            }
+
+            const message = errorData.message || "";
+
+            switch (response.status) {
+                case 401:
+                    throw new Error("Unauthorized: Check your GitHub Token.");
+                case 403:
+                    if (response.headers.get('X-RateLimit-Remaining') === '0') {
+                        throw new Error("API rate limit exceeded. Try again later.");
+                    }
+                    throw new Error("Forbidden: You may not have permission to view this repo.");
+                case 404:
+                    throw new Error(`Repo '${repo}' not found or branch 'main' does not exist.`);
+                case 409:
+                    throw new Error("Git Repository is empty or being built.");
+                case 422:
+                    throw new Error("Validation failed: The recursive tree limit might be exceeded.");
+                default:
+                    throw new Error(`GitHub API Error: ${message} (Status: ${response.status})`);
+            }
+        }
+
         const data = await response.json();
-        
+
         // 1. Prepare the tree HTML
         const treeHtml = data.tree
             .filter(item => item.type === 'blob' && !item.path.match(/\.(png|jpg|gif|pdf)$/i))
@@ -552,9 +586,9 @@ async function openFileExplorer(repo) {
         const renderFile = async (item) => {
             const url = item.getAttribute('data-url');
             const path = item.getAttribute('data-path');
-            
+
             ModalManager.show(path, `<p>Loading contents...</p>`, { large: true });
-            
+
             const fileRes = await fetch(url, { headers });
             const fileData = await fileRes.json();
             const content = decodeURIComponent(escape(atob(fileData.content)));
@@ -586,11 +620,161 @@ function getLevenshteinDistance(a, b) {
     for (let i = 1; i <= a.length; i++) {
         for (let j = 1; j <= b.length; j++) {
             tmp[i][j] = Math.min(
-                tmp[i - 1][j] + 1, 
-                tmp[i][j - 1] + 1, 
+                tmp[i - 1][j] + 1,
+                tmp[i][j - 1] + 1,
                 tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
             );
         }
     }
     return tmp[a.length][b.length];
+}
+
+/**
+ * Vim-style Navigation System (Optimized)
+ */
+function initVimNavigation() {
+    const MODES = { NORMAL: 'NORMAL', VISUAL: 'VISUAL' };
+    let currentMode = MODES.NORMAL;
+    const activeKeys = new Set();
+    let lastKey = null;
+    let animationFrame = null;
+    const SCROLL_SPEED = 30;
+
+    // 1. Create a mode indicator
+    const indicator = document.createElement('div');
+    indicator.id = 'vim-indicator';
+    indicator.style.cssText = 'position:fixed; bottom:10px; right:10px; padding:5px 10px; background:var(--accent); color:var(--bg); font-family:monospace; font-size:12px; display:none; border-radius:4px; z-index:9999; pointer-events:none;';
+    document.body.appendChild(indicator);
+
+    function updateIndicator() {
+        const enabled = localStorage.getItem('vimMode') === 'true';
+        indicator.style.display = enabled ? 'block' : 'none';
+        indicator.innerText = `-- ${currentMode} --`;
+    }
+
+    window.addEventListener('vimModeChange', updateIndicator);
+
+    // 2. Selection helper
+    function moveSelection(direction) {
+        const sel = window.getSelection();
+        if (!sel.rangeCount) {
+            const range = document.createRange();
+            range.setStart(document.body, 0);
+            sel.addRange(range);
+        }
+
+        // Use 'line' for j/k, 'character' for h/l
+        const granularity = (direction === 'down' || direction === 'up') ? 'line' : 'character';
+        const dir = (direction === 'down' || direction === 'right') ? 'forward' : 'backward';
+
+        sel.modify('extend', dir, granularity);
+        sel.focusNode?.parentElement?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+
+    function scrollLoop() {
+        if (currentMode === MODES.NORMAL) {
+            if (activeKeys.has('j')) window.scrollBy({ top: SCROLL_SPEED, behavior: 'auto' });
+            if (activeKeys.has('k')) window.scrollBy({ top: -SCROLL_SPEED, behavior: 'auto' });
+            if (activeKeys.has('h')) window.scrollBy({ left: -SCROLL_SPEED, behavior: 'auto' });
+            if (activeKeys.has('l')) window.scrollBy({ left: SCROLL_SPEED, behavior: 'auto' });
+        } else if (currentMode === MODES.VISUAL) {
+            if (activeKeys.has('j')) moveSelection('down');
+            if (activeKeys.has('k')) moveSelection('up');
+            if (activeKeys.has('h')) moveSelection('left');
+            if (activeKeys.has('l')) moveSelection('right');
+        }
+
+        // Keep loop alive if ANY movement key is held
+        if (activeKeys.has('h') || activeKeys.has('j') || activeKeys.has('k') || activeKeys.has('l')) {
+            animationFrame = requestAnimationFrame(scrollLoop);
+        } else {
+            animationFrame = null;
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (localStorage.getItem('vimMode') !== 'true') return;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+        // Mode Toggles
+        if (e.key === 'v' && currentMode === MODES.NORMAL) {
+            currentMode = MODES.VISUAL;
+            updateIndicator();
+        }
+        if (e.key === 'Escape') {
+            currentMode = MODES.NORMAL;
+            window.getSelection().removeAllRanges();
+            updateIndicator();
+        }
+
+        // Track movement keys
+        if (['h', 'j', 'k', 'l'].includes(e.key)) {
+            if (!activeKeys.has(e.key)) {
+                activeKeys.add(e.key);
+                if (!animationFrame) scrollLoop();
+            }
+        }
+
+        // Top of page (gg)
+        if (e.key === 'g') {
+            if (lastKey === 'g') {
+                window.scrollTo({ top: 0, behavior: 'auto' });
+                lastKey = null;
+            } else {
+                lastKey = 'g';
+                setTimeout(() => lastKey = null, 500);
+            }
+        }
+    });
+
+    document.addEventListener('keyup', (e) => activeKeys.delete(e.key));
+
+    window.addEventListener('blur', () => {
+        activeKeys.clear();
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    });
+
+    updateIndicator();
+}
+
+/**
+ * Helper to find fuzzy matches for repos
+ */
+function findBestRepoMatch(input) {
+    if (window.PROJECT_LIST.includes(input)) return input;
+
+    let closestMatch = null;
+    let minDistance = 3;
+
+    window.PROJECT_LIST.forEach(repo => {
+        const dist = getLevenshteinDistance(input, repo);
+        if (dist < minDistance) {
+            minDistance = dist;
+            closestMatch = repo;
+        }
+    });
+    return closestMatch;
+}
+
+/**
+ * Fetch and Render README
+ */
+async function showReadme(repo) {
+    ModalManager.show(`man ${repo}`, `<p>Fetching README.md...</p>`, { large: true });
+    try {
+        const res = await fetch(`https://api.github.com/repos/Evilpasture/${repo}/readme`, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+        });
+        if (!res.ok) throw new Error("README not found");
+
+        const data = await res.json();
+        const text = decodeURIComponent(escape(atob(data.content)));
+
+        // Use marked if available, else fallback to pre
+        const content = (typeof marked !== 'undefined') ? marked.parse(text) : `<pre>${text}</pre>`;
+        ModalManager.show(`man ${repo}`, `<div class="prose">${content}</div>`, { large: true });
+    } catch (err) {
+        ModalManager.show("ERROR", `<p>Could not fetch README: ${err.message}</p>`);
+    }
 }

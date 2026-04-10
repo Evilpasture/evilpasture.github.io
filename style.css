@@ -161,8 +161,6 @@ html {
     height: 100%;
     margin: 0;
     padding: 0;
-    /* This prevents the "white flash" on scroll */
-    scroll-behavior: smooth;
 }
 
 body {
