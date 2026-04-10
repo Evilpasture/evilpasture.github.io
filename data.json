@@ -1,6 +1,6 @@
 {
     "stats": {
-        "commits": 1477,
+        "commits": 1479,
         "repos": 13,
         "followers": 1,
         "since": "2025"
@@ -31,5 +31,40 @@
         "rps": 0,
         "sound-dsl": 0,
         "uni-assignments": 0
+    },
+    "projects": {
+        "culverin": {
+            "title": "Culverin",
+            "desc": "Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.",
+            "tech": [
+                "C++23",
+                "Python",
+                "SIMD"
+            ],
+            "stars": 5,
+            "link": "https://github.com/Evilpasture/Culverin"
+        },
+        "hypergl": {
+            "title": "HyperGL",
+            "desc": "Custom OpenGL-based rendering engine and performance heatmap analyzer.",
+            "tech": [
+                "OpenGL",
+                "C++",
+                "GLSL"
+            ],
+            "stars": 1,
+            "link": "https://github.com/Evilpasture/HyperGL"
+        },
+        "mag-mutex": {
+            "title": "MagMutex",
+            "desc": "A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.",
+            "tech": [
+                "C23",
+                "Atomics",
+                "Locking"
+            ],
+            "stars": 0,
+            "link": "https://github.com/Evilpasture/mag-mutex"
+        }
     }
 }
