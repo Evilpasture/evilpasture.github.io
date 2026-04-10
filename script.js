@@ -135,24 +135,52 @@ function setupUptimeCounter() {
  * 4. Theme & Appearance
  */
 function setupThemeSystem() {
-    const themeSelect = document.getElementById('themeSelect');
+    const dropdown = document.getElementById('themeDropdown');
+    const trigger = dropdown?.querySelector('.select-trigger');
+    const options = dropdown?.querySelectorAll('.option');
+    const currentNameLabel = document.getElementById('currentThemeName');
+    const htmlEl = document.documentElement;
     const modeToggle = document.getElementById('modeToggle');
     const modeIcon = document.getElementById('modeIcon');
-    const htmlEl = document.documentElement;
 
-    // 1. APPLY THEME ON LOAD
+    if (!dropdown) return;
+
+    // 1. Load Initial Theme
     const savedTheme = localStorage.getItem('theme') || 'default';
-    htmlEl.setAttribute('data-theme', savedTheme); // <-- This was missing!
+    htmlEl.setAttribute('data-theme', savedTheme);
+    updateDropdownUI(savedTheme);
 
-    if (themeSelect) {
-        themeSelect.value = savedTheme;
-        themeSelect.addEventListener('change', (e) => {
-            htmlEl.setAttribute('data-theme', e.target.value);
-            localStorage.setItem('theme', e.target.value);
+    // 2. Toggle Dropdown Open/Close
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+    });
+
+    // 3. Handle Option Selection
+    options.forEach(opt => {
+        opt.addEventListener('click', () => {
+            const theme = opt.getAttribute('data-value');
+            htmlEl.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateDropdownUI(theme);
+            dropdown.classList.remove('active');
+        });
+    });
+
+    // 4. Close dropdown when clicking outside
+    document.addEventListener('click', () => dropdown.classList.remove('active'));
+
+    function updateDropdownUI(themeValue) {
+        options.forEach(opt => {
+            const isSelected = opt.getAttribute('data-value') === themeValue;
+            opt.classList.toggle('selected', isSelected);
+            if (isSelected) {
+                currentNameLabel.innerText = opt.innerText;
+            }
         });
     }
 
-    // 2. APPLY MODE ON LOAD
+    // 5. Handle Mode Toggle (Remains the same)
     if (modeToggle) {
         const savedMode = localStorage.getItem('mode') || 'auto';
         htmlEl.setAttribute('data-mode', savedMode);

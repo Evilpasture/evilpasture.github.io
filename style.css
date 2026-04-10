@@ -938,6 +938,84 @@ footer {
     background: var(--accent-faded);
 }
 
+/* Custom Select Container */
+.custom-select {
+    position: relative;
+    width: 160px;
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.select-trigger {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.select-trigger:hover {
+    border-color: var(--accent);
+}
+
+.select-trigger .arrow {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+    color: var(--secondary);
+}
+
+/* Options Menu (The Pop-up) */
+.select-options {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 100%;
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 100;
+    display: none; /* Hidden by default */
+    overflow: hidden;
+    animation: dropdownFade 0.2s ease-out;
+}
+
+.custom-select.active .select-options {
+    display: block;
+}
+
+.custom-select.active .arrow {
+    transform: rotate(180deg);
+}
+
+.option {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+}
+
+.option:hover {
+    background: var(--accent-faded);
+    color: var(--accent);
+    padding-left: 16px;
+}
+
+.option.selected {
+    color: var(--accent);
+    font-weight: bold;
+    background: var(--accent-faded);
+}
+
+@keyframes dropdownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* =========================================
    10. HARDWARE & CRT EMULATION
    ========================================= */

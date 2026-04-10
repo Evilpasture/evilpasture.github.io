@@ -46,12 +46,18 @@
 
             <div class="setting-item">
                 <span>󰏘 Theme</span>
-                <select id="themeSelect">
-                    <option value="default">Default Blue</option>
-                    <option value="dracula">Dracula Purple</option>
-                    <option value="gruvbox">Gruvbox Retro</option>
-                    <option value="terminal">Terminal Green</option>
-                </select>
+                <div class="custom-select" id="themeDropdown">
+                    <div class="select-trigger">
+                        <span id="currentThemeName">Default Blue</span>
+                        <span class="arrow">󰅀</span>
+                    </div>
+                    <div class="select-options">
+                        <div class="option" data-value="default">Default Blue</div>
+                        <div class="option" data-value="dracula">Dracula Purple</div>
+                        <div class="option" data-value="gruvbox">Gruvbox Retro</div>
+                        <div class="option" data-value="terminal">Terminal Green</div>
+                    </div>
+                </div>
             </div>
 
             <div class="setting-item">
