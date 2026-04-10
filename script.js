@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUptimeCounter();
     setupThemeSystem();
     setupEffectsSystem();
+    setupLicenseModal();
+    setupTerminalEasterEgg(); 
 });
 
 /**
@@ -186,4 +188,184 @@ function setupEffectsSystem() {
         localStorage.setItem('visualEffects', newState);
         icon.innerText = newState === 'on' ? '󰄬' : '󰅖';
     });
+}
+
+/**
+ * 5. License Modal System
+ */
+function setupLicenseModal() {
+    const licenseBtn = document.getElementById('licenseBtn');
+    const modal = document.getElementById('licenseModal');
+    const closeBtn = document.getElementById('closeLicenseBtn');
+    const licenseText = document.getElementById('licenseText');
+    const sidebar = document.getElementById('sideNav');
+    const overlay = document.getElementById('overlay');
+
+    if (!licenseBtn || !modal) return;
+
+    let isLoaded = false;
+
+    const openModal = async (e) => {
+        e.preventDefault();
+        
+        // 1. Close sidebar if it's open
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        
+        // 2. Lock body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // 3. Show Modal
+        modal.classList.add('active');
+
+        // 4. Fetch License (Only fetch once per page load)
+        if (!isLoaded) {
+            try {
+                // Fetch the LICENSE file directly from the root directory
+                const response = await fetch('LICENSE');
+                if (!response.ok) throw new Error('License file not found in repository.');
+                
+                const text = await response.text();
+                licenseText.textContent = text;
+                licenseText.classList.remove('loading-text');
+                isLoaded = true;
+            } catch (err) {
+                licenseText.textContent = `[ERROR]: ${err.message}\nMake sure a file named 'LICENSE' exists in the root of your GitHub repo.`;
+                licenseText.style.color = 'var(--accent)'; // Highlight error
+            }
+        }
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = ''; // Unlock body scroll
+    };
+
+    // Event Listeners
+    licenseBtn.addEventListener('click', openModal);
+    closeBtn?.addEventListener('click', closeModal);
+    
+    // Close when clicking outside the modal window
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+    });
+}
+
+/**
+ * 6. Terminal Easter Egg (Vim Logic / Opcode Dispatcher)
+ */
+function setupTerminalEasterEgg() {
+    const cmdBar = document.getElementById('cmd-bar');
+    const cmdInput = document.getElementById('cmd-input');
+    const htmlEl = document.documentElement;
+
+    if (!cmdBar || !cmdInput) return;
+
+    // --- 1. Opcode Definition (Enum) ---
+    const OP = Object.freeze({
+        NOP:          0x00,
+        QUIT:         0x01,
+        SET_THEME:    0x02,
+        TOGGLE_GUI:   0x03,
+        SHOW_LICENSE: 0x04,
+        SUDO:         0x05,
+        HELP:         0x06,
+        WHOAMI:       0x07
+    });
+
+    // --- 2. String to Opcode Mapping ---
+    const COMMAND_MAP = {
+        'q':       OP.QUIT,
+        'quit':    OP.QUIT,
+        'exit':    OP.QUIT,
+        'theme':   OP.SET_THEME,
+        'gui':     OP.TOGGLE_GUI,
+        'license': OP.SHOW_LICENSE,
+        'sudo':    OP.SUDO,
+        'help':    OP.HELP,
+        'whoami':  OP.WHOAMI
+    };
+
+    // --- 3. Global Input Listeners ---
+    document.addEventListener('keydown', (e) => {
+        const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+        
+        if (e.key === ':' && !isTyping) {
+            e.preventDefault();
+            cmdBar.classList.add('active');
+            cmdInput.value = '';
+            cmdInput.focus();
+        }
+
+        if (e.key === 'Escape') closeCmd();
+    });
+
+    cmdInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const [rawCmd, arg] = cmdInput.value.trim().toLowerCase().split(' ');
+            const opcode = COMMAND_MAP[rawCmd] || OP.NOP;
+            
+            dispatch(opcode, arg);
+            closeCmd();
+        }
+    });
+
+    function closeCmd() {
+        cmdBar.classList.remove('active');
+        cmdInput.blur();
+    }
+
+    // --- 4. Dispatcher ---
+    function dispatch(opcode, arg) {
+        switch (opcode) {
+            case OP.QUIT:
+                break; // Handled by closeCmd()
+
+            case OP.SET_THEME:
+                const validThemes = ['default', 'dracula', 'gruvbox', 'terminal'];
+                if (validThemes.includes(arg)) {
+                    htmlEl.setAttribute('data-theme', arg);
+                    localStorage.setItem('theme', arg);
+                    const selector = document.getElementById('themeSelect');
+                    if (selector) selector.value = arg;
+                }
+                break;
+
+            case OP.TOGGLE_GUI:
+                const next = htmlEl.getAttribute('data-effects') === 'on' ? 'off' : 'on';
+                htmlEl.setAttribute('data-effects', next);
+                localStorage.setItem('visualEffects', next);
+                const effIcon = document.getElementById('effectsIcon');
+                if (effIcon) effIcon.innerText = next === 'on' ? '󰄬' : '󰅖';
+                break;
+
+            case OP.SHOW_LICENSE:
+                document.getElementById('licenseBtn')?.click();
+                break;
+
+            case OP.SUDO:
+                alert("Nice try. Evilpasture is the only root user here.");
+                break;
+
+            case OP.HELP:
+                alert("OPCODES: theme [default|dracula|gruvbox|terminal], gui, license, sudo, whoami, q");
+                break;
+
+            case OP.WHOAMI:
+                window.location.hash = "about";
+                break;
+
+            case OP.NOP:
+            default:
+                if (cmdInput.value.length > 0) {
+                    console.warn(`0x${opcode.toString(16).toUpperCase().padStart(2, '0')} // ERR_UNKNOWN_OPCODE`);
+                }
+                break;
+        }
+    }
 }

@@ -36,6 +36,7 @@
             <li><a href="#projects" class="nav-item"><span>󰚝</span> Core Projects</a></li>
             <li><a href="#logs" class="nav-item"><span>󰏚</span> Technical Logs</a></li>
             <li class="nav-divider"></li>
+            <li><a href="#" id="licenseBtn" class="nav-item"><span>󰈙</span> Repository License</a></li>
             <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item"><span></span> GitHub
                     Profile</a></li>
         </ul>
@@ -301,6 +302,24 @@
         </footer>
     </div>
 
+    <!-- License Modal -->
+    <div class="modal-overlay" id="licenseModal">
+        <div class="modal-window terminal-window">
+            <div class="terminal-header" style="justify-content: space-between;">
+                <div class="terminal-buttons" style="display:flex; align-items:center; gap:15px;">
+                    <div style="display:flex; gap:6px;">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="terminal-title">cat LICENSE</div>
+                </div>
+                <button class="modal-close" id="closeLicenseBtn" title="Close">󰅖</button>
+            </div>
+            <div class="terminal-content modal-content">
+                <pre id="licenseText" class="loading-text">Fetching license...</pre>
+            </div>
+        </div>
+    </div>
+
     <!-- Add the Shader and UI scripts -->
     <script src="script.js"></script>
     <script src="shader.js"></script>
@@ -315,6 +334,11 @@
         </defs>
     </svg>
     <div class="crt-overlay"></div>
+    <!-- Command Line Easter Egg -->
+    <div id="cmd-bar" class="cmd-bar">
+        <span class="cmd-prompt">:</span>
+        <input type="text" id="cmd-input" spellcheck="false" autocomplete="off">
+    </div>
 </body>
 
 </html>

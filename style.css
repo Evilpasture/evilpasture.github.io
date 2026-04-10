@@ -1248,3 +1248,124 @@ h2,
         grid-template-columns: 1fr;
     }
 }
+
+/* =========================================
+   11. MODAL SYSTEM (LICENSE POP-UP)
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 3000; /* Must be higher than sidebar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-window {
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0; /* Override terminal window margin */
+}
+
+.modal-overlay.active .modal-window {
+    transform: translateY(0);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--secondary);
+    cursor: pointer;
+    font-family: 'JetBrainsMono NF', monospace;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+    padding: 0;
+}
+
+.modal-close:hover {
+    color: var(--accent);
+}
+
+.modal-content {
+    overflow-y: auto;
+    background: var(--code-bg);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem;
+    
+    /* Custom scrollbar for terminal */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--code-bg);
+}
+
+#licenseText {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: 'JetBrainsMono NF', monospace;
+    font-size: 0.85rem;
+    color: var(--secondary);
+    line-height: 1.5;
+}
+
+/* =========================================
+   12. TERMINAL EASTER EGG (CMD LINE)
+   ========================================= */
+.cmd-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--sidebar-bg);
+    border-top: 1px solid var(--accent);
+    padding: 8px 20px;
+    display: none; /* Hidden by default */
+    align-items: center;
+    z-index: 10000;
+    font-family: 'JetBrainsMono NF', monospace;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.2s ease-out;
+}
+
+.cmd-bar.active {
+    display: flex;
+}
+
+.cmd-prompt {
+    color: var(--accent);
+    margin-right: 12px;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+#cmd-input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
