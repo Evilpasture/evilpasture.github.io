@@ -139,52 +139,55 @@ function setupUptimeCounter() {
  * 4. Theme & Appearance
  */
 function setupThemeSystem() {
-    const dropdown = document.getElementById('themeDropdown');
-    const trigger = dropdown?.querySelector('.select-trigger');
-    const options = dropdown?.querySelectorAll('.option');
-    const currentNameLabel = document.getElementById('currentThemeName');
     const htmlEl = document.documentElement;
     const modeToggle = document.getElementById('modeToggle');
     const modeIcon = document.getElementById('modeIcon');
 
-    if (!dropdown) return;
-
     // 1. Load Initial Theme
     const savedTheme = localStorage.getItem('theme') || 'default';
     htmlEl.setAttribute('data-theme', savedTheme);
-    updateDropdownUI(savedTheme);
 
-    // 2. Toggle Dropdown Open/Close
-    trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('active');
-    });
+    // --- A. Handle Custom Div Dropdown (index.html) ---
+    const dropdown = document.getElementById('themeDropdown');
+    const currentNameLabel = document.getElementById('currentThemeName');
+    
+    if (dropdown) {
+        const options = dropdown.querySelectorAll('.option');
+        const trigger = dropdown.querySelector('.select-trigger');
 
-    // 3. Handle Option Selection
-    options.forEach(opt => {
-        opt.addEventListener('click', () => {
-            const theme = opt.getAttribute('data-value');
+        // Set initial label
+        const selectedOption = dropdown.querySelector(`[data-value="${savedTheme}"]`);
+        if (selectedOption && currentNameLabel) currentNameLabel.innerText = selectedOption.innerText;
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+        });
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const theme = opt.getAttribute('data-value');
+                htmlEl.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                currentNameLabel.innerText = opt.innerText;
+                dropdown.classList.remove('active');
+            });
+        });
+        document.addEventListener('click', () => dropdown.classList.remove('active'));
+    }
+
+    // --- B. Handle Standard Select Dropdown (log-viewer.html) ---
+    const select = document.getElementById('themeSelect');
+    if (select) {
+        select.value = savedTheme; // Sync current theme to select value
+        select.addEventListener('change', (e) => {
+            const theme = e.target.value;
             htmlEl.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
-            updateDropdownUI(theme);
-            dropdown.classList.remove('active');
-        });
-    });
-
-    // 4. Close dropdown when clicking outside
-    document.addEventListener('click', () => dropdown.classList.remove('active'));
-
-    function updateDropdownUI(themeValue) {
-        options.forEach(opt => {
-            const isSelected = opt.getAttribute('data-value') === themeValue;
-            opt.classList.toggle('selected', isSelected);
-            if (isSelected) {
-                currentNameLabel.innerText = opt.innerText;
-            }
         });
     }
 
-    // 5. Handle Mode Toggle (Remains the same)
+    // --- C. Handle Mode Toggle ---
     if (modeToggle) {
         const savedMode = localStorage.getItem('mode') || 'auto';
         htmlEl.setAttribute('data-mode', savedMode);
@@ -246,9 +249,9 @@ const ModalManager = {
         });
     },
     show(title, content, options = {}) {
-        console.log(`Attempting to show modal: ${title}`); // ADD THIS
+        console.log(`Attempting to show modal: ${title}`); 
         if (!this.modal) {
-            console.error("Modal element not found!"); // ADD THIS
+            console.error("Modal element not found!");
             return;
         }
 
