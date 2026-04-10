@@ -16,10 +16,10 @@
     </button>
 
     <!-- The Sidebar -->
-    <nav class="side-nav" id="sideNav">
+    <nav class="side-nav" id="sideNav" aria-label="Main Navigation">
         <div class="side-nav-header">
-            <span class="side-nav-title">Navigation</span>
-            <button class="side-nav-close" id="sidebarClose">󰅖</button>
+            <span class="side-nav-title">System Navigation</span>
+            <button class="side-nav-close" id="sidebarClose" aria-label="Close Navigation">󰅖</button>
         </div>
 
         <ul class="side-nav-links">
@@ -28,9 +28,15 @@
             <li><a href="#projects" class="nav-item"><span>󰚝</span> Core Projects</a></li>
             <li><a href="#logs" class="nav-item"><span>󰏚</span> Technical Logs</a></li>
             <li class="nav-divider"></li>
-            <li><a href="#" id="licenseBtn" class="nav-item"><span>󰈙</span> Repository License</a></li>
-            <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item"><span></span> GitHub
-                    Profile</a></li>
+            <!-- Changed to button for correct semantic behavior -->
+            <li>
+                <button id="licenseBtn" class="nav-item"
+                    style="width: 100%; border: none; background: none; text-align: left; cursor: pointer; color: var(--text);">
+                    <span>󰈙</span> Repository License
+                </button>
+            </li>
+            <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item" rel="noopener"><span></span>
+                    GitHub Profile</a></li>
         </ul>
 
         <div class="side-nav-settings">
@@ -39,30 +45,29 @@
             <div class="setting-item">
                 <span>󰏘 Theme</span>
                 <div class="custom-select" id="themeDropdown">
-                    <div class="select-trigger">
+                    <button class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
                         <span id="currentThemeName">Default Blue</span>
                         <span class="arrow">󰅀</span>
-                    </div>
-                    <div class="select-options">
-                        <div class="option" data-value="default">Default Blue</div>
-                        <div class="option" data-value="dracula">Dracula Purple</div>
-                        <div class="option" data-value="gruvbox">Gruvbox Retro</div>
-                        <div class="option" data-value="terminal">Terminal Green</div>
+                    </button>
+                    <div class="select-options" role="listbox">
+                        <button class="option" data-value="default" role="option">Default Blue</button>
+                        <button class="option" data-value="dracula" role="option">Dracula Purple</button>
+                        <button class="option" data-value="gruvbox" role="option">Gruvbox Retro</button>
+                        <button class="option" data-value="terminal" role="option">Terminal Green</button>
                     </div>
                 </div>
             </div>
 
             <div class="setting-item">
                 <span>󰔎 Appearance</span>
-                <button id="modeToggle" title="Toggle Light/Dark Mode">
+                <button id="modeToggle" title="Toggle Light/Dark Mode" aria-label="Toggle Light/Dark Mode">
                     <span id="modeIcon">󰖔</span>
                 </button>
             </div>
 
-            <!-- Inside <div class="side-nav-settings"> in index.html -->
             <div class="setting-item">
                 <span>󰀱 Effects</span>
-                <button id="effectsToggle" title="Toggle Visual Effects">
+                <button id="effectsToggle" title="Toggle Visual Effects" aria-label="Toggle Visual Effects">
                     <span id="effectsIcon">󰄬</span>
                 </button>
             </div>
@@ -70,6 +75,7 @@
 
         <div class="side-nav-footer">
             <p>Evilpasture 2026</p>
+            <small style="opacity: 0.5;">Press <kbd>:</kbd> for command line</small>
         </div>
     </nav>
 

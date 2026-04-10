@@ -938,6 +938,23 @@ footer {
     text-align: center;
 }
 
+/* Ensure the License button matches nav links */
+#licenseBtn {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 12px 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+#licenseBtn:hover {
+    background: var(--sidebar-bg);
+    color: var(--accent);
+    padding-left: 2rem;
+}
+
 .overlay {
     position: fixed;
     top: 0;
@@ -957,8 +974,9 @@ footer {
 }
 
 /* =========================================
-   9. THEME SWITCHER UI
+   9. THEME SWITCHER UI (Cleaned & Aligned)
    ========================================= */
+
 .side-nav-settings {
     padding: 1.5rem;
     border-top: 1px solid var(--border);
@@ -968,45 +986,32 @@ footer {
 .setting-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; /* Ensures everything is perfectly centered vertically */
     margin-top: 1rem;
-    font-size: 0.85rem;
+    height: 32px; /* Force consistent height for all items */
 }
 
-.setting-item span {
+/* Common button/trigger reset for the settings section */
+.side-nav-settings button, 
+.custom-select {
+    height: 32px; /* Sync height with .setting-item */
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--secondary);
-}
-
-#themeSelect {
     background: var(--bg);
-    color: var(--text);
     border: 1px solid var(--border);
     border-radius: 4px;
-    padding: 4px;
-    font-family: 'JetBrainsMono NF', monospace;
-    font-size: 0.75rem;
-    outline: none;
-    cursor: pointer;
-}
-
-#themeSelect:focus {
-    border-color: var(--accent);
-}
-
-/* Update the existing #modeToggle block to look like this: */
-
-#modeToggle, #effectsToggle {
-    background: var(--bg);
     color: var(--accent);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 10px;
     cursor: pointer;
-    font-family: 'JetBrainsMono NF';
+    font-family: 'JetBrainsMono NF', monospace;
+    font-size: 0.8rem;
     transition: all 0.2s ease;
+}
+
+/* Fix specific button styling */
+#modeToggle, #effectsToggle {
+    padding: 0 10px;
+    justify-content: center;
+    min-width: 40px;
 }
 
 #modeToggle:hover, #effectsToggle:hover {
@@ -1017,21 +1022,18 @@ footer {
 /* Custom Select Container */
 .custom-select {
     position: relative;
-    width: 160px;
+    width: 140px; /* Reduced from 160px to 140px */
     font-size: 0.8rem;
     user-select: none;
+    border: none;
+    background: none;
 }
 
 .select-trigger {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    padding: 6px 10px;
-    border-radius: 4px;
-    display: flex;
+    width: 100%;
     justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: border-color 0.2s;
+    padding: 0 10px;
+    border: 1px solid var(--border);
 }
 
 .select-trigger:hover {
@@ -1044,7 +1046,7 @@ footer {
     color: var(--secondary);
 }
 
-/* Options Menu (The Pop-up) */
+/* Options Menu */
 .select-options {
     position: absolute;
     top: calc(100% + 5px);
@@ -1055,37 +1057,31 @@ footer {
     border-radius: 6px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     z-index: 100;
-    display: none; /* Hidden by default */
+    display: none;
     overflow: hidden;
     animation: dropdownFade 0.2s ease-out;
-}
-
-.custom-select.active .select-options {
-    display: block;
-}
-
-.custom-select.active .arrow {
-    transform: rotate(180deg);
 }
 
 .option {
     padding: 8px 12px;
     cursor: pointer;
-    transition: all 0.2s;
     color: var(--text);
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 0.8rem;
 }
 
 .option:hover {
     background: var(--accent-faded);
     color: var(--accent);
-    padding-left: 16px;
 }
 
-.option.selected {
-    color: var(--accent);
-    font-weight: bold;
-    background: var(--accent-faded);
-}
+/* State Classes */
+.custom-select.active .select-options { display: block; }
+.custom-select.active .arrow { transform: rotate(180deg); }
 
 @keyframes dropdownFade {
     from { opacity: 0; transform: translateY(-10px); }
