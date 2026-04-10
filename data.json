@@ -1,6 +1,6 @@
 {
     "stats": {
-        "commits": 1487,
+        "commits": 1488,
         "repos": 13,
         "followers": 1,
         "since": "2025-11-23T15:41:33Z"
@@ -37,6 +37,7 @@
             "title": "Culverin",
             "desc": "Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.",
             "tech": [
+                "C23",
                 "C++23",
                 "Python",
                 "SIMD"
@@ -49,7 +50,8 @@
             "desc": "Custom OpenGL-based rendering engine and performance heatmap analyzer.",
             "tech": [
                 "OpenGL",
-                "C++",
+                "C",
+                "Python",
                 "GLSL"
             ],
             "stars": 1,
@@ -61,7 +63,8 @@
             "tech": [
                 "C23",
                 "Atomics",
-                "Locking"
+                "Locking",
+                "Concurrency"
             ],
             "stars": 0,
             "link": "https://github.com/Evilpasture/mag-mutex"
