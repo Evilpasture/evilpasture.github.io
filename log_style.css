@@ -321,3 +321,20 @@
     border: 2px solid var(--border);
     transition: border-color 0.2s;
 }
+
+/* Mirror index.html license button style */
+#licenseBtn.nav-item {
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 12px 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+#licenseBtn.nav-item:hover {
+    background: var(--sidebar-bg);
+    color: var(--accent);
+    padding-left: 2rem;
+}
