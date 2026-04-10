@@ -93,25 +93,29 @@
 
     <div class="container">
         <header class="terminal-header">
-            <div class="banner-frame">
-                <img src="res/banner.jpg" alt="Developer Banner" class="banner">
-            </div>
+    <div class="banner-frame">
+        <picture>
+            <!-- If you have a portrait version of your banner, put it here -->
+            <source media="(max-width: 650px)" srcset="res/banner.jpg"> 
+            <img src="res/banner.jpg" alt="Developer Banner" class="banner">
+        </picture>
+    </div>
 
-            <div class="header-content">
-                <div class="prompt-container">
-                    <span class="prompt">$</span> <span class="cmd-text">whoami</span>
-                </div>
+    <div class="header-content">
+        <div class="prompt-container">
+            <span class="prompt">$</span> <span class="cmd-text">whoami</span>
+        </div>
 
-                <h1 class="glitch" data-text="Evilpasture">Evilpasture</h1>
+        <h1 class="glitch" data-text="Evilpasture">Evilpasture</h1>
 
-                <p class="subtitle">Data Science Student // Systems Programmer!!!</p>
+        <p class="subtitle">Data Science Student // Systems Programmer!!!</p>
 
-                <div class="header-actions">
-                    <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
-                    <span class="status-badge"><span class="blink">●</span> ACCESS GRANTED</span>
-                </div>
-            </div>
-        </header>
+        <div class="header-actions">
+            <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
+            <span class="status-badge"><span class="blink">●</span> ACCESS GRANTED</span>
+        </div>
+    </div>
+</header>
 
         <main>
             <section id="about">
