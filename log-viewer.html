@@ -19,6 +19,53 @@
 </head>
 
 <body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarOpen" title="Open Navigation">
+        <span>󰍜</span>
+    </button>
+
+    <!-- The Sidebar (Copy-pasted from index.html) -->
+    <nav class="side-nav" id="sideNav">
+        <div class="side-nav-header">
+            <span class="side-nav-title">Navigation</span>
+            <button class="side-nav-close" id="sidebarClose">󰅖</button>
+        </div>
+
+        <ul class="side-nav-links">
+            <li><a href="index.html#about" class="nav-item"><span>󰋜</span> Home / About</a></li>
+            <li><a href="index.html#expertise" class="nav-item"><span>󰒓</span> Technical Skills</a></li>
+            <li><a href="index.html#projects" class="nav-item"><span>󰚝</span> Core Projects</a></li>
+            <li><a href="index.html#logs" class="nav-item"><span>󰏚</span> Technical Logs</a></li>
+            <li class="nav-divider"></li>
+            <li><a href="https://github.com/Evilpasture" target="_blank" class="nav-item"><span></span> GitHub
+                    Profile</a></li>
+        </ul>
+
+        <div class="side-nav-settings">
+            <span class="side-nav-title">Personalization</span>
+            <div class="setting-item">
+                <span>󰏘 Theme</span>
+                <select id="themeSelect">
+                    <option value="default">Default Blue</option>
+                    <option value="dracula">Dracula Purple</option>
+                    <option value="gruvbox">Gruvbox Retro</option>
+                    <option value="terminal">Terminal Green</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <span>󰔎 Appearance</span>
+                <button id="modeToggle" title="Toggle Light/Dark Mode">
+                    <span id="modeIcon">󰖔</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dimmed Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- The background shader canvas -->
+    <canvas id="bg-canvas"></canvas>
     <div class="container log-container">
         <!-- In log-viewer.html -->
         <header class="article-header">
@@ -39,6 +86,8 @@
         </footer>
     </div>
 
+    <script src="script.js"></script>
+    <script src="shader.js"></script>
     <script src="load_markdown.js"></script>
 </body>
 

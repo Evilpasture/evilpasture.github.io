@@ -207,3 +207,48 @@
         order: -1;
     }
 }
+
+/* Ensure the sidebar toggle stays above everything */
+.sidebar-toggle {
+    z-index: 2000;
+}
+
+/* Ensure the shader canvas stays in the background */
+#bg-canvas {
+    z-index: -1;
+}
+
+/* Make links in the sidebar navigate back to index correctly */
+.side-nav-links a {
+    cursor: pointer;
+}
+
+.explanation-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--accent-faded);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+}
+
+.explanation-section h2 {
+    margin-top: 0;
+    color: var(--accent);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+}
+
+.explanation-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.explanation-section ul {
+    padding-left: 1.2rem;
+}
+
+.explanation-section li {
+    margin-bottom: 0.8rem;
+    list-style-type: "󰄬 "; /* Nerd Font Check */
+}
