@@ -598,10 +598,84 @@ aside {
    ========================================= */
 footer {
     grid-column: 1 / -1;
-    margin-top: 3rem;
-    text-align: center;
-    font-size: 0.9rem;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footer-telemetry {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    font-family: 'JetBrainsMono NF', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.telemetry-item {
+    display: flex;
+    gap: 8px;
+}
+
+.telemetry-item .label {
     color: var(--secondary);
+}
+
+.telemetry-item .value {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.status-ok {
+    color: #22c55e !important; /* Force green for "Ready" */
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed var(--border);
+    padding-top: 1.5rem;
+    font-size: 0.8rem;
+}
+
+.source-code {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.source-code a {
+    color: var(--secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.source-code a:hover {
+    color: var(--accent);
+}
+
+.copyright {
+    color: var(--secondary);
+    margin: 0;
+    font-family: monospace;
+}
+
+/* Mobile: Stack the telemetry */
+@media (max-width: 650px) {
+    .footer-telemetry {
+        gap: 0.5rem 1.5rem;
+        justify-content: flex-start;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
 }
 
 /* =========================================
@@ -889,5 +963,216 @@ h1, h2, .nav-item {
     }
     header .banner {
         border-radius: 0;
+    }
+}
+
+
+/* --- Terminal Window Container --- */
+.terminal-window {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-top: 1.5rem;
+}
+
+.terminal-header {
+    background: var(--border);
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.terminal-buttons span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--secondary);
+    opacity: 0.5;
+}
+
+.terminal-title {
+    font-size: 0.75rem;
+    font-family: monospace;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+.terminal-content {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* --- About Grid Layout --- */
+.about-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+}
+
+.about-status {
+    border-right: 1px dashed var(--border);
+    padding-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-item .label {
+    font-size: 0.7rem;
+    color: var(--secondary);
+    font-weight: bold;
+}
+
+.status-item .value {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.about-text .prompt {
+    color: var(--accent);
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.inline-link {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.inline-link:hover {
+    border-bottom-color: var(--accent);
+}
+
+/* --- Animations --- */
+.pulse-text {
+    animation: simple-pulse 2s infinite;
+}
+
+@keyframes simple-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+/* --- Mobile Responsive --- */
+@media (max-width: 650px) {
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+    .about-status {
+        border-right: none;
+        border-bottom: 1px dashed var(--border);
+        padding-right: 0;
+        padding-bottom: 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .status-item {
+        flex: 1 1 120px;
+    }
+}
+
+/* --- Expertise Grid --- */
+.expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.expertise-card {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.expertise-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card-label {
+    font-size: 0.7rem;
+    font-family: monospace;
+    color: var(--secondary);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.skill-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.skill-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.skill-list li .icon {
+    color: var(--accent);
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.skill-list li small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--secondary);
+    font-family: monospace;
+}
+
+/* Add a subtle "active" light indicator to each card */
+.expertise-card::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 5px var(--accent);
+    opacity: 0.5;
+}
+
+.expertise-card:hover::after {
+    opacity: 1;
+    animation: blink 0.5s infinite alternate;
+}
+
+@keyframes blink {
+    from { opacity: 0.3; }
+    to { opacity: 1; }
+}
+
+/* Mobile Fixes */
+@media (max-width: 650px) {
+    .expertise-grid {
+        grid-template-columns: 1fr;
     }
 }
