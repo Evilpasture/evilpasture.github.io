@@ -586,21 +586,44 @@ async function openFileExplorer(repo) {
         const renderFile = async (item) => {
             const url = item.getAttribute('data-url');
             const path = item.getAttribute('data-path');
+            const lang = getLanguageFromPath(path);
 
-            ModalManager.show(path, `<p>Loading contents...</p>`, { large: true });
+            ModalManager.show(path, `<p class="loading-text">Downloading ${path}...</p>`, { large: true });
 
-            const fileRes = await fetch(url, { headers });
-            const fileData = await fileRes.json();
-            const content = decodeURIComponent(escape(atob(fileData.content)));
+            try {
+                const fileRes = await fetch(url, { headers });
+                const fileData = await fileRes.json();
 
-            // Add the Back Button here!
-            ModalManager.show(path, `
-                <button class="explorer-back-btn" id="backToTree">󰁍 Back to Explorer</button>
-                <pre class="explorer-content"><code>${content}</code></pre>
-            `, { large: true });
+                // Decode GitHub's base64 content
+                let content = decodeURIComponent(escape(atob(fileData.content)));
 
-            document.getElementById('backToTree').addEventListener('click', renderTree);
+                // ESCAPE HTML: This is vital so the browser doesn't execute tags in your code
+                const escapedContent = content
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+
+                ModalManager.show(path, `
+                    <button class="explorer-back-btn" id="backToTree">󰁍 Back to Explorer</button>
+                    <pre class="explorer-content language-${lang}"><code class="language-${lang}">${escapedContent}</code></pre>
+                `, { large: true });
+
+                // Bind the back button
+                document.getElementById('backToTree').addEventListener('click', renderTree);
+
+                // TRIGGER PRISM: Find the code block we just created and highlight it
+                const codeElement = document.querySelector('.explorer-content code');
+                if (codeElement && window.Prism) {
+                    Prism.highlightElement(codeElement);
+                }
+
+            } catch (err) {
+                ModalManager.show("ERROR", `<p>Failed to load file: ${err.message}</p>`);
+            }
         };
+
 
         // Initial launch
         renderTree();
@@ -767,7 +790,7 @@ async function showReadme(repo) {
         const res = await fetch(`https://api.github.com/repos/Evilpasture/${repo}/readme`, {
             headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
-        
+
         if (!res.ok) throw new Error("README.md not found in this repository.");
 
         const data = await res.json();
@@ -791,4 +814,15 @@ async function showReadme(repo) {
     } catch (err) {
         ModalManager.show("EXEC_ERROR", `<p style="color:var(--accent)">󰀦 Man Error:</p><p>${err.message}</p>`);
     }
+}
+
+function getLanguageFromPath(path) {
+    const ext = path.split('.').pop().toLowerCase();
+    const map = {
+        'c': 'c', 'h': 'c', 'cpp': 'cpp', 'hpp': 'cpp',
+        'py': 'python', 'js': 'javascript', 'ts': 'typescript',
+        'html': 'markup', 'css': 'css', 'md': 'markdown',
+        'json': 'json', 'lua': 'lua', 'zig': 'zig', 'sh': 'bash'
+    };
+    return map[ext] || 'clike'; // Default fallback
 }

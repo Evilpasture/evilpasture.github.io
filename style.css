@@ -1493,15 +1493,26 @@ html {
     color: var(--accent);
 }
 
+/* Update the explorer content block */
 .explorer-content {
-    background: #1e1e1e; /* Code background */
-    padding: 1rem;
+    background: #0d1117 !important; /* Matches GitHub's dark theme */
+    padding: 1.5rem !important;
     border-radius: 8px;
     overflow-x: auto;
     font-size: 0.85rem;
-    color: #d4d4d4;
     border: 1px solid var(--border);
+    margin: 0;
+    /* Remove the hardcoded 'color' property if it's there */
 }
+
+.explorer-content code {
+    font-family: 'JetBrainsMono NF', monospace !important;
+    white-space: pre !important;
+}
+
+/* Scrollbar for the code block */
+.explorer-content::-webkit-scrollbar { height: 8px; }
+.explorer-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .explorer-back-btn {
     background: var(--sidebar-bg);
