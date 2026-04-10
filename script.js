@@ -84,35 +84,34 @@ function setupSidebar() {
     openBtn?.addEventListener('click', () => toggle(true));
     closeBtn?.addEventListener('click', () => toggle(false));
     overlay?.addEventListener('click', () => toggle(false));
-    document.querySelectorAll('.nav-item').forEach(l => l.addEventListener('click', () => toggle(false)));
+
+    // Optimization: Event Delegation
+    sidebar.addEventListener('click', (e) => {
+        if (e.target.closest('.nav-item')) toggle(false);
+    });
 }
 
 /**
- * 2. Sidebar & Navigation
+ * 3. Utilities
  */
-function setupSidebar() {
-    const sidebar = document.getElementById('sideNav');
-    const overlay = document.getElementById('overlay');
-    const openBtn = document.getElementById('sidebarOpen');
-    const closeBtn = document.getElementById('sidebarClose');
+function setupDiscordCopy() {
+    const handle = document.querySelector('.discord-handle');
+    if (!handle) return;
 
-    if (!sidebar) return;
-
-    const toggle = (s) => {
-        sidebar.classList.toggle('active', s);
-        overlay.classList.toggle('active', s);
-        document.body.style.overflow = s ? 'hidden' : '';
-    };
-
-    openBtn?.addEventListener('click', () => toggle(true));
-    closeBtn?.addEventListener('click', () => toggle(false));
-    overlay?.addEventListener('click', () => toggle(false));
-
-    // Optimization: Event Delegation
-    // Handles all nav-item clicks (even those added dynamically) 
-    // and correctly catches clicks on children (like icons) inside the <a> tag
-    sidebar.addEventListener('click', (e) => {
-        if (e.target.closest('.nav-item')) toggle(false);
+    handle.addEventListener('click', async () => {
+        const valSpan = handle.querySelector('.contact-value');
+        const textToCopy = handle.getAttribute('data-handle') || valSpan.innerText.replace('@', '');
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            const originalText = valSpan.innerText;
+            valSpan.innerText = 'Copied!';
+            handle.classList.add('copied');
+            setTimeout(() => {
+                valSpan.innerText = originalText;
+                handle.classList.remove('copied');
+            }, 2000);
+        } catch (err) { console.error('Copy failed', err); }
     });
 }
 
@@ -131,7 +130,7 @@ function setupUptimeCounter() {
 }
 
 /**
- * 4. Theme & Appearance (Mode/Theme/Effects)
+ * 4. Theme & Appearance
  */
 function setupThemeSystem() {
     const themeSelect = document.getElementById('themeSelect');
@@ -168,7 +167,6 @@ function setupEffectsSystem() {
 
     if (!toggle) return;
 
-    // Default to 'off' if mobile, 'on' if desktop, unless user has a saved preference
     const isMobile = window.innerWidth < 950;
     const savedState = localStorage.getItem('visualEffects') || (isMobile ? 'off' : 'on');
     
