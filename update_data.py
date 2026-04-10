@@ -3,6 +3,24 @@ import json
 import os
 import sys
 
+from typing import TypedDict
+
+class Stats(TypedDict):
+    commits: int
+    repos: int
+    followers: int
+    since: str
+
+class PR(TypedDict):
+    title: str
+    url: str
+    repo: str
+
+class GitHubData(TypedDict):
+    stats: Stats
+    prs: list[PR]
+    stars: dict[str, int]
+
 # Since you're targeting 3.14, let's log the version for your Action logs
 print(f"Running on Python version: {sys.version}")
 
@@ -29,7 +47,7 @@ def main():
         # 4. Repo Stars
         repos = get_json(f"https://api.github.com/users/{USERNAME}/repos?per_page=100")
 
-        data = {
+        data: GitHubData = {
             "stats": {
                 "commits": commits.get('total_count', 0),
                 "repos": user.get('public_repos', 0),
