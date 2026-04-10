@@ -1603,3 +1603,15 @@ html {
     font-family: 'JetBrainsMono NF', monospace !important;
     font-size: 0.85rem;
 }
+
+/* --- Custom Cursor Pack (CDN Version) --- */
+
+/* 1. The Normal State */
+html, body {
+    cursor: url('https://cdn.custom-cursor.com/db/9106/32/adventure-time-huntress-wizard-cursor.png') 0 0, auto;
+}
+
+/* 2. The Hover State */
+a, button, .nav-item, .select-trigger, .option, .card-link, .discord-handle, [role="button"] {
+    cursor: url('https://cdn.custom-cursor.com/db/9105/32/adventure-time-huntress-wizard-pointer.png') 0 0, pointer !important;
+}
