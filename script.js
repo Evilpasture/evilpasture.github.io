@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupLicenseButton();
     ModalManager.init();
     setupTerminalEasterEgg();
+    setupProjectPreviews();
 });
 
 /**
@@ -419,4 +420,48 @@ function setupTerminalEasterEgg() {
                 break;
         }
     }
+}
+
+/**
+ * Project Preview System
+ */
+function setupProjectPreviews() {
+    const cards = document.querySelectorAll('.card-link');
+    
+    cards.forEach(card => {
+        card.addEventListener('click', async (e) => {
+            e.preventDefault(); // Stop navigation
+            const repo = card.getAttribute('data-repo');
+            
+            // Show a "Loading" state immediately
+            ModalManager.show(repo.toUpperCase(), '<p>Loading project metadata...</p>');
+
+            try {
+                // Fetch your data.json
+                const response = await fetch('data.json');
+                const data = await response.json();
+                const info = data.projects[repo];
+
+                if (!info) throw new Error("Project details not found.");
+
+                // Build interactive UI
+                const html = `
+                    <div class="project-modal">
+                        <h3>${info.title}</h3>
+                        <p>${info.desc}</p>
+                        <div class="tech-stack">
+                            ${info.tech.map(t => `<span>${t}</span>`).join('')}
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <a href="${info.link}" target="_blank" class="github-link">View Repository</a>
+                        </div>
+                    </div>
+                `;
+                
+                ModalManager.show(info.title, html, { large: true });
+            } catch (err) {
+                ModalManager.show("ERROR", `<p>Could not load project details: ${err.message}</p>`);
+            }
+        });
+    });
 }

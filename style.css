@@ -1436,6 +1436,30 @@ h2,
     font-weight: normal !important;
 }
 
+.project-modal {
+    padding: 10px;
+}
+
+.project-modal h3 {
+    margin-top: 0;
+    color: var(--accent);
+}
+
+.project-modal .tech-stack {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.project-modal .tech-stack span {
+    background: var(--sidebar-bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--accent);
+    border: 1px solid var(--border);
+}
+
 /* =========================================
    12. TERMINAL EASTER EGG (CMD LINE)
    ========================================= */
