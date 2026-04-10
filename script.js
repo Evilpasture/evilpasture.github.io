@@ -761,20 +761,34 @@ function findBestRepoMatch(input) {
  * Fetch and Render README
  */
 async function showReadme(repo) {
-    ModalManager.show(`man ${repo}`, `<p>Fetching README.md...</p>`, { large: true });
+    ModalManager.show(`man ${repo}`, `<p class="loading-text">Fetching documentation from main/README.md...</p>`, { large: true });
+
     try {
         const res = await fetch(`https://api.github.com/repos/Evilpasture/${repo}/readme`, {
             headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
-        if (!res.ok) throw new Error("README not found");
+        
+        if (!res.ok) throw new Error("README.md not found in this repository.");
 
         const data = await res.json();
+        // Decode base64 UTF-8 string
         const text = decodeURIComponent(escape(atob(data.content)));
 
-        // Use marked if available, else fallback to pre
-        const content = (typeof marked !== 'undefined') ? marked.parse(text) : `<pre>${text}</pre>`;
-        ModalManager.show(`man ${repo}`, `<div class="prose">${content}</div>`, { large: true });
+        // 1. Parse Markdown to HTML
+        const htmlContent = marked.parse(text);
+
+        // 2. Wrap in .prose container for styling
+        const modalBody = `<div class="prose man-page">${htmlContent}</div>`;
+
+        // 3. Show in Modal
+        ModalManager.show(`man ${repo}`, modalBody, { large: true });
+
+        // 4. Force Prism to highlight the new code blocks in the modal
+        if (window.Prism) {
+            Prism.highlightAllUnder(document.getElementById('modalBody'));
+        }
+
     } catch (err) {
-        ModalManager.show("ERROR", `<p>Could not fetch README: ${err.message}</p>`);
+        ModalManager.show("EXEC_ERROR", `<p style="color:var(--accent)">󰀦 Man Error:</p><p>${err.message}</p>`);
     }
 }

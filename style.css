@@ -296,14 +296,14 @@ header.terminal-header {
     text-align: left;
 }
 
-/* Generic Terminal Header (used in Windows and Modals) */
-.terminal-header {
+/* Generic Terminal Header (Used in Windows and Modals) */
+.terminal-window .terminal-header {
     background: var(--border);
     padding: 8px 15px;
     display: flex;
     align-items: center;
     gap: 15px;
-    /* Removed margin-bottom here so it doesn't affect modals */
+    margin-bottom: 0; /* Margin removed here */
 }
 
 .banner-frame {
@@ -1515,4 +1515,45 @@ html {
 .explorer-back-btn:hover {
     background: var(--accent-faded);
     border-color: var(--accent);
+}
+
+/* Styling for Markdown inside the Modal */
+.man-page {
+    text-align: left;
+    color: var(--text);
+    padding-bottom: 2rem;
+}
+
+.man-page h1 { font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
+.man-page h2 { font-size: 1.4rem; margin-top: 1.5rem; color: var(--accent); border: none; }
+.man-page h3 { font-size: 1.1rem; margin-top: 1rem; }
+.man-page p { margin-bottom: 1rem; opacity: 0.9; }
+
+/* Lists */
+.man-page ul, .man-page ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.man-page li { margin-bottom: 0.4rem; }
+
+/* Links in Readme */
+.man-page a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Code blocks in Readme */
+.man-page pre {
+    margin: 1.5rem 0 !important;
+    background: #000 !important; /* True black for manual look */
+    border: 1px solid var(--border);
+    padding: 1rem !important;
+    border-radius: 6px;
+}
+
+.man-page code {
+    font-family: 'JetBrainsMono NF', monospace !important;
+    font-size: 0.85rem;
 }
