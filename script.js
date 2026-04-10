@@ -138,14 +138,19 @@ function setupThemeSystem() {
     const modeIcon = document.getElementById('modeIcon');
     const htmlEl = document.documentElement;
 
+    // 1. APPLY THEME ON LOAD
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    htmlEl.setAttribute('data-theme', savedTheme); // <-- This was missing!
+
     if (themeSelect) {
-        themeSelect.value = localStorage.getItem('theme') || 'default';
+        themeSelect.value = savedTheme;
         themeSelect.addEventListener('change', (e) => {
             htmlEl.setAttribute('data-theme', e.target.value);
             localStorage.setItem('theme', e.target.value);
         });
     }
 
+    // 2. APPLY MODE ON LOAD
     if (modeToggle) {
         const savedMode = localStorage.getItem('mode') || 'auto';
         htmlEl.setAttribute('data-mode', savedMode);
