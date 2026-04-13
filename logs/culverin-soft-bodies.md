@@ -1,7 +1,9 @@
 # Culverin Soft Bodies ADDITION!
 
 **Date:** April 13, 2026
+
 **Category:** Systems Programming and Features
+
 **Tags:** `Culverin`, `project`, `C23`, `soft bodies`, `physics`, `features`
 
 New features to `Culverin`! With the addition of soft bodies after endless optimization creep, I decided that I ran out of things to optimize and actually add soft bodies. Overprepared much, no?
