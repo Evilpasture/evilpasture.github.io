@@ -1,11 +1,16 @@
 {
     "stats": {
-        "commits": 1620,
+        "commits": 1621,
         "repos": 13,
         "followers": 1,
         "since": "2025-11-23T15:41:33Z"
     },
     "prs": [
+        {
+            "title": "Add soft body support, direct memory access APIs, and TSan compatibility",
+            "url": "https://github.com/amerkoleci/joltc/pull/73",
+            "repo": "amerkoleci/joltc"
+        },
         {
             "title": "Optimize DVec3::StoreDouble3 with platform-specific SIMD stores",
             "url": "https://github.com/jrouwe/JoltPhysics/pull/1963",
