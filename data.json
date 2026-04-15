@@ -1,7 +1,7 @@
 {
     "stats": {
-        "commits": 1659,
-        "repos": 13,
+        "commits": 1692,
+        "repos": 14,
         "followers": 1,
         "since": "2025-11-23T15:41:33Z"
     },
@@ -26,6 +26,7 @@
         "culverin": 5,
         "evilpasture": 0,
         "evilpasture.github.io": 0,
+        "fast-capi": 0,
         "gemini-with-gui": 0,
         "hypergl": 1,
         "joltc": 0,
