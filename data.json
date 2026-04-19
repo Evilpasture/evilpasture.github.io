@@ -1,7 +1,7 @@
 {
     "stats": {
-        "commits": 1720,
-        "repos": 14,
+        "commits": 1833,
+        "repos": 15,
         "followers": 1,
         "since": "2025-11-23T15:41:33Z"
     },
@@ -23,6 +23,7 @@
         }
     ],
     "stars": {
+        "caravangl": 0,
         "culverin": 6,
         "evilpasture": 0,
         "evilpasture.github.io": 0,
