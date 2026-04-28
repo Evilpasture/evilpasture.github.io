@@ -1,6 +1,6 @@
 {
     "stats": {
-        "commits": 1967,
+        "commits": 1995,
         "repos": 16,
         "followers": 2,
         "since": "2025-11-23T15:41:33Z"
@@ -15,16 +15,6 @@
             "title": "Add soft body support, direct memory access APIs, and TSan compatibility",
             "url": "https://github.com/amerkoleci/joltc/pull/73",
             "repo": "amerkoleci/joltc"
-        },
-        {
-            "title": "Optimize DVec3::StoreDouble3 with platform-specific SIMD stores",
-            "url": "https://github.com/jrouwe/JoltPhysics/pull/1963",
-            "repo": "jrouwe/JoltPhysics"
-        },
-        {
-            "title": "Fix heap-buffer-overflow and SIMD alignment in ContactConstraintManager",
-            "url": "https://github.com/jrouwe/JoltPhysics/pull/1917",
-            "repo": "jrouwe/JoltPhysics"
         }
     ],
     "stars": {
