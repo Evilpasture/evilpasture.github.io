@@ -1,11 +1,16 @@
 {
     "stats": {
-        "commits": 1995,
+        "commits": 1996,
         "repos": 16,
         "followers": 2,
         "since": "2025-11-23T15:41:33Z"
     },
     "prs": [
+        {
+            "title": "Expose TempAllocator C-API and add explicit allocator support for parallel PhysicsSystem updates",
+            "url": "https://github.com/amerkoleci/joltc/pull/74",
+            "repo": "amerkoleci/joltc"
+        },
         {
             "title": "Update and vectorize certain quaternion methods and Euler transformations using NEON/SSE",
             "url": "https://github.com/jrouwe/JoltPhysics/pull/1984",
