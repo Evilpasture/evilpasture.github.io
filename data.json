@@ -34,7 +34,7 @@
     ],
     "stars": {
         "caravangl": 0,
-        "culverin": 7,
+        "culverin": 8,
         "docs-embedder": 0,
         "evilpasture": 0,
         "evilpasture.github.io": 0,
@@ -61,7 +61,7 @@
                 "Python",
                 "SIMD"
             ],
-            "stars": 7,
+            "stars": 8,
             "link": "https://github.com/Evilpasture/Culverin"
         },
         "hypergl": {
