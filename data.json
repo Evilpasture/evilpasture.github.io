@@ -1,7 +1,7 @@
 {
     "stats": {
-        "commits": 2079,
-        "repos": 17,
+        "commits": 2083,
+        "repos": 18,
         "followers": 5,
         "since": "2025-11-23T15:41:33Z"
     },
@@ -47,6 +47,7 @@
         "mag-mutex": 0,
         "nogil-swarm": 0,
         "nvim-config": 0,
+        "r-university-project": 0,
         "rps": 0,
         "sound-dsl": 0,
         "uni-assignments": 0
