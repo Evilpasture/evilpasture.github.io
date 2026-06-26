@@ -20,6 +20,16 @@ Has a functional scripting layer. Not sure what games I'm gonna make with it, bu
 
 I already have assets, conveniently from animators who created `The Amazing Digital Circus` assets. Why that show specifically? I'm not sure. It's just there. And I like the show.
 
+---
+
+## Not So Quick Development
+
+The engine is still in the early stages of development. But it's working.
+
+I already have real life issues to work on and therefore I have problems. I'll try my best.
+
+---
+
 ## License
 
 This project is licensed under the GNU GPLv3 license or later versions. 
@@ -30,11 +40,11 @@ I felt like making a libre game engine was a good idea.
 
 ---
 
-## Not So Quick Development
+## Repository
 
-The engine is still in the early stages of development. But it's working.
+The repository is hosted on GitHub. You can find it [here](https://github.com/Evilpasture/project-zahlen).
 
-I already have real life issues to work on and therefore I have problems. I'll try my best.
+The repostiory is also hosted on Codeberg. You can find it [here](https://codeberg.org/Evilpasture/project-zahlen).
 
 ---
 
