@@ -1,6 +1,6 @@
 {
     "stats": {
-        "commits": 2893,
+        "commits": 2905,
         "repos": 20,
         "followers": 6,
         "since": "2025-11-23T15:41:33Z"
@@ -34,7 +34,7 @@
     ],
     "stars": {
         "caravangl": 0,
-        "culverin": 9,
+        "culverin": 10,
         "docs-embedder": 0,
         "evilpasture": 0,
         "evilpasture.github.io": 0,
@@ -64,7 +64,7 @@
                 "Python",
                 "SIMD"
             ],
-            "stars": 9,
+            "stars": 10,
             "link": "https://github.com/Evilpasture/Culverin"
         },
         "hypergl": {
