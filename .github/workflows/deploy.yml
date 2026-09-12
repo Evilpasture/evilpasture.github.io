@@ -19,6 +19,50 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Fail fast: if Pages is set to "Deploy from a branch", GitHub's built-in
+      # pages-build-deployment workflow republishes the raw branch tree on every
+      # push and finishes *after* this job, overwriting our artifact. That tree
+      # can never contain blizzard.wasm (gitignored), so the blizzard 404s even
+      # though this workflow reports success. Catch it here instead.
+      - name: Verify Pages source is "GitHub Actions"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pages_json=$(mktemp)
+          status=$(curl -s -o "$pages_json" -w '%{http_code}' \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")
+
+          # Only a definitive "legacy" answer is fatal. Anything else (Pages not
+          # enabled on a fork, transient 5xx, trimmed token scopes) is a warning:
+          # don't let an unrelated API problem block a legitimate deployment.
+          if [ "$status" != "200" ]; then
+            body=$(tr -d '\r\n' < "$pages_json" | cut -c1-200)
+            echo "::warning title=Could not read Pages settings::GET /pages returned HTTP $status; skipping the source check. $body"
+            exit 0
+          fi
+
+          if command -v jq >/dev/null 2>&1; then
+            build_type=$(jq -r '.build_type // "unknown"' "$pages_json")
+            branch=$(jq -r '.source.branch // "-"' "$pages_json")
+          else
+            # jq is preinstalled on GitHub-hosted runners; parse defensively anyway.
+            build_type=$(sed -n 's/.*"build_type"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pages_json" | head -1)
+            branch=$(sed -n 's/.*"branch"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$pages_json" | head -1)
+            build_type=${build_type:-unknown}
+            branch=${branch:--}
+          fi
+
+          if [ "$build_type" = "workflow" ]; then
+            echo "Pages source is 'GitHub Actions' (build_type=workflow) -- OK."
+            exit 0
+          fi
+
+          echo "::error title=Pages source must be 'GitHub Actions'::Got build_type='$build_type' (branch: $branch). GitHub's built-in Jekyll build republishes the raw branch tree *after* this job and overwrites the artifact -- and that tree never contains blizzard.wasm (gitignored), so the background 404s even though this workflow looks green. Fix it in Settings -> Pages -> Build and deployment -> Source -> GitHub Actions, then re-run this workflow."
+          exit 1
+
       - uses: actions/checkout@v4
 
       - name: Install Clang & LLD
