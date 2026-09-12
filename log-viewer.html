@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="neon-yellow" data-mode="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <!-- In log-viewer.html head -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
-    <link rel="icon" type="image/png" href="res/logo.png">
+    <link rel="icon" type="image/png" href="res/favicon.png">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="log_style.css">
 </head>
@@ -50,23 +50,6 @@
 
     <div class="side-nav-settings">
         <span class="side-nav-title">Personalization</span>
-
-        <div class="setting-item">
-            <span>󰏘 Theme</span>
-            <!-- Swapped standard select for the custom dropdown used in index.html -->
-            <div class="custom-select" id="themeDropdown">
-                <button class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
-                    <span id="currentThemeName">Default Blue</span>
-                    <span class="arrow">󰅀</span>
-                </button>
-                <div class="select-options" role="listbox">
-                    <button class="option" data-value="default" role="option">Default Blue</button>
-                    <button class="option" data-value="dracula" role="option">Dracula Purple</button>
-                    <button class="option" data-value="gruvbox" role="option">Gruvbox Retro</button>
-                    <button class="option" data-value="terminal" role="option">Terminal Green</button>
-                </div>
-            </div>
-        </div>
 
         <div class="setting-item">
             <span>󰔎 Appearance</span>

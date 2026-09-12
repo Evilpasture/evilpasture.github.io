@@ -4,7 +4,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initGitHubData();
     setupSidebar();
-    setupDiscordCopy();
+    setupCopy();
     setupUptimeCounter();
     setupThemeSystem();
     setupEffectsSystem();
@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTerminalEasterEgg();
     setupProjectPreviews();
     initVimNavigation();
+    setupCustomCursor();
 });
 
 /**
@@ -104,24 +105,29 @@ function setupSidebar() {
 /**
  * 3. Utilities
  */
-function setupDiscordCopy() {
-    const handle = document.querySelector('.discord-handle');
-    if (!handle) return;
+function setupCopy() {
+    // Select all elements marked as copyable
+    const copyables = document.querySelectorAll('.copyable-contact');
+    if (!copyables.length) return;
 
-    handle.addEventListener('click', async () => {
-        const valSpan = handle.querySelector('.contact-value');
-        const textToCopy = handle.getAttribute('data-handle') || valSpan.innerText.replace('@', '');
+    copyables.forEach(handle => {
+        handle.addEventListener('click', async () => {
+            const valSpan = handle.querySelector('.contact-value');
+            const textToCopy = handle.getAttribute('data-copy');
 
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            const originalText = valSpan.innerText;
-            valSpan.innerText = 'Copied!';
-            handle.classList.add('copied');
-            setTimeout(() => {
-                valSpan.innerText = originalText;
-                handle.classList.remove('copied');
-            }, 2000);
-        } catch (err) { console.error('Copy failed', err); }
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                const originalText = valSpan.innerText;
+                valSpan.innerText = 'Copied!';
+                handle.classList.add('copied');
+                setTimeout(() => {
+                    valSpan.innerText = originalText;
+                    handle.classList.remove('copied');
+                }, 2000);
+            } catch (err) { 
+                console.error('Copy failed', err); 
+            }
+        });
     });
 }
 
@@ -139,6 +145,7 @@ function setupUptimeCounter() {
     }, 1000);
 }
 
+
 /**
  * 4. Theme & Appearance
  */
@@ -147,61 +154,20 @@ function setupThemeSystem() {
     const modeToggle = document.getElementById('modeToggle');
     const modeIcon = document.getElementById('modeIcon');
 
-    // 1. Load Initial Theme
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    htmlEl.setAttribute('data-theme', savedTheme);
+    htmlEl.setAttribute('data-theme', 'neon-yellow');
+    localStorage.removeItem('theme'); // Clear any legacy theme selection
 
-    // --- A. Handle Custom Div Dropdown (index.html) ---
-    const dropdown = document.getElementById('themeDropdown');
-    const currentNameLabel = document.getElementById('currentThemeName');
-
-    if (dropdown) {
-        const options = dropdown.querySelectorAll('.option');
-        const trigger = dropdown.querySelector('.select-trigger');
-
-        // Set initial label
-        const selectedOption = dropdown.querySelector(`[data-value="${savedTheme}"]`);
-        if (selectedOption && currentNameLabel) currentNameLabel.innerText = selectedOption.innerText;
-
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('active');
-        });
-
-        options.forEach(opt => {
-            opt.addEventListener('click', () => {
-                const theme = opt.getAttribute('data-value');
-                htmlEl.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-                currentNameLabel.innerText = opt.innerText;
-                dropdown.classList.remove('active');
-            });
-        });
-        document.addEventListener('click', () => dropdown.classList.remove('active'));
-    }
-
-    // --- B. Handle Standard Select Dropdown (log-viewer.html) ---
-    const select = document.getElementById('themeSelect');
-    if (select) {
-        select.value = savedTheme; // Sync current theme to select value
-        select.addEventListener('change', (e) => {
-            const theme = e.target.value;
-            htmlEl.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        });
-    }
-
-    // --- C. Handle Mode Toggle ---
+    // Handle Mode Toggle (Dark / Light)
     if (modeToggle) {
-        const savedMode = localStorage.getItem('mode') || 'auto';
+        const savedMode = localStorage.getItem('mode') || 'dark';
         htmlEl.setAttribute('data-mode', savedMode);
-        modeIcon.innerText = savedMode === 'light' ? '󰖨' : '󰖔';
+        if (modeIcon) modeIcon.innerText = savedMode === 'light' ? '󰖨' : '󰖔';
 
         modeToggle.addEventListener('click', () => {
             const nextMode = htmlEl.getAttribute('data-mode') === 'light' ? 'dark' : 'light';
             htmlEl.setAttribute('data-mode', nextMode);
             localStorage.setItem('mode', nextMode);
-            modeIcon.innerText = nextMode === 'light' ? '󰖨' : '󰖔';
+            if (modeIcon) modeIcon.innerText = nextMode === 'light' ? '󰖨' : '󰖔';
         });
     }
 }
@@ -328,7 +294,6 @@ function setupTerminalEasterEgg() {
         'q': OP.QUIT,
         'quit': OP.QUIT,
         'exit': OP.QUIT,
-        'theme': OP.SET_THEME,
         'gui': OP.TOGGLE_GUI,
         'license': OP.SHOW_LICENSE,
         'sudo': OP.SUDO,
@@ -372,19 +337,6 @@ function setupTerminalEasterEgg() {
         switch (opcode) {
             case OP.QUIT:
                 closeCmd();
-                break;
-
-            case OP.SET_THEME:
-                const validThemes = ['default', 'dracula', 'gruvbox', 'terminal'];
-                if (validThemes.includes(arg)) {
-                    htmlEl.setAttribute('data-theme', arg);
-                    localStorage.setItem('theme', arg);
-                    const label = document.getElementById('currentThemeName');
-                    if (label) {
-                        const opt = document.querySelector(`.option[data-value="${arg}"]`);
-                        if (opt) label.innerText = opt.innerText;
-                    }
-                }
                 break;
 
             case OP.TOGGLE_GUI:
@@ -831,4 +783,135 @@ function getLanguageFromPath(path) {
         'json': 'json', 'lua': 'lua', 'zig': 'zig', 'sh': 'bash'
     };
     return map[ext] || 'clike'; // Default fallback
+}
+
+/**
+ * 7. Custom Interactive Cursor with Precision Triangle & Color-Shifting Spin
+ */
+function setupCustomCursor() {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    // 1. Create cursor container
+    const container = document.createElement('div');
+    container.id = 'custom-cursor-container';
+
+    // 2. SVG Precision Triangle pointing at exact click hotspot (0, 0)
+    const triangle = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    triangle.id = 'cursor-triangle';
+    triangle.setAttribute('width', '10');
+    triangle.setAttribute('height', '10');
+    triangle.setAttribute('viewBox', '0 0 10 10');
+    triangle.innerHTML = `<path d="M0,0 L9,2.5 L5,5 L2.5,9 Z" fill="#ffffff" stroke="rgba(0,0,0,0.7)" stroke-width="0.8" stroke-linejoin="round"/>`;
+
+    // 3. Resized Icon Canvas (48x48 internal resolution for retina sharpness, 24x24 display)
+    const canvas = document.createElement('canvas');
+    canvas.id = 'custom-cursor-canvas';
+    canvas.width = 48;
+    canvas.height = 48;
+
+    container.appendChild(triangle);
+    container.appendChild(canvas);
+    document.body.appendChild(container);
+
+    const ctx = canvas.getContext('2d');
+    const trianglePath = triangle.querySelector('path');
+
+    // 4. Preload Assets
+    const cursorImg = new Image();
+    cursorImg.src = 'res/cursor.png';
+
+    const pointerImg = new Image();
+    pointerImg.src = 'res/pointer.png';
+
+    let isHovered = false;
+    let currentInteractive = null;
+
+    const HOVER_COLORS = [
+        '#a855f7', // Purple
+        '#ef4444', // Red
+        '#eab308'  // Yellow
+    ];
+
+    let lastColorIndex = -1;
+    function pickRandomColor() {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * HOVER_COLORS.length);
+        } while (newIndex === lastColorIndex && HOVER_COLORS.length > 1);
+        lastColorIndex = newIndex;
+        return HOVER_COLORS[newIndex];
+    }
+
+    // 5. Render scaled & tinted cursor
+    function renderCursor(img, tintColor = null) {
+        if (!img.complete || !img.naturalWidth) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw image scaled down into the 48x48 canvas buffer
+        ctx.save();
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        if (tintColor) {
+            ctx.globalCompositeOperation = 'source-atop';
+            ctx.fillStyle = tintColor;
+            ctx.globalAlpha = 0.88;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            // Match the precision triangle to the hover color
+            if (trianglePath) trianglePath.setAttribute('fill', tintColor);
+            container.style.filter = `drop-shadow(0 0 5px ${tintColor})`;
+        } else {
+            ctx.restore();
+            if (trianglePath) trianglePath.setAttribute('fill', '#ffffff');
+            container.style.filter = 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))';
+        }
+    }
+
+    cursorImg.onload = () => { if (!isHovered) renderCursor(cursorImg); };
+    pointerImg.onload = () => { if (isHovered) renderCursor(pointerImg, pickRandomColor()); };
+
+    // 6. Movement tracking (tip of triangle hits exact (clientX, clientY))
+    window.addEventListener('mousemove', (e) => {
+        container.style.opacity = '1';
+        container.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+    });
+
+    document.addEventListener('mouseleave', () => { container.style.opacity = '0'; });
+    document.addEventListener('mouseenter', () => { container.style.opacity = '1'; });
+
+    // 7. Interactive Hover Detection
+    const INTERACTIVE_SELECTOR = 'a, button, input, select, textarea, .nav-item, .select-trigger, .option, .card-link, .discord-handle, [role="button"], .explorer-item, #licenseBtn, [tabindex]';
+
+    document.addEventListener('mouseover', (e) => {
+        const interactive = e.target.closest(INTERACTIVE_SELECTOR);
+        if (interactive && interactive !== currentInteractive) {
+            currentInteractive = interactive;
+            isHovered = true;
+            renderCursor(pointerImg, pickRandomColor());
+        }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        if (currentInteractive) {
+            const stillInside = e.relatedTarget && e.relatedTarget.closest(INTERACTIVE_SELECTOR);
+            if (!stillInside) {
+                currentInteractive = null;
+                isHovered = false;
+                renderCursor(cursorImg, null);
+            }
+        }
+    });
+
+    // 8. Spin on Click (Spins only the companion icon, triangle remains aimed)
+    window.addEventListener('mousedown', () => {
+        canvas.classList.remove('spin');
+        void canvas.offsetWidth; // Force reflow
+        canvas.classList.add('spin');
+    });
+
+    canvas.addEventListener('animationend', () => {
+        canvas.classList.remove('spin');
+    });
 }

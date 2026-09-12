@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="default" data-mode="dark">
+<html lang="en" data-theme="neon-yellow" data-mode="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to my page! | Evilpasture</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="res/logo.png">
+    <link rel="icon" type="image/png" href="res/favicon.png">
     <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -52,22 +52,6 @@
             <span class="side-nav-title">Personalization</span>
 
             <div class="setting-item">
-                <span>󰏘 Theme</span>
-                <div class="custom-select" id="themeDropdown">
-                    <button class="select-trigger" aria-haspopup="listbox" aria-expanded="false">
-                        <span id="currentThemeName">Default Blue</span>
-                        <span class="arrow">󰅀</span>
-                    </button>
-                    <div class="select-options" role="listbox">
-                        <button class="option" data-value="default" role="option">Default Blue</button>
-                        <button class="option" data-value="dracula" role="option">Dracula Purple</button>
-                        <button class="option" data-value="gruvbox" role="option">Gruvbox Retro</button>
-                        <button class="option" data-value="terminal" role="option">Terminal Green</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="setting-item">
                 <span>󰔎 Appearance</span>
                 <button id="modeToggle" title="Toggle Light/Dark Mode" aria-label="Toggle Light/Dark Mode">
                     <span id="modeIcon">󰖔</span>
@@ -91,31 +75,35 @@
     <!-- Dimmed Overlay -->
     <div class="overlay" id="overlay"></div>
 
+    <!-- The background shader canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- ==================== TOP CONTAINER ==================== -->
     <div class="container">
         <header class="terminal-header">
-    <div class="banner-frame">
-        <picture>
-            <!-- If you have a portrait version of your banner, put it here -->
-            <source media="(max-width: 650px)" srcset="res/banner.jpg"> 
-            <img src="res/banner.jpg" alt="Developer Banner" class="banner">
-        </picture>
-    </div>
+            <div class="banner-frame">
+                <picture>
+                    <source media="(max-width: 650px)" srcset="res/banner.png"> 
+                    <img src="res/banner.png" alt="Developer Banner" class="banner">
+                </picture>
+            </div>
 
-    <div class="header-content">
-        <div class="prompt-container">
-            <span class="prompt">$</span> <span class="cmd-text">whoami</span>
-        </div>
+            <div class="header-insignia">
+                <img src="res/badge.svg" alt="Evilpasture Insignia" class="insignia-img">
+            </div>
 
-        <h1 class="glitch" data-text="Evilpasture">Evilpasture</h1>
-
-        <p class="subtitle">Data Science Student // Systems Programmer!!!</p>
-
-        <div class="header-actions">
-            <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
-            <span class="status-badge"><span class="blink">●</span> ACCESS GRANTED</span>
-        </div>
-    </div>
-</header>
+            <div class="header-content">
+                <div class="prompt-container">
+                    <span class="prompt">#</span> <span class="cmd-text">Using `greeting` as the init process.</span>
+                </div>
+                <h1 class="glitch" data-text="Evilpasture">Evilpasture</h1>
+                <p class="subtitle">Hi, I know a thing about systems programming or two.</p>
+                <div class="header-actions">
+                    <a href="https://github.com/Evilpasture" class="github-link">github.com/Evilpasture</a>
+                    <span class="status-badge"><span class="blink">●</span> ACCESS GRANTED</span>
+                </div>
+            </div>
+        </header>
 
         <main>
             <section id="about">
@@ -128,160 +116,33 @@
                     </div>
                     <div class="terminal-content">
                         <div class="about-grid">
-                            <!-- Status Column -->
                             <div class="about-status">
                                 <div class="status-item">
-                                    <span class="label">NAME:</span>
-                                    <span class="value">Mai Huy Hiếu</span>
+                                    <span class="label">HANDLE:</span>
+                                    <span class="value">Evilpasture</span>
                                 </div>
                                 <div class="status-item">
                                     <span class="label">ROLE:</span>
-                                    <span class="value">Software Engineer</span>
+                                    <span class="value">currently a student</span>
                                 </div>
                                 <div class="status-item">
                                     <span class="label">FOCUS:</span>
-                                    <span class="value">High-Perf / Graphics</span>
+                                    <span class="value">High performance code and Graphics</span>
                                 </div>
                                 <div class="status-item">
                                     <span class="label">STATUS:</span>
-                                    <span class="value pulse-text">ALLOCATED</span>
+                                    <span class="value pulse-text">Do you know people who create enum classes containing APIError::Success? That's how I feel.</span>
                                 </div>
                             </div>
 
-                            <!-- Text Column -->
                             <div class="about-text">
-                                <p><span class="prompt">></span> Focused on <strong>high-performance</strong> software,
-                                    graphics
-                                    engineering, and hardware-sympathetic design. Currently exploring
-                                    <strong>C23</strong>, Vulkan <strong>memory
-                                        management</strong>, and <strong>high-contention atomics</strong>.
-                                </p>
-                                <p><span class="prompt">></span> Contributing to open source with my projects and
-                                    others.
-                                    Active contributor to open-source libraries like <a
-                                        href="https://github.com/jrouwe/JoltPhysics" class="inline-link">Jolt
-                                        Physics</a>.</p>
-                                <p><span class="prompt">></span> Hit me up on Discord for technical discussions or
-                                    collaboration. Or just talk. Don't worry, I won't bite.</p>
+                                <p><span class="prompt">></span> Focused on <strong>high-performance</strong> software, graphics engineering, and hardware-sympathetic design. Currently exploring <strong>C23</strong>, Vulkan <strong>memory management</strong>, and <strong>high-contention atomics</strong>.</p>
+                                <p><span class="prompt">></span> Contributing to free software with my own projects. Contributed to open-source libraries like <a href="https://github.com/jrouwe/JoltPhysics" class="inline-link">Jolt Physics</a>.</p>
+                                <p><span class="prompt">></span> I like <img src="res/title.svg" alt="Title of Murder Drones" class="inline-title">. Just because.</p>
+                                <p><span class="prompt">></span> Hit me up on Discord for technical discussions or any questions. Or just talk. Don't worry, I won't bite.</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <section id="expertise">
-                <h2>Technical Capabilities</h2>
-                <div class="expertise-grid">
-                    <!-- Low Level & Standards -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x01 // CORE_LOGIC</div>
-                        <ul class="skill-list">
-                            <li><span class="icon"></span> C23 <small>Atomics, VLA, Threading</small></li>
-                            <li><span class="icon"></span> C++23 <small>Concepts, Ranges, Coroutines</small></li>
-                            <li><span class="icon"></span> Python.h <small>C-Extensions, GIL-Free</small></li>
-                        </ul>
-                    </div>
-
-                    <!-- Graphics & Hardware -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x02 // COMPUTE_GRAPHICS</div>
-                        <ul class="skill-list">
-                            <li><span class="icon">󰝨</span> Vulkan <small>Memory Management, Pipelines</small></li>
-                            <li><span class="icon">󰟆</span> OpenGL <small>Shader Optimization, AZDO</small></li>
-                            <li><span class="icon">󰓅</span> SIMD <small>AVX-512, SSE, NEON</small></li>
-                        </ul>
-                    </div>
-
-                    <!-- Environment -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x03 // ENVIRONMENT</div>
-                        <ul class="skill-list">
-                            <li><span class="icon"></span> NeoVim <small>Custom Lua Toolchain</small></li>
-                            <li><span class="icon"></span> Windows <small>Win32 API, Performance Counters</small></li>
-                            <li><span class="icon"></span> MacOS <small>Darwin / Metal Interop</small></li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <section id="projects">
-                <h2>Core Projects</h2>
-                <div class="grid">
-                    <!-- Add data-repo attribute here -->
-                    <a href="https://github.com/Evilpasture/culverin" class="card-link" data-repo="culverin">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Culverin</h3>
-                                <span class="star-badge">--</span>
-                            </div>
-                            <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a href="https://github.com/Evilpasture/hypergl" class="card-link" data-repo="hypergl">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>HyperGL</h3>
-                                <span class="star-badge">--</span>
-                            </div>
-                            <p>Custom OpenGL-based rendering engine and performance heatmap analyzer.</p>
-                        </div>
-                    </a>
-
-                    <a href="https://github.com/Evilpasture/mag-mutex" class="card-link" data-repo="mag-mutex">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>MagMutex</h3>
-                                <span class="star-badge">--</span>
-                            </div>
-                            <p>A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.
-                            </p>
-                        </div>
-                    </a>
-                </div>
-            </section>
-            <section id="logs">
-                <h2>Technical Logs</h2>
-                <div class="log-list">
-                    <article class="log-item">
-                        <div class="log-meta">
-                            <span class="log-date">󰃭 April 9, 2026</span>
-                            <span class="log-tag">C</span> <span class="log-tag">Concurrency</span>
-                        </div>
-                        <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a>
-                        </h3>
-                        <p>The creation of one of the fastest mutexes in C23.</p>
-                    </article>
-                    <article class="log-item">
-                        <div class="log-meta">
-                            <span class="log-date">󰃭 April 9, 2026</span>
-                            <span class="log-tag">C</span> <span class="log-tag">C++</span> <span
-                                class="log-tag">Zig</span> <span class="log-tag">Joke</span>
-                        </div>
-                        <h3><a href="log-viewer.html?file=the-art-of-nullptr" class="log-link">The art of nullptr</a>
-                        </h3>
-                        <p>Pushing the C23 and C++23 standard to the limit with nullptr.</p>
-                    </article>
-                    <article class="log-item">
-                        <div class="log-meta">
-                            <span class="log-date">󰃭 April 13, 2026</span>
-                            <span class="log-tag">C</span> <span class="log-tag">Features</span>
-                        </div>
-                        <h3><a href="log-viewer.html?file=culverin-soft-bodies" class="log-link">Culverin Soft Bodies</a>
-                        </h3>
-                        <p>Culverin's new soft bodies feature is cool!</p>
-                    </article>
-                    <article class="log-item">
-                        <div class="log-meta">
-                            <span class="log-date">󰃭 June 26, 2026</span>
-                            <span class="log-tag">C++</span> <span class="log-tag">Game Engine Development</span>
-                            <span class="log-tag">Graphics</span>
-                        </div>
-                        <h3><a href="log-viewer.html?file=game-engine-dev-log-1" class="log-link">Game Engine Development Log 1</a>
-                        </h3>
-                        <p>A new log entry for the game engine development log for Project Zahlen.</p>
-                    </article>
                 </div>
             </section>
         </main>
@@ -291,29 +152,158 @@
                 <h3>GitHub Activity</h3>
                 <div id="github-stats-container">
                     <p class="loading-text">Loading stats...</p>
-                    <!-- Stats will be injected here -->
                 </div>
             </div>
 
             <div class="sidebar-block">
                 <h3>Contact & Social</h3>
-
                 <div class="contact-grid">
-                    <!-- GitHub Link -->
                     <a href="https://github.com/Evilpasture" class="contact-item-link" target="_blank" rel="noopener">
                         <div class="contact-row">
                             <span class="stat-label">GitHub</span>
                             <span class="contact-value">@Evilpasture</span>
                         </div>
                     </a>
-
-                    <!-- Discord Copy (Interactions handled by your script.js) -->
-                    <div class="contact-row discord-handle" data-handle="enwifi" title="Click to copy Discord handle">
+                    <div class="contact-row copyable-contact" data-copy="evilpasture@proton.me" title="Click to copy email">
+                        <span class="stat-label">Proton</span>
+                        <span class="contact-value">@evilpasture</span>
+                    </div>
+                    <div class="contact-row copyable-contact" data-copy="enwifi" title="Click to copy Discord handle">
                         <span class="stat-label">Discord</span>
                         <span class="contact-value">@enwifi</span>
                     </div>
                 </div>
             </div>
+        </aside>
+    </div> <!-- END TOP CONTAINER -->
+
+    <!-- ==================== MIDDLE SECTION (ENTIRE ROW OF THE DISPLAY) ==================== -->
+    <section id="expertise" class="capabilities-section">
+        <div class="capabilities-header-wrap">
+            <h2>Technical Capabilities</h2>
+        </div>
+
+        <div class="capabilities-showcase">
+            <!-- C Language -->
+            <div class="showcase-item" data-tech="c">
+                <div class="showcase-logo-stage">
+                    <img src="res/c.svg" alt="C Programming Language" class="showcase-logo">
+                </div>
+                <article class="showcase-panel">
+                    <div class="showcase-body">
+                        <div class="showcase-header">
+                            <span class="spec-id">/* LOW LEVEL CHOICE */</span>
+                            <h3>C Programming Language</h3>
+                        </div>
+                        <p>Mechanical sympathy at the byte level. High-contention atomic synchronization, strict memory layouts, and hardware-deterministic systems design. Standard of choice is C23.</p>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Modern C++ -->
+            <div class="showcase-item" data-tech="cpp">
+                <div class="showcase-logo-stage">
+                    <img src="res/cpp.svg" alt="C++ Programming Language" class="showcase-logo">
+                </div>
+                <article class="showcase-panel">
+                    <div class="showcase-body">
+                        <div class="showcase-header">
+                            <span class="spec-id">/* HIGH LEVEL CHOICE */</span>
+                            <h3>C++ Programming Language</h3>
+                        </div>
+                        <p>Zero-overhead abstractions and modern language mechanics. Leveraging compile-time metaprogramming, deterministic RAII lifecycles, and cache-friendly data pipelines, along with std::expected monadic chains. Standard of choice is C++23/C++26</p>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Vulkan API -->
+            <div class="showcase-item" data-tech="vulkan">
+                <div class="showcase-logo-stage">
+                    <img src="res/vulkan.svg" alt="Vulkan API" class="showcase-logo">
+                </div>
+                <article class="showcase-panel">
+                    <div class="showcase-body">
+                        <div class="showcase-header">
+                            <span class="spec-id">/* PREFERRED GRAPHICS API */</span>
+                            <h3>Vulkan Graphics API</h3>
+                        </div>
+                        <p>Explicit, low-overhead GPU pipeline control. Direct command queue dispatching, barrier-driven memory synchronization, and high-throughput compute kernels. Standard of choice is Vulkan 1.3 or 1.4.</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== BOTTOM CONTAINER ==================== -->
+    <div class="container">
+        <main>
+            <section id="projects">
+                <h2>Core Projects</h2>
+                <div class="grid">
+                    <!-- Culverin -->
+                    <a href="https://github.com/Evilpasture/culverin" class="card-link" data-repo="culverin">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Culverin</h3>
+                                <span class="star-badge">--</span>
+                            </div>
+                            <p>Python wrapper for Jolt Physics. Optimizing for free-threaded Python 3.14 environments.</p>
+                        </div>
+                    </a>
+
+                    <!-- Project Zahlen -->
+                    <a href="https://github.com/Evilpasture/project-zahlen" class="card-link" data-repo="project-zahlen">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Project Zahlen</h3>
+                                <span class="star-badge">--</span>
+                            </div>
+                            <p>Custom high-performance game engine and rendering framework built from scratch with modern C++ and Vulkan.</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="logs">
+                <h2>Technical Logs</h2>
+                <div class="log-list">
+                    <article class="log-item">
+                        <div class="log-meta">
+                            <span class="log-date">󰃭 April 9, 2026</span>
+                            <span class="log-tag">C</span> <span class="log-tag">Concurrency</span>
+                        </div>
+                        <h3><a href="log-viewer.html?file=1-byte-mutex" class="log-link">Designing a 1-Byte Mutex</a></h3>
+                        <p>The creation of one of the fastest mutexes in C23.</p>
+                    </article>
+                    <article class="log-item">
+                        <div class="log-meta">
+                            <span class="log-date">󰃭 April 9, 2026</span>
+                            <span class="log-tag">C</span> <span class="log-tag">C++</span> <span class="log-tag">Zig</span> <span class="log-tag">Joke</span>
+                        </div>
+                        <h3><a href="log-viewer.html?file=the-art-of-nullptr" class="log-link">The art of nullptr</a></h3>
+                        <p>Pushing the C23 and C++23 standard to the limit with nullptr.</p>
+                    </article>
+                    <article class="log-item">
+                        <div class="log-meta">
+                            <span class="log-date">󰃭 April 13, 2026</span>
+                            <span class="log-tag">C</span> <span class="log-tag">Features</span>
+                        </div>
+                        <h3><a href="log-viewer.html?file=culverin-soft-bodies" class="log-link">Culverin Soft Bodies</a></h3>
+                        <p>Culverin's new soft bodies feature is cool!</p>
+                    </article>
+                    <article class="log-item">
+                        <div class="log-meta">
+                            <span class="log-date">󰃭 June 26, 2026</span>
+                            <span class="log-tag">C++</span> <span class="log-tag">Game Engine Development</span> <span class="log-tag">Graphics</span>
+                        </div>
+                        <h3><a href="log-viewer.html?file=game-engine-dev-log-1" class="log-link">Game Engine Development Log 1</a></h3>
+                        <p>A new log entry for the game engine development log for Project Zahlen.</p>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <aside>
             <div class="sidebar-block">
                 <h3>Open Source Contributions</h3>
                 <div id="pr-container">
@@ -322,8 +312,11 @@
                 </div>
             </div>
         </aside>
+    </div> <!-- END BOTTOM CONTAINER (closes here) -->
 
-        <footer>
+    <!-- ==================== FULL-WIDTH SITE FOOTER ==================== -->
+    <footer>
+        <div class="footer-container">
             <div class="footer-telemetry">
                 <div class="telemetry-item">
                     <span class="label">ENGINE:</span>
@@ -347,13 +340,15 @@
                 <div class="source-code">
                     <span class="icon"></span>
                     <a href="https://github.com/Evilpasture/evilpasture.github.io" target="_blank">
-                        [ ./index.html ]
+                        See the source code
                     </a>
                 </div>
                 <p class="copyright">EVILPASTURE // 2026</p>
             </div>
-        </footer>
-    </div>
+        </div>
+
+        <img src="res/N.png" alt="Footer Emblem" class="footer-corner-img">
+    </footer>
 
     <!-- Add the Shader and UI scripts -->
     <script src="script.js"></script>
