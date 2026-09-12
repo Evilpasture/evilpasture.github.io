@@ -67,29 +67,17 @@
             "stars": 10,
             "link": "https://github.com/Evilpasture/Culverin"
         },
-        "hypergl": {
-            "title": "HyperGL",
-            "desc": "Custom OpenGL-based rendering engine and performance heatmap analyzer.",
+        "project-zahlen": {
+            "title": "Project Zahlen",
+            "desc": "Custom high-performance game engine and rendering framework built from scratch with modern C++ and Vulkan.",
             "tech": [
-                "OpenGL",
-                "C",
-                "Python",
-                "GLSL"
-            ],
-            "stars": 1,
-            "link": "https://github.com/Evilpasture/HyperGL"
-        },
-        "mag-mutex": {
-            "title": "MagMutex",
-            "desc": "A custom mutex 1 byte in size, inspired by PyMutex and WTF::Lock with the locking model.",
-            "tech": [
-                "C23",
-                "Atomics",
-                "Locking",
-                "Concurrency"
+                "C++23",
+                "Vulkan",
+                "Graphics",
+                "Game Engine"
             ],
             "stars": 0,
-            "link": "https://github.com/Evilpasture/mag-mutex"
+            "link": "https://github.com/Evilpasture/project-zahlen"
         }
     }
 }
