@@ -395,8 +395,9 @@ function initLightShader() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     };
 
-    let cachedBg = [0.06, 0.09, 0.16];
-    let cachedAcc = [0.22, 0.74, 0.97];
+    // Dracula theme defaults: Background (#282a36) and Accent (#bd93f9)
+    let cachedBg = [0.16, 0.16, 0.21];
+    let cachedAcc = [0.74, 0.58, 0.98];
 
     function parseColor(color) {
         if (color.startsWith('rgb')) {

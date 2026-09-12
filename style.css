@@ -1,6 +1,7 @@
 /* =========================================
    1. FONTS & THEME VARIABLES
    ========================================= */
+
 @font-face {
     font-family: 'JetBrainsMono NF';
     src: url('fonts/JetBrainsMonoNerdFontMono-Regular.ttf') format('truetype');
@@ -8,57 +9,21 @@
     font-style: normal;
 }
 
-/* --- THEME 1: DEFAULT (Blue/Slate) --- */
+/* --- DRACULA DARK (DEFAULT) --- */
 :root {
-    --bg: #ffffff;
-    --text: #1a1a1a;
-    --accent: #2563eb;
-    --secondary: #64748b;
-    --border: #e2e8f0;
-    --sidebar-bg: #f8fafc;
-    --accent-faded: rgba(37, 99, 235, 0.08);
-    --success: #10b981;
-    --code-bg: #1e1e1e;
-}
-
-/* Explicit Dark Override */
-:root[data-mode="dark"] {
-    --bg: #0f172a;
-    --text: #f1f5f9;
-    --accent: #38bdf8;
-    --secondary: #94a3b8;
-    --border: #334155;
-    --sidebar-bg: #1e293b;
-    --accent-faded: rgba(56, 189, 248, 0.15);
-    --code-bg: #0f172a;
-}
-
-/* OS Dark Mode (unless explicitly forced light) */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-mode="light"]) {
-        --bg: #0f172a;
-        --text: #f1f5f9;
-        --accent: #38bdf8;
-        --secondary: #94a3b8;
-        --border: #334155;
-        --sidebar-bg: #1e293b;
-        --accent-faded: rgba(56, 189, 248, 0.15);
-        --code-bg: #0f172a;
-    }
-}
-
-/* --- THEME 2: DRACULA (Purple) --- */
-:root[data-theme="dracula"] {
-    --bg: #f8f8f2;
-    --text: #282a36;
-    --accent: #9580ff;
+    --bg: #282a36;
+    --text: #f8f8f2;
+    --accent: #bd93f9;
     --secondary: #6272a4;
-    --border: #d7d7cb;
-    --sidebar-bg: #e6e6dc;
-    --accent-faded: rgba(149, 128, 255, 0.15);
+    --border: #44475a;
+    --sidebar-bg: #21222c;
+    --accent-faded: rgba(189, 147, 249, 0.15);
+    --code-bg: #1e1f29;
+    --success: #50fa7b;
 }
 
-:root[data-theme="dracula"][data-mode="dark"] {
+/* Explicit Dark Mode */
+:root[data-mode="dark"] {
     --bg: #282a36;
     --text: #f8f8f2;
     --accent: #bd93f9;
@@ -69,87 +34,16 @@
     --code-bg: #1e1f29;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root[data-theme="dracula"]:not([data-mode="light"]) {
-        --bg: #282a36;
-        --text: #f8f8f2;
-        --accent: #bd93f9;
-        --secondary: #6272a4;
-        --border: #44475a;
-        --sidebar-bg: #21222c;
-        --accent-faded: rgba(189, 147, 249, 0.15);
-        --code-bg: #1e1f29;
-    }
-}
-
-/* --- THEME 3: GRUVBOX (Retro/Warm) --- */
-:root[data-theme="gruvbox"] {
-    --bg: #fbf1c7;
-    --text: #3c3836;
-    --accent: #d65d0e;
-    --secondary: #7c6f64;
-    --border: #d5c4a1;
-    --sidebar-bg: #ebdbb2;
-    --accent-faded: rgba(214, 93, 14, 0.12);
-}
-
-:root[data-theme="gruvbox"][data-mode="dark"] {
-    --bg: #282828;
-    --text: #ebdbb2;
-    --accent: #fe8019;
-    --secondary: #a89984;
-    --border: #504945;
-    --sidebar-bg: #1d2021;
-    --accent-faded: rgba(254, 128, 25, 0.15);
-    --code-bg: #1d2021;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root[data-theme="gruvbox"]:not([data-mode="light"]) {
-        --bg: #282828;
-        --text: #ebdbb2;
-        --accent: #fe8019;
-        --secondary: #a89984;
-        --border: #504945;
-        --sidebar-bg: #1d2021;
-        --accent-faded: rgba(254, 128, 25, 0.15);
-        --code-bg: #1d2021;
-    }
-}
-
-/* --- THEME 4: TERMINAL (Hacker Green) --- */
-:root[data-theme="terminal"] {
-    --bg: #ffffff;
-    --text: #111111;
-    --accent: #16a34a;
-    --secondary: #4b5563;
-    --border: #d1d5db;
-    --sidebar-bg: #f3f4f6;
-    --accent-faded: rgba(22, 163, 74, 0.12);
-}
-
-:root[data-theme="terminal"][data-mode="dark"] {
-    --bg: #09090b;
-    --text: #4ade80;
-    --accent: #22c55e;
-    --secondary: #166534;
-    --border: #14532d;
-    --sidebar-bg: #052e16;
-    --accent-faded: rgba(34, 197, 94, 0.15);
-    --code-bg: #000000;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root[data-theme="terminal"]:not([data-mode="light"]) {
-        --bg: #09090b;
-        --text: #4ade80;
-        --accent: #22c55e;
-        --secondary: #166534;
-        --border: #14532d;
-        --sidebar-bg: #052e16;
-        --accent-faded: rgba(34, 197, 94, 0.15);
-        --code-bg: #000000;
-    }
+/* Optional Light Mode (Dracula Light) */
+:root[data-mode="light"] {
+    --bg: #f8f8f2;
+    --text: #282a36;
+    --accent: #9580ff;
+    --secondary: #6272a4;
+    --border: #d7d7cb;
+    --sidebar-bg: #e6e6dc;
+    --accent-faded: rgba(149, 128, 255, 0.15);
+    --code-bg: #f1f1ea;
 }
 
 html {

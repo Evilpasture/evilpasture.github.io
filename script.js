@@ -140,6 +140,7 @@ function setupUptimeCounter() {
     }, 1000);
 }
 
+
 /**
  * 4. Theme & Appearance
  */
@@ -148,61 +149,21 @@ function setupThemeSystem() {
     const modeToggle = document.getElementById('modeToggle');
     const modeIcon = document.getElementById('modeIcon');
 
-    // 1. Load Initial Theme
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    htmlEl.setAttribute('data-theme', savedTheme);
+    // Permanently lock to Dracula
+    htmlEl.setAttribute('data-theme', 'dracula');
+    localStorage.removeItem('theme'); // Clear any legacy theme selection
 
-    // --- A. Handle Custom Div Dropdown (index.html) ---
-    const dropdown = document.getElementById('themeDropdown');
-    const currentNameLabel = document.getElementById('currentThemeName');
-
-    if (dropdown) {
-        const options = dropdown.querySelectorAll('.option');
-        const trigger = dropdown.querySelector('.select-trigger');
-
-        // Set initial label
-        const selectedOption = dropdown.querySelector(`[data-value="${savedTheme}"]`);
-        if (selectedOption && currentNameLabel) currentNameLabel.innerText = selectedOption.innerText;
-
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('active');
-        });
-
-        options.forEach(opt => {
-            opt.addEventListener('click', () => {
-                const theme = opt.getAttribute('data-value');
-                htmlEl.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-                currentNameLabel.innerText = opt.innerText;
-                dropdown.classList.remove('active');
-            });
-        });
-        document.addEventListener('click', () => dropdown.classList.remove('active'));
-    }
-
-    // --- B. Handle Standard Select Dropdown (log-viewer.html) ---
-    const select = document.getElementById('themeSelect');
-    if (select) {
-        select.value = savedTheme; // Sync current theme to select value
-        select.addEventListener('change', (e) => {
-            const theme = e.target.value;
-            htmlEl.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        });
-    }
-
-    // --- C. Handle Mode Toggle ---
+    // Handle Mode Toggle (Dark / Light)
     if (modeToggle) {
-        const savedMode = localStorage.getItem('mode') || 'auto';
+        const savedMode = localStorage.getItem('mode') || 'dark';
         htmlEl.setAttribute('data-mode', savedMode);
-        modeIcon.innerText = savedMode === 'light' ? '󰖨' : '󰖔';
+        if (modeIcon) modeIcon.innerText = savedMode === 'light' ? '󰖨' : '󰖔';
 
         modeToggle.addEventListener('click', () => {
             const nextMode = htmlEl.getAttribute('data-mode') === 'light' ? 'dark' : 'light';
             htmlEl.setAttribute('data-mode', nextMode);
             localStorage.setItem('mode', nextMode);
-            modeIcon.innerText = nextMode === 'light' ? '󰖨' : '󰖔';
+            if (modeIcon) modeIcon.innerText = nextMode === 'light' ? '󰖨' : '󰖔';
         });
     }
 }
@@ -329,7 +290,6 @@ function setupTerminalEasterEgg() {
         'q': OP.QUIT,
         'quit': OP.QUIT,
         'exit': OP.QUIT,
-        'theme': OP.SET_THEME,
         'gui': OP.TOGGLE_GUI,
         'license': OP.SHOW_LICENSE,
         'sudo': OP.SUDO,
@@ -373,19 +333,6 @@ function setupTerminalEasterEgg() {
         switch (opcode) {
             case OP.QUIT:
                 closeCmd();
-                break;
-
-            case OP.SET_THEME:
-                const validThemes = ['default', 'dracula', 'gruvbox', 'terminal'];
-                if (validThemes.includes(arg)) {
-                    htmlEl.setAttribute('data-theme', arg);
-                    localStorage.setItem('theme', arg);
-                    const label = document.getElementById('currentThemeName');
-                    if (label) {
-                        const opt = document.querySelector(`.option[data-value="${arg}"]`);
-                        if (opt) label.innerText = opt.innerText;
-                    }
-                }
                 break;
 
             case OP.TOGGLE_GUI:
