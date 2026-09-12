@@ -13,18 +13,18 @@
     box-sizing: border-box;
 }
 
-/* --- DRACULA THEME (DEFAULT: DARK) --- */
+/* --- NEON YELLOW / HIGH-VOLTAGE CYBER THEME --- */
 :root {
-    --bg: #282a36;
-    --text: #f8f8f2;
-    --accent: #bd93f9;
-    --secondary: #6272a4;
-    --border: #44475a;
-    --sidebar-bg: #21222c;
-    --accent-faded: rgba(189, 147, 249, 0.15);
-    --code-bg: #1e1f29;
-    --success: #50fa7b;
-    --container-bg: rgba(40, 42, 54, 0.94);
+    --bg: #0c0d10;                            /* Deep carbon background */
+    --text: #f4f5f8;                          /* Bright off-white */
+    --accent: #fcee0a;                        /* Electric Neon Yellow */
+    --secondary: #7f8497;                     /* Muted telemetry gray */
+    --border: #23252e;                        /* Subtle dark border */
+    --sidebar-bg: #14151b;                    /* Elevated container dark tone */
+    --accent-faded: rgba(252, 238, 10, 0.12); /* Translucent yellow glow */
+    --code-bg: #08090b;                       /* Terminal black for code */
+    --success: #39ff14;                       /* Neon green */
+    --container-bg: rgba(12, 13, 16, 0.94);
 }
 
 /* Optional Light Mode */
@@ -997,7 +997,7 @@ aside {
 
 html[data-effects="on"] .container {
     filter: contrast(1.05) brightness(1.05);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
+    box-shadow: 0 0 25px rgba(252, 238, 10, 0.08); /* Yellow ambient glow */
 }
 
 .crt-overlay {

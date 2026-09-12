@@ -149,8 +149,7 @@ function setupThemeSystem() {
     const modeToggle = document.getElementById('modeToggle');
     const modeIcon = document.getElementById('modeIcon');
 
-    // Permanently lock to Dracula
-    htmlEl.setAttribute('data-theme', 'dracula');
+    htmlEl.setAttribute('data-theme', 'neon-yellow');
     localStorage.removeItem('theme'); // Clear any legacy theme selection
 
     // Handle Mode Toggle (Dark / Light)

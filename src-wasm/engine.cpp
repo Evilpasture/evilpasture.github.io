@@ -68,7 +68,7 @@ void BlizzardEngine::update(float dt, float total_time, float screen_w,
   m_uniforms.time = total_time;
   m_uniforms.delta_time = dt;
   m_uniforms.accent_color =
-      Vec4(0.741f, 0.576f, 0.976f, 1.0f); // Dracula accent
+      Vec4(0.988f, 0.933f, 0.039f, 1.0f); // #fcee0a Neon Yellow
 }
 
 } // namespace gfx
