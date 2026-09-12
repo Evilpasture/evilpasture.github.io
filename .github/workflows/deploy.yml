@@ -1,26 +1,44 @@
-# .github/workflows/deploy.yml
 name: Build WASM and Deploy Pages
+
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Prevent race conditions with concurrent deployments
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Clang & LLD
         run: sudo apt-get update && sudo apt-get install -y clang lld
+
       - name: Build WASM
         run: make
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "."
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
