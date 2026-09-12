@@ -239,6 +239,21 @@ class WebGPUBlizzard {
     }
 
     async start() {
+        try {
+            await this.init();
+        } catch (err) {
+            // Never let a missing WASM blob / missing WebGPU feature take the page down.
+            console.warn("[blizzard] background disabled:", err);
+            this.disable();
+        }
+    }
+
+    disable() {
+        this.isPaused = true;
+        if (this.canvas) this.canvas.style.display = "none";
+    }
+
+    async init() {
         if (!navigator.gpu) {
             console.warn("WebGPU not available; using static background.");
             return;
@@ -256,9 +271,7 @@ class WebGPUBlizzard {
             alphaMode: "premultiplied",
         });
 
-        const wasmRes = await fetch("blizzard.wasm");
-        const { instance } = await WebAssembly.instantiateStreaming(wasmRes);
-        this.wasm = instance.exports;
+        this.wasm = await this.loadEngine();
 
         this.enginePtr = this.wasm.engine_create(this.particleCount);
 
@@ -294,6 +307,27 @@ class WebGPUBlizzard {
         });
 
         requestAnimationFrame((t) => this.loop(t));
+    }
+
+    async loadEngine() {
+        const wasmRes = await fetch("blizzard.wasm");
+
+        if (!wasmRes.ok) {
+            throw new Error(
+                `blizzard.wasm not found (HTTP ${wasmRes.status}). ` +
+                "Run `make` to build it from src-wasm/ (see README)."
+            );
+        }
+
+        // Stream when the server sends `application/wasm`, buffer otherwise
+        // (some static servers fall back to application/octet-stream).
+        try {
+            const { instance } = await WebAssembly.instantiateStreaming(wasmRes.clone());
+            return instance.exports;
+        } catch (streamErr) {
+            const { instance } = await WebAssembly.instantiate(await wasmRes.arrayBuffer());
+            return instance.exports;
+        }
     }
 
     async loadSnowflakeTexture() {
@@ -478,5 +512,5 @@ class WebGPUBlizzard {
 
 document.addEventListener("DOMContentLoaded", () => {
     const blizzard = new WebGPUBlizzard();
-    blizzard.start();
+    blizzard.start().catch((err) => console.warn("[blizzard] failed to start:", err));
 });

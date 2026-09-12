@@ -27,6 +27,11 @@ jobs:
       - name: Build WASM
         run: make
 
+      - name: Verify build artifact
+        run: |
+          test -s blizzard.wasm || { echo "::error::blizzard.wasm was not produced"; exit 1; }
+          ls -l blizzard.wasm
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

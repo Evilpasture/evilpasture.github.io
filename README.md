@@ -33,6 +33,8 @@ The frontend never hits the GitHub REST API for stats, so there are no rate limi
 
 **`.github/workflows/deploy.yml`** builds `blizzard.wasm` with clang/LLD on every push to `main` and deploys the site to **GitHub Pages**.
 
+> **Pages must be set to "GitHub Actions"** as the source (Settings → Pages → Build and deployment → Source). If it's left on "Deploy from a branch", the built-in Jekyll build re-deploys the raw branch contents (which never contain `blizzard.wasm`) and overwrites the Actions artifact — the blizzard then 404s. See [Troubleshooting](#troubleshooting).
+
 ## Project Structure
 
 ```text
@@ -60,10 +62,11 @@ The site is fully static — any web server will do. (A server is required so `f
 ```bash
 git clone https://github.com/Evilpasture/evilpasture.github.io.git
 cd evilpasture.github.io
+make                       # builds blizzard.wasm (optional, see below)
 python -m http.server 8000
 ```
 
-Open `http://localhost:8000`. Without a `blizzard.wasm` present, the blizzard background simply stays off and the rest of the site works normally.
+Open `http://localhost:8000`. Without a `blizzard.wasm` present, the blizzard background simply stays off and the rest of the site works normally — it logs one warning and never throws.
 
 ### Building the WASM engine
 
@@ -82,6 +85,18 @@ USE_MOCK=true uv run --with requests update_data.py           # from mock_data.j
 ```
 
 CI does this automatically every night; locally you only need it if you're hacking on the stats UI.
+
+## Troubleshooting
+
+**`Failed to load resource: the server responded with a status of 404` for `blizzard.wasm`, followed by**
+**`TypeError: Failed to execute 'compile' on 'WebAssembly': HTTP status code is not ok`**
+
+The renderer fetched `blizzard.wasm` and the server answered with a 404 page; `WebAssembly.compile` then rejected on the HTML body. `blizzard.wasm` is a **build artifact** produced by `make` from `src-wasm/` — it is gitignored and deliberately not committed, so it only exists if something built it:
+
+- **Local dev:** run `make` in the repo root (needs clang with the `wasm32` target + LLD), then reload.
+- **Live site:** check Settings → Pages → Build and deployment → Source is **GitHub Actions**. On "Deploy from a branch", Pages serves the raw contents of `main`, which never include `blizzard.wasm`, so the blizzard 404s even though `deploy.yml` built it successfully.
+
+The page itself stays fully functional either way: `shader.js` catches the failure, logs `[blizzard] background disabled: ...`, hides `#bg-canvas`, and the static background remains.
 
 ## License
 
