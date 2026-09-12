@@ -1,1 +1,4 @@
 .DS_Store
+
+# Build artifact from src-wasm/ (built by `make` / CI, deployed by GitHub Actions)
+blizzard.wasm
