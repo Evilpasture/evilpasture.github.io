@@ -1385,17 +1385,58 @@ h1, h2, .nav-item {
    13. FOOTER & TELEMETRY (FULL-WIDTH EDGE-TO-EDGE)
    ========================================================= */
 
+/* Ensure the footer doesn't clip the mascot peeking over the top border */
 footer {
+    position: relative;
     width: 100vw;
     max-width: 100vw;
     margin-top: 4rem;
     padding: 2.5rem 0 2rem 0;
-    background: var(--sidebar-bg); /* Deep carbon bar spanning full screen */
+    background: var(--sidebar-bg);
     border-top: 1px solid var(--border);
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     box-sizing: border-box;
+    overflow: visible;                   /* Allows N's head/hat to break over the footer edge */
+}
+
+/* Mascot PNG - Sized to match your yellow marker line */
+.footer-corner-img {
+    position: absolute;
+    right: 2.5rem;                       /* Distance from the right screen edge */
+    bottom: 0;                           /* Anchored flush to the bottom edge */
+    height: 240px;                       /* Sized up to span the full footer height */
+    max-height: none;                    /* Uncapped */
+    width: auto;
+    max-width: none;                     /* Uncapped */
+    object-fit: contain;
+    opacity: 0.95;
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.85));
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.footer-corner-img:hover {
+    transform: translateY(-8px) scale(1.05);
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(252, 238, 10, 0.25));
+}
+
+/* Responsive safety: scale down so it doesn't cover text on smaller displays */
+@media (max-width: 1100px) {
+    .footer-corner-img {
+        height: 180px;
+        right: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-corner-img {
+        height: 110px;
+        right: 1rem;
+        opacity: 0.6;
+    }
 }
 
 /* Keeps the telemetry and copyright aligned with your main content width */
