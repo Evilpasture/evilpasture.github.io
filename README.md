@@ -33,7 +33,9 @@ The frontend never hits the GitHub REST API for stats, so there are no rate limi
 
 **`.github/workflows/deploy.yml`** builds `blizzard.wasm` with clang/LLD on every push to `main` and deploys the site to **GitHub Pages**.
 
-> **Pages must be set to "GitHub Actions"** as the source (Settings → Pages → Build and deployment → Source). If it's left on "Deploy from a branch", the built-in Jekyll build re-deploys the raw branch contents (which never contain `blizzard.wasm`) and overwrites the Actions artifact — the blizzard then 404s. See [Troubleshooting](#troubleshooting).
+> **Pages must be set to "GitHub Actions"** as the source (Settings → Pages → Build and deployment → Source). If it's left on "Deploy from a branch", the built-in Jekyll build re-deploys the raw branch contents (which never contain `blizzard.wasm`) and overwrites the Actions artifact — the blizzard then 404s, *even though `deploy.yml` reports success*. See [Troubleshooting](#troubleshooting).
+>
+> `deploy.yml` now fails fast on this: its first step reads the Pages API and aborts the run with an explicit error if `build_type` is `legacy`, so a green build can no longer hide a misconfigured source. (An unreadable Pages API — e.g. a fork with Pages disabled, or a transient 5xx — only warns, so it can never block a legitimate deploy.) A committed `.nojekyll` additionally disables Jekyll for any branch-based build.
 
 ## Project Structure
 
@@ -52,6 +54,7 @@ The frontend never hits the GitHub REST API for stats, so there are no rate limi
 ├── logs/                 # Technical log posts (.md)
 ├── fonts/                # Self-hosted JetBrains Mono NF
 ├── res/                  # Image & SVG assets
+├── .nojekyll             # Skips Jekyll processing (matters only for branch-based Pages builds)
 └── .github/workflows/    # Pages deploy + nightly data refresh
 ```
 
@@ -95,6 +98,15 @@ The renderer fetched `blizzard.wasm` and the server answered with a 404 page; `W
 
 - **Local dev:** run `make` in the repo root (needs clang with the `wasm32` target + LLD), then reload.
 - **Live site:** check Settings → Pages → Build and deployment → Source is **GitHub Actions**. On "Deploy from a branch", Pages serves the raw contents of `main`, which never include `blizzard.wasm`, so the blizzard 404s even though `deploy.yml` built it successfully.
+
+  Both deployments race on every push, and the branch build wins because it finishes *last* — e.g. from the run that produced this 404:
+
+  | Workflow | Created | Finished |
+  | --- | --- | --- |
+  | `Build WASM and Deploy Pages` (ours) | 16:01:36Z | 16:02:19Z |
+  | `pages-build-deployment` (GitHub's built-in) | 16:01:35Z | **16:02:23Z** ← overwrites |
+
+  `concurrency: group: "pages"` in `deploy.yml` does not help here: `pages-build-deployment` is an internal workflow outside that group. The only fix is switching the source, after which the built-in workflow stops running entirely. Confirm with `gh api repos/<owner>/<repo>/pages --jq .build_type` → `workflow`, then re-run **Build WASM and Deploy Pages** and check `curl -I https://evilpasture.github.io/blizzard.wasm` returns `200` with `content-type: application/wasm`.
 
 The page itself stays fully functional either way: `shader.js` catches the failure, logs `[blizzard] background disabled: ...`, hides `#bg-canvas`, and the static background remains.
 
