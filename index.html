@@ -85,6 +85,11 @@
         </picture>
     </div>
 
+    <div class="header-insignia">
+        <img src="res/badge.svg" alt="Evilpasture Insignia" class="insignia-img">
+    </div>
+
+
     <div class="header-content">
         <div class="prompt-container">
             <span class="prompt">$</span> <span class="cmd-text">whoami</span>
@@ -155,36 +160,59 @@
 
             <section id="expertise">
                 <h2>Technical Capabilities</h2>
-                <div class="expertise-grid">
-                    <!-- Low Level & Standards -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x01 // CORE_LOGIC</div>
-                        <ul class="skill-list">
-                            <li><span class="icon"></span> C23 <small>Atomics, VLA, Threading</small></li>
-                            <li><span class="icon"></span> C++23 <small>Concepts, Ranges, Coroutines</small></li>
-                            <li><span class="icon"></span> Python.h <small>C-Extensions, GIL-Free</small></li>
-                        </ul>
-                    </div>
+                <div class="capabilities-showcase">
 
-                    <!-- Graphics & Hardware -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x02 // COMPUTE_GRAPHICS</div>
-                        <ul class="skill-list">
-                            <li><span class="icon">󰝨</span> Vulkan <small>Memory Management, Pipelines</small></li>
-                            <li><span class="icon">󰟆</span> OpenGL <small>Shader Optimization, AZDO</small></li>
-                            <li><span class="icon">󰓅</span> SIMD <small>AVX-512, SSE, NEON</small></li>
-                        </ul>
-                    </div>
+                    <!-- C -->
+                    <article class="showcase-panel" data-tech="c">
+                        <div class="showcase-logo-stage">
+                            <img src="res/c.svg" alt="C Programming Language" class="showcase-logo">
+                        </div>
+                        <div class="showcase-body">
+                            <div class="showcase-header">
+                                <span class="spec-id">0x01 // BARE_METAL</span>
+                                <h3>C Language</h3>
+                            </div>
+                            <p>
+                                Mechanical sympathy at the byte level. High-contention atomic synchronization, 
+                                strict memory layouts, and hardware-deterministic systems design.
+                            </p>
+                        </div>
+                    </article>
 
-                    <!-- Environment -->
-                    <div class="expertise-card">
-                        <div class="card-label">0x03 // ENVIRONMENT</div>
-                        <ul class="skill-list">
-                            <li><span class="icon"></span> NeoVim <small>Custom Lua Toolchain</small></li>
-                            <li><span class="icon"></span> Windows <small>Win32 API, Performance Counters</small></li>
-                            <li><span class="icon"></span> MacOS <small>Darwin / Metal Interop</small></li>
-                        </ul>
-                    </div>
+                    <!-- C++ -->
+                    <article class="showcase-panel" data-tech="cpp">
+                        <div class="showcase-logo-stage">
+                            <img src="res/cpp.svg" alt="C++ Programming Language" class="showcase-logo">
+                        </div>
+                        <div class="showcase-body">
+                            <div class="showcase-header">
+                                <span class="spec-id">0x02 // ARCHITECTURE</span>
+                                <h3>Modern C++</h3>
+                            </div>
+                            <p>
+                                Zero-overhead abstractions and modern language mechanics. Leveraging compile-time 
+                                metaprogramming, deterministic RAII lifecycles, and cache-friendly data pipelines.
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Vulkan -->
+                    <article class="showcase-panel" data-tech="vulkan">
+                        <div class="showcase-logo-stage">
+                            <img src="res/vulkan.svg" alt="Vulkan API" class="showcase-logo">
+                        </div>
+                        <div class="showcase-body">
+                            <div class="showcase-header">
+                                <span class="spec-id">0x03 // COMPUTE_GRAPHICS</span>
+                                <h3>Vulkan API</h3>
+                            </div>
+                            <p>
+                                Explicit, low-overhead GPU pipeline control. Direct command queue dispatching, 
+                                barrier-driven memory synchronization, and high-throughput compute kernels.
+                            </p>
+                        </div>
+                    </article>
+
                 </div>
             </section>
 

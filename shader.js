@@ -1,230 +1,11 @@
-// =========================================================
-// 1. BACKGROUND & VOLUMETRIC BLIZZARD SHADERS (PASS 1)
-// =========================================================
-const bgVertexShader = `
-    attribute vec2 position;
-    varying vec2 vUv;
-    void main() {
-        vUv = position * 0.5 + 0.5;
-        gl_Position = vec4(position, 0.0, 1.0);
-    }
-`;
+/**
+ * WebGPU + C++17 WASM Blizzard Orchestrator
+ * Volumetric Atmospheric Fog + Instanced SVG Snowflakes
+ * evilpasture.github.io
+ */
 
-const bgFragmentShader = `
-    precision mediump float;
-    varying vec2 vUv;
-    uniform float u_time;
-    uniform vec2 u_resolution;
-    uniform vec2 u_imageResolution;
-    uniform vec3 u_colorBg;
-    uniform vec3 u_colorAccent;
-    uniform sampler2D u_texture;
-
-    const vec2 WIND_DIR = vec2(-0.908, -0.418);
-    const vec2 WIND_PERP = vec2(0.418, -0.908);
-
-    float hash(vec2 p) {
-        p = fract(p * vec2(123.34, 456.21));
-        p += dot(p, p + 45.32);
-        return fract(p.x * p.y);
-    }
-
-    float noise(vec2 p) {
-        vec2 i = floor(p);
-        vec2 f = fract(p);
-        f = f * f * (3.0 - 2.0 * f);
-        float a = hash(i);
-        float b = hash(i + vec2(1.0, 0.0));
-        float c = hash(i + vec2(0.0, 1.0));
-        float d = hash(i + vec2(1.0, 1.0));
-        return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-    }
-
-    float fbm(vec2 p) {
-        float v = 0.0;
-        v += 0.5000 * noise(p); p *= 2.02;
-        v += 0.2500 * noise(p); p *= 2.03;
-        v += 0.1250 * noise(p);
-        return v;
-    }
-
-    vec2 getCoverUV(vec2 uv, vec2 screenRes, vec2 imgRes) {
-        float sAspect = screenRes.x / screenRes.y;
-        float iAspect = imgRes.x / imgRes.y;
-        vec2 newUv = uv;
-        if (sAspect > iAspect) {
-            float scale = sAspect / iAspect;
-            newUv.y = (uv.y - 0.5) / scale + 0.5;
-        } else {
-            float scale = iAspect / sAspect;
-            newUv.x = (uv.x - 0.5) / scale + 0.5;
-        }
-        return newUv;
-    }
-
-    float snowLayer(vec2 uv, float stormTime, float speed, float scale, float elongation, float seed) {
-        // Horizontal aerodynamic drift (no vertical reversal)
-        vec2 fluidWarp = vec2(
-            sin(uv.y * 2.2 + stormTime * 1.2 + seed) * 0.04,
-            cos(uv.x * 1.5 + stormTime * 0.8 + seed * 1.5) * 0.015
-        );
-
-        vec2 p = (uv + fluidWarp - WIND_DIR * (stormTime * speed)) * scale;
-        vec2 id = floor(p);
-        vec2 f = fract(p) - 0.5;
-
-        float flakes = 0.0;
-        for (int y = -1; y <= 1; y++) {
-            for (int x = -1; x <= 1; x++) {
-                vec2 neighbor = vec2(float(x), float(y));
-                vec2 cellId = id + neighbor;
-                float r1 = hash(cellId + vec2(seed, seed * 1.31));
-                float r2 = hash(cellId + vec2(seed * 2.17, seed * 3.73));
-
-                float densityMask = step(0.12, r1);
-                
-                // Pure horizontal fluttering wobble
-                vec2 eddy = vec2(
-                    sin(stormTime * 2.4 + r1 * 6.28) * 0.12,
-                    cos(stormTime * 1.8 + r2 * 6.28) * 0.04
-                );
-                vec2 pos = (vec2(r1, r2) - 0.5) * 0.65 + eddy;
-                vec2 d = (f - neighbor) - pos;
-
-                float dAlong = dot(d, WIND_DIR) * elongation;
-                float dAcross = dot(d, WIND_PERP);
-                float dist = sqrt(dAlong * dAlong + dAcross * dAcross);
-
-                float radius = 0.026 + r1 * 0.038;
-                float flake = smoothstep(radius, 0.0, dist);
-
-                flake *= 0.7 + 0.3 * sin(stormTime * 4.0 + r2 * 6.28);
-                flakes += flake * (0.35 + 0.65 * r1) * densityMask;
-            }
-        }
-        return flakes;
-    }
-
-    void main() {
-        vec2 uv = vUv;
-        vec2 coverUv = getCoverUV(uv, u_resolution, u_imageResolution);
-        vec4 bgTex = texture2D(u_texture, coverUv);
-
-        vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
-        vec2 aspectUv = uv * aspect;
-
-        float stormTime = u_time * 1.25;
-
-        // Volumetric fog sweeping down-left
-        vec2 fogUv = aspectUv - WIND_DIR * (stormTime * 0.45);
-        fogUv += vec2(sin(fogUv.y * 1.8 + stormTime * 0.6) * 0.10, cos(fogUv.x * 1.5) * 0.06);
-        float mist = fbm(fogUv * 1.2);
-
-        float squallCycle = sin(dot(aspectUv, WIND_PERP) * 2.0 - dot(aspectUv, WIND_DIR) * 0.7 + stormTime * 1.4 + mist * 1.6);
-        float squall = smoothstep(0.35, 0.85, squallCycle) * (0.35 + 0.45 * (0.5 + 0.5 * sin(u_time * 0.7)));
-        float totalMist = mist * 0.38 + squall * 0.40;
-
-        // Blizzard needle layers
-        float snow1 = snowLayer(aspectUv, stormTime, 0.55, 28.0, 0.32, 13.7);
-        float snow2 = snowLayer(aspectUv, stormTime, 1.05, 14.0, 0.16, 47.3);
-
-        vec3 coldWhite = vec3(0.92, 0.96, 1.0);
-        vec3 snowTint = mix(coldWhite, u_colorAccent, 0.14);
-
-        vec3 scene = mix(bgTex.rgb, snowTint, totalMist * 0.45);
-        scene += snowTint * (snow1 * 0.35 + snow2 * 0.70);
-        scene += u_colorAccent * squall * 0.12;
-
-        float vignette = smoothstep(1.3, 0.35, length((uv - 0.5) * vec2(1.0, u_resolution.y / u_resolution.x)));
-        scene *= mix(0.82, 1.0, vignette);
-        scene += (hash(uv + u_time) - 0.5) * 0.015;
-
-        gl_FragColor = vec4(scene, 1.0);
-    }
-`;
-
-// =========================================================
-// 2. SVG SNOWFLAKE PARTICLE SHADERS (PASS 2)
-// =========================================================
-const particleVertexShader = `
-    attribute vec2 a_corner;   // Quad corner: (-1, -1) to (1, 1)
-    attribute vec2 a_basePos;  // Spawn pos [0, 1]
-    attribute vec4 a_params;   // x: size, y: speed, z: rotSpeed, w: seed
-
-    uniform float u_time;
-    uniform vec2 u_resolution;
-
-    varying vec2 vUv;
-    varying float vAlpha;
-
-    const vec2 WIND_DIR = vec2(-0.908, -0.418);
-
-    void main() {
-        float size = a_params.x;
-        float speed = a_params.y;
-        float rotSpeed = a_params.z;
-        float seed = a_params.w;
-
-        // Steady linear displacement along wind (NO time-amplified acceleration)
-        vec2 move = WIND_DIR * (u_time * 0.35 * speed);
-
-        // Gentle, bounded flutter (amplitude cannot exceed 0.015)
-        vec2 flutter = vec2(
-            sin(u_time * 1.5 + seed * 6.28) * 0.015,
-            cos(u_time * 1.1 + seed * 3.14) * 0.008
-        );
-
-        // Infinite, seamless periodic boundary wrapping [-0.1, 1.1] (span = 1.2)
-        // Uses fract() to prevent negative-sign modulo bugs on GPU drivers
-        vec2 rawPos = a_basePos + move + flutter;
-        vec2 pos = vec2(
-            fract((rawPos.x + 0.1) / 1.2) * 1.2 - 0.1,
-            fract((rawPos.y + 0.1) / 1.2) * 1.2 - 0.1
-        );
-
-        // Crystal rotation
-        float angle = seed * 10.0 + u_time * rotSpeed;
-        float cosA = cos(angle);
-        float sinA = sin(angle);
-        mat2 rot = mat2(cosA, -sinA, sinA, cosA);
-
-        float aspect = u_resolution.x / u_resolution.y;
-
-        // Clip-space positioning
-        vec2 centerClip = pos * 2.0 - 1.0;
-        vec2 cornerOffset = rot * (a_corner * size);
-        cornerOffset.x /= aspect;
-
-        gl_Position = vec4(centerClip + cornerOffset, 0.0, 1.0);
-
-        vUv = a_corner * 0.5 + 0.5;
-        vAlpha = mix(0.4, 0.9, smoothstep(0.010, 0.028, size));
-    }
-`;
-
-const particleFragmentShader = `
-    precision mediump float;
-    varying vec2 vUv;
-    varying float vAlpha;
-
-    uniform sampler2D u_flakeTexture;
-    uniform vec3 u_colorAccent;
-
-    void main() {
-        vec4 tex = texture2D(u_flakeTexture, vUv);
-        if (tex.a < 0.02) discard;
-
-        vec3 flakeColor = mix(vec3(0.95, 0.98, 1.0), u_colorAccent, 0.16);
-        gl_FragColor = vec4(flakeColor, tex.a * vAlpha);
-    }
-`;
-
-// =========================================================
-// 3. SVG TEXTURE CREATION (ONCE)
-// =========================================================
-function createSnowflakeTexture(gl) {
-    const svgString = `<svg width="256" height="256" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <g transform="translate(100,100)" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.95">
+const SVG_SNOWFLAKE = `<svg width="256" height="256" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(100,100)" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" fill="none">
     <g id="branch">
       <line x1="0" y1="0" x2="0" y2="-80" />
       <line x1="0" y1="-30" x2="-15" y2="-45" />
@@ -234,262 +15,468 @@ function createSnowflakeTexture(gl) {
       <line x1="0" y1="-80" x2="-10" y2="-70" />
       <line x1="0" y1="-80" x2="10" y2="-70" />
     </g>
-    <use href="#branch" xlink:href="#branch" transform="rotate(60)" />
-    <use href="#branch" xlink:href="#branch" transform="rotate(120)" />
-    <use href="#branch" xlink:href="#branch" transform="rotate(180)" />
-    <use href="#branch" xlink:href="#branch" transform="rotate(240)" />
-    <use href="#branch" xlink:href="#branch" transform="rotate(300)" />
+    <use href="#branch" transform="rotate(60)" />
+    <use href="#branch" transform="rotate(120)" />
+    <use href="#branch" transform="rotate(180)" />
+    <use href="#branch" transform="rotate(240)" />
+    <use href="#branch" transform="rotate(300)" />
     <circle cx="0" cy="0" r="4.5" fill="#ffffff" stroke="none" />
   </g>
 </svg>`;
 
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 0]));
+const COMMON_STRUCTS = /* wgsl */ `
+struct Particle {
+    pos: vec2<f32>,
+    vel: vec2<f32>,
+    params: vec4<f32>, // x: size, y: speed, z: rotSpeed, w: seed
+};
 
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
+struct Uniforms {
+    resolution: vec2<f32>,
+    time: f32,
+    deltaTime: f32,
+    accentColor: vec4<f32>,
+};
+`;
 
-    img.onload = () => {
-        const offscreen = document.createElement('canvas');
-        offscreen.width = 256;
-        offscreen.height = 256;
-        const ctx = offscreen.getContext('2d');
-        ctx.drawImage(img, 0, 0, 256, 256);
-        URL.revokeObjectURL(url);
+// ========================================================
+// 1. VOLUMETRIC ATMOSPHERE SHADER (Mist, Squalls & Vignette)
+// ========================================================
+const VOLUMETRIC_SHADER = /* wgsl */ `
+${COMMON_STRUCTS}
 
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, offscreen);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.generateMipmap(gl.TEXTURE_2D);
-    };
-    img.src = url;
+@group(0) @binding(0) var<uniform> u: Uniforms;
 
-    return texture;
+struct BgOutput {
+    @builtin(position) position: vec4<f32>,
+    @location(0) uv: vec2<f32>,
+};
+
+const WIND_DIR: vec2<f32> = vec2<f32>(-0.908, -0.418);
+const WIND_PERP: vec2<f32> = vec2<f32>(0.418, -0.908);
+
+fn hash(p: vec2<f32>) -> f32 {
+    var q = fract(p * vec2<f32>(123.34, 456.21));
+    q += dot(q, q + 45.32);
+    return fract(q.x * q.y);
 }
 
-// =========================================================
-// 4. PARTICLE GEOMETRY GENERATION
-// =========================================================
-function createParticleBuffer(gl, count = 160) {
-    const corners = [
-        [-1, -1], [ 1, -1], [ 1,  1],
-        [-1, -1], [ 1,  1], [-1,  1]
-    ];
-
-    const vertexData = [];
-    for (let i = 0; i < count; i++) {
-        const baseX = Math.random();
-        const baseY = Math.random();
-        const depth = Math.pow(Math.random(), 2.0);
-        
-        const size = 0.010 + depth * 0.018;
-        const speed = 0.55 + depth * 0.45;
-        const rotSpeed = (Math.random() - 0.5) * 1.2;
-        const seed = Math.random() * 100.0;
-
-        for (let c = 0; c < 6; c++) {
-            vertexData.push(
-                corners[c][0], corners[c][1],
-                baseX, baseY,
-                size, speed, rotSpeed, seed
-            );
-        }
-    }
-
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW);
-
-    return { buffer, count: count * 6 };
+fn noise(p: vec2<f32>) -> f32 {
+    let i = floor(p);
+    let f = fract(p);
+    let u_smooth = f * f * (3.0 - 2.0 * f);
+    let a = hash(i);
+    let b = hash(i + vec2<f32>(1.0, 0.0));
+    let c = hash(i + vec2<f32>(0.0, 1.0));
+    let d = hash(i + vec2<f32>(1.0, 1.0));
+    return mix(mix(a, b, u_smooth.x), mix(c, d, u_smooth.x), u_smooth.y);
 }
 
-// =========================================================
-// 5. MAIN INITIALIZATION & RENDER LOOP
-// =========================================================
-function initLightShader() {
-    const canvas = document.getElementById('bg-canvas') || document.createElement('canvas');
-    if (!canvas.id) {
-        canvas.id = 'bg-canvas';
-        document.body.prepend(canvas);
+fn fbm(p_in: vec2<f32>) -> f32 {
+    var p = p_in;
+    var v: f32 = 0.0;
+    v += 0.5000 * noise(p); p *= 2.02;
+    v += 0.2500 * noise(p); p *= 2.03;
+    v += 0.1250 * noise(p);
+    return v;
+}
+
+// Single fullscreen triangle trick (covers [-1, 1] clip space)
+@vertex
+fn vs_bg(@builtin(vertex_index) v_idx: u32) -> BgOutput {
+    var pos = array<vec2<f32>, 3>(
+        vec2<f32>(-1.0, -1.0),
+        vec2<f32>( 3.0, -1.0),
+        vec2<f32>(-1.0,  3.0)
+    );
+    let p = pos[v_idx];
+    var out: BgOutput;
+    out.position = vec4<f32>(p, 0.0, 1.0);
+    out.uv = p * 0.5 + 0.5;
+    return out;
+}
+
+@fragment
+fn fs_bg(in: BgOutput) -> @location(0) vec4<f32> {
+    let aspect = vec2<f32>(u.resolution.x / u.resolution.y, 1.0);
+    let aspectUv = in.uv * aspect;
+    let stormTime = u.time * 1.25;
+
+    // Sweeping volumetric mist
+    var fogUv = aspectUv - WIND_DIR * (stormTime * 0.40);
+    fogUv += vec2<f32>(sin(fogUv.y * 1.8 + stormTime * 0.6) * 0.10, cos(fogUv.x * 1.5) * 0.06);
+    let mist = fbm(fogUv * 1.2);
+
+    // Dynamic wind squalls
+    let squallCycle = sin(dot(aspectUv, WIND_PERP) * 2.0 - dot(aspectUv, WIND_DIR) * 0.7 + stormTime * 1.4 + mist * 1.6);
+    let squall = smoothstep(0.35, 0.85, squallCycle) * (0.35 + 0.45 * (0.5 + 0.5 * sin(u.time * 0.7)));
+    let totalMist = mist * 0.35 + squall * 0.32;
+
+    // Atmospheric snow tint
+    let coldWhite = vec3<f32>(0.92, 0.96, 1.0);
+    let snowTint = mix(coldWhite, u.accentColor.rgb, 0.12);
+
+    // Subtle edge vignette
+    let vignette = smoothstep(1.3, 0.35, length((in.uv - vec2<f32>(0.5)) * vec2<f32>(1.0, u.resolution.y / u.resolution.x)));
+
+    // Volumetric density alpha
+    let alpha = totalMist * 0.42 * vignette;
+
+    return vec4<f32>(snowTint, clamp(alpha, 0.0, 0.60));
+}
+`;
+
+// ========================================================
+// 2. COMPUTE PHYSICS SHADER
+// ========================================================
+const COMPUTE_SHADER = /* wgsl */ `
+${COMMON_STRUCTS}
+
+@group(0) @binding(0) var<uniform> u: Uniforms;
+@group(0) @binding(1) var<storage, read_write> particles: array<Particle>;
+
+@compute @workgroup_size(64)
+fn cs_main(@builtin(global_invocation_id) id: vec3<u32>) {
+    let index = id.x;
+    if (index >= arrayLength(&particles)) {
+        return;
     }
 
-    const gl = canvas.getContext('webgl', { antialias: false, depth: false });
-    if (!gl) return;
+    var p = particles[index];
 
-    function createShader(gl, type, source) {
-        const s = gl.createShader(type);
-        gl.shaderSource(s, source);
-        gl.compileShader(s);
-        return s;
+    let flutter = vec2<f32>(
+        sin(u.time * 1.5 + p.params.w) * 0.0008,
+        cos(u.time * 1.1 + p.params.w) * 0.0004
+    );
+
+    p.pos += (p.vel * (p.params.y * 0.25) * u.deltaTime) + flutter;
+
+    p.pos.x = fract((p.pos.x + 0.1) / 1.2) * 1.2 - 0.1;
+    p.pos.y = fract((p.pos.y + 0.1) / 1.2) * 1.2 - 0.1;
+
+    particles[index] = p;
+}
+`;
+
+// ========================================================
+// 3. INSTANCED SNOWFLAKE RENDER SHADER
+// ========================================================
+const RENDER_SHADER = /* wgsl */ `
+${COMMON_STRUCTS}
+
+@group(0) @binding(0) var<uniform> u: Uniforms;
+@group(0) @binding(1) var<storage, read> particles: array<Particle>;
+@group(0) @binding(2) var s_sampler: sampler;
+@group(0) @binding(3) var t_flake: texture_2d<f32>;
+
+struct VertexOutput {
+    @builtin(position) clip_pos: vec4<f32>,
+    @location(0) uv: vec2<f32>,
+    @location(1) alpha: f32,
+};
+
+@vertex
+fn vs_main(
+    @builtin(vertex_index) v_idx: u32,
+    @builtin(instance_index) inst_idx: u32
+) -> VertexOutput {
+    let p = particles[inst_idx];
+
+    var corners = array<vec2<f32>, 6>(
+        vec2<f32>(-1.0, -1.0), vec2<f32>( 1.0, -1.0), vec2<f32>(-1.0,  1.0),
+        vec2<f32>(-1.0,  1.0), vec2<f32>( 1.0, -1.0), vec2<f32>( 1.0,  1.0)
+    );
+    let corner = corners[v_idx];
+
+    let angle = p.params.w + u.time * p.params.z;
+    let cosA = cos(angle);
+    let sinA = sin(angle);
+    let rot = mat2x2<f32>(cosA, -sinA, sinA, cosA);
+
+    let aspect = u.resolution.x / u.resolution.y;
+    var offset = rot * (corner * p.params.x);
+    offset.x /= aspect;
+
+    var out: VertexOutput;
+    let center_clip = p.pos * 2.0 - 1.0;
+    out.clip_pos = vec4<f32>(center_clip + offset, 0.0, 1.0);
+    out.uv = corner * 0.5 + 0.5;
+    out.alpha = mix(0.45, 0.95, smoothstep(0.010, 0.035, p.params.x));
+
+    return out;
+}
+
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
+    let tex = textureSample(t_flake, s_sampler, in.uv);
+    if (tex.a < 0.02) {
+        discard;
     }
 
-    function createProgram(vSrc, fSrc) {
-        const p = gl.createProgram();
-        gl.attachShader(p, createShader(gl, gl.VERTEX_SHADER, vSrc));
-        gl.attachShader(p, createShader(gl, gl.FRAGMENT_SHADER, fSrc));
-        gl.linkProgram(p);
-        return p;
-    }
+    let coldWhite = vec3<f32>(0.96, 0.98, 1.0);
+    let snowColor = mix(coldWhite, u.accentColor.rgb, 0.10);
 
-    const bgProg = createProgram(bgVertexShader, bgFragmentShader);
-    const partProg = createProgram(particleVertexShader, particleFragmentShader);
+    return vec4<f32>(snowColor, tex.a * in.alpha);
+}
+`;
 
-    // Quad buffer
-    const quadVertices = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
-    const quadBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, quadVertices, gl.STATIC_DRAW);
-    const bgPosLoc = gl.getAttribLocation(bgProg, "position");
-
-    const bgUniforms = {
-        time: gl.getUniformLocation(bgProg, "u_time"),
-        bg: gl.getUniformLocation(bgProg, "u_colorBg"),
-        acc: gl.getUniformLocation(bgProg, "u_colorAccent"),
-        res: gl.getUniformLocation(bgProg, "u_resolution"),
-        imgRes: gl.getUniformLocation(bgProg, "u_imageResolution"),
-        tex: gl.getUniformLocation(bgProg, "u_texture")
-    };
-
-    // Particle buffer
-    const particles = createParticleBuffer(gl, 160);
-    const partAttribs = {
-        corner: gl.getAttribLocation(partProg, "a_corner"),
-        basePos: gl.getAttribLocation(partProg, "a_basePos"),
-        params: gl.getAttribLocation(partProg, "a_params")
-    };
-
-    const partUniforms = {
-        time: gl.getUniformLocation(partProg, "u_time"),
-        res: gl.getUniformLocation(partProg, "u_resolution"),
-        flakeTex: gl.getUniformLocation(partProg, "u_flakeTexture"),
-        acc: gl.getUniformLocation(partProg, "u_colorAccent")
-    };
-
-    const flakeTexture = createSnowflakeTexture(gl);
-
-    const bgTexture = gl.createTexture();
-    let imageResolution = [1920, 1080];
-    gl.bindTexture(gl.TEXTURE_2D, bgTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([15, 23, 42, 255]));
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-    const bgImage = new Image();
-    bgImage.src = 'res/background.jpg';
-    bgImage.onload = () => {
-        imageResolution = [bgImage.naturalWidth, bgImage.naturalHeight];
-        gl.bindTexture(gl.TEXTURE_2D, bgTexture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bgImage);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    };
-
-    // Dracula theme defaults: Background (#282a36) and Accent (#bd93f9)
-    let cachedBg = [0.16, 0.16, 0.21];
-    let cachedAcc = [0.74, 0.58, 0.98];
-
-    function parseColor(color) {
-        if (color.startsWith('rgb')) {
-            const vals = color.match(/\d+/g).map(Number);
-            return [vals[0] / 255, vals[1] / 255, vals[2] / 255];
+class WebGPUBlizzard {
+    constructor() {
+        this.canvas = document.getElementById('bg-canvas');
+        if (!this.canvas) {
+            this.canvas = document.createElement('canvas');
+            this.canvas.id = 'bg-canvas';
+            document.body.prepend(this.canvas);
         }
-        const hex = color.replace('#', '');
-        const b = parseInt(hex, 16);
-        return [((b >> 16) & 255) / 255, ((b >> 8) & 255) / 255, (b & 255) / 255];
+
+        this.device = null;
+        this.context = null;
+        this.wasm = null;
+        this.enginePtr = null;
+        this.particleCount = 220;
+        this.lastTime = performance.now();
+        this.isPaused = false;
     }
 
-    function updateColors() {
-        const style = getComputedStyle(document.documentElement);
-        cachedBg = parseColor(style.getPropertyValue('--bg').trim() || "#0f172a");
-        cachedAcc = parseColor(style.getPropertyValue('--accent').trim() || "#38bdf8");
-    }
-
-    updateColors();
-    const observer = new MutationObserver(updateColors);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-mode'] });
-
-    function render(time) {
-        if (document.documentElement.getAttribute('data-effects') === 'off') {
-            requestAnimationFrame(render);
+    async start() {
+        if (!navigator.gpu) {
+            console.warn("WebGPU not available; using static background.");
             return;
         }
 
-        const quality = window.innerWidth < 950 ? 0.6 : 1.0;
-        const displayWidth = Math.floor(window.innerWidth * quality);
-        const displayHeight = Math.floor(window.innerHeight * quality);
+        const adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" });
+        if (!adapter) return;
+        this.device = await adapter.requestDevice();
 
-        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-            canvas.width = displayWidth;
-            canvas.height = displayHeight;
-            gl.viewport(0, 0, canvas.width, canvas.height);
+        this.context = this.canvas.getContext("webgpu");
+        this.format = navigator.gpu.getPreferredCanvasFormat();
+        this.context.configure({
+            device: this.device,
+            format: this.format,
+            alphaMode: "premultiplied",
+        });
+
+        const wasmRes = await fetch("blizzard.wasm");
+        const { instance } = await WebAssembly.instantiateStreaming(wasmRes);
+        this.wasm = instance.exports;
+
+        this.enginePtr = this.wasm.engine_create(this.particleCount);
+
+        const byteSize = this.wasm.engine_get_byte_size(this.enginePtr);
+        const particleOffset = this.wasm.engine_get_particles(this.enginePtr);
+
+        this.particleBuffer = this.device.createBuffer({
+            size: byteSize,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+        });
+
+        this.device.queue.writeBuffer(
+            this.particleBuffer,
+            0,
+            this.wasm.memory.buffer,
+            particleOffset,
+            byteSize
+        );
+
+        this.uniformBuffer = this.device.createBuffer({
+            size: 32,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        await this.loadSnowflakeTexture();
+        this.setupPipelines();
+
+        this.handleResize();
+        window.addEventListener('resize', () => this.handleResize());
+        document.addEventListener('visibilitychange', () => {
+            this.isPaused = document.hidden;
+            if (!this.isPaused) this.lastTime = performance.now();
+        });
+
+        requestAnimationFrame((t) => this.loop(t));
+    }
+
+    async loadSnowflakeTexture() {
+        const blob = new Blob([SVG_SNOWFLAKE], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+        URL.revokeObjectURL(url);
+
+        const bitmap = await createImageBitmap(img);
+
+        this.flakeTexture = this.device.createTexture({
+            size: [256, 256, 1],
+            format: "rgba8unorm",
+            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT
+        });
+
+        this.device.queue.copyExternalImageToTexture(
+            { source: bitmap },
+            { texture: this.flakeTexture },
+            [256, 256]
+        );
+
+        this.sampler = this.device.createSampler({
+            magFilter: "linear",
+            minFilter: "linear",
+        });
+    }
+
+    setupPipelines() {
+        const blendState = {
+            color: { srcFactor: "src-alpha", dstFactor: "one-minus-src-alpha", operation: "add" },
+            alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha", operation: "add" }
+        };
+
+        // 1. VOLUMETRIC BACKGROUND PASS
+        const volModule = this.device.createShaderModule({ code: VOLUMETRIC_SHADER });
+
+        this.volBindGroupLayout = this.device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } }
+            ]
+        });
+
+        this.volBindGroup = this.device.createBindGroup({
+            layout: this.volBindGroupLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.uniformBuffer } }
+            ]
+        });
+
+        this.volPipeline = this.device.createRenderPipeline({
+            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.volBindGroupLayout] }),
+            vertex: { module: volModule, entryPoint: "vs_bg" },
+            fragment: {
+                module: volModule,
+                entryPoint: "fs_bg",
+                targets: [{ format: this.format, blend: blendState }]
+            },
+            primitive: { topology: "triangle-list" }
+        });
+
+        // 2. COMPUTE PARTICLES PASS
+        const computeModule = this.device.createShaderModule({ code: COMPUTE_SHADER });
+
+        this.computeBindGroupLayout = this.device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: { type: "uniform" } },
+                { binding: 1, visibility: GPUShaderStage.COMPUTE, buffer: { type: "storage" } }
+            ]
+        });
+
+        this.computeBindGroup = this.device.createBindGroup({
+            layout: this.computeBindGroupLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.uniformBuffer } },
+                { binding: 1, resource: { buffer: this.particleBuffer } }
+            ]
+        });
+
+        this.computePipeline = this.device.createComputePipeline({
+            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.computeBindGroupLayout] }),
+            compute: { module: computeModule, entryPoint: "cs_main" }
+        });
+
+        // 3. INSTANCED PARTICLES RENDER PASS
+        const renderModule = this.device.createShaderModule({ code: RENDER_SHADER });
+
+        this.renderBindGroupLayout = this.device.createBindGroupLayout({
+            entries: [
+                { binding: 0, visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT, buffer: { type: "uniform" } },
+                { binding: 1, visibility: GPUShaderStage.VERTEX, buffer: { type: "read-only-storage" } },
+                { binding: 2, visibility: GPUShaderStage.FRAGMENT, sampler: { type: "filtering" } },
+                { binding: 3, visibility: GPUShaderStage.FRAGMENT, texture: { sampleType: "float" } }
+            ]
+        });
+
+        this.renderBindGroup = this.device.createBindGroup({
+            layout: this.renderBindGroupLayout,
+            entries: [
+                { binding: 0, resource: { buffer: this.uniformBuffer } },
+                { binding: 1, resource: { buffer: this.particleBuffer } },
+                { binding: 2, resource: this.sampler },
+                { binding: 3, resource: this.flakeTexture.createView() }
+            ]
+        });
+
+        this.renderPipeline = this.device.createRenderPipeline({
+            layout: this.device.createPipelineLayout({ bindGroupLayouts: [this.renderBindGroupLayout] }),
+            vertex: { module: renderModule, entryPoint: "vs_main" },
+            fragment: {
+                module: renderModule,
+                entryPoint: "fs_main",
+                targets: [{ format: this.format, blend: blendState }]
+            },
+            primitive: { topology: "triangle-list" }
+        });
+    }
+
+    handleResize() {
+        const dpr = Math.min(window.devicePixelRatio || 1.0, 1.5);
+        const w = Math.floor(window.innerWidth * dpr);
+        const h = Math.floor(window.innerHeight * dpr);
+
+        if (this.canvas.width !== w || this.canvas.height !== h) {
+            this.canvas.width = w;
+            this.canvas.height = h;
+        }
+    }
+
+    loop(timestamp) {
+        if (this.isPaused || document.documentElement.getAttribute('data-effects') === 'off') {
+            requestAnimationFrame((t) => this.loop(t));
+            return;
         }
 
-        const tSec = time * 0.001;
+        const dt = Math.min((timestamp - this.lastTime) * 0.001, 0.05);
+        this.lastTime = timestamp;
 
-        // --------------------------------------------------
-        // PASS 1: Background Quad
-        // --------------------------------------------------
-        gl.disable(gl.BLEND);
-        gl.useProgram(bgProg);
+        this.wasm.engine_update(this.enginePtr, dt, timestamp * 0.001, this.canvas.width, this.canvas.height);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
-        gl.enableVertexAttribArray(bgPosLoc);
-        gl.vertexAttribPointer(bgPosLoc, 2, gl.FLOAT, false, 0, 0);
+        const uboOffset = this.wasm.engine_get_uniforms(this.enginePtr);
+        this.device.queue.writeBuffer(this.uniformBuffer, 0, this.wasm.memory.buffer, uboOffset, 32);
 
-        gl.uniform1f(bgUniforms.time, tSec);
-        gl.uniform2f(bgUniforms.res, canvas.width, canvas.height);
-        gl.uniform2f(bgUniforms.imgRes, imageResolution[0], imageResolution[1]);
-        gl.uniform3fv(bgUniforms.bg, cachedBg);
-        gl.uniform3fv(bgUniforms.acc, cachedAcc);
+        const encoder = this.device.createCommandEncoder();
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, bgTexture);
-        gl.uniform1i(bgUniforms.tex, 0);
+        // 1. Compute step: Advance particles
+        const computePass = encoder.beginComputePass();
+        computePass.setPipeline(this.computePipeline);
+        computePass.setBindGroup(0, this.computeBindGroup);
+        computePass.dispatchWorkgroups(Math.ceil(this.particleCount / 64));
+        computePass.end();
 
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        // 2. Render step: Unified draw passes
+        const renderPass = encoder.beginRenderPass({
+            colorAttachments: [{
+                view: this.context.getCurrentTexture().createView(),
+                loadOp: "clear",
+                storeOp: "store",
+                clearValue: { r: 0.0, g: 0.0, b: 0.0, a: 0.0 }
+            }]
+        });
 
-        // --------------------------------------------------
-        // PASS 2: Snowflake Particles
-        // --------------------------------------------------
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        gl.useProgram(partProg);
+        // Draw 1: Fullscreen volumetric fog & squall gusts
+        renderPass.setPipeline(this.volPipeline);
+        renderPass.setBindGroup(0, this.volBindGroup);
+        renderPass.draw(3, 1, 0, 0); // 1 procedural triangle covering screen
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, particles.buffer);
-        const stride = 32;
-        gl.enableVertexAttribArray(partAttribs.corner);
-        gl.vertexAttribPointer(partAttribs.corner, 2, gl.FLOAT, false, stride, 0);
+        // Draw 2: Instanced SVG snowflakes on top
+        renderPass.setPipeline(this.renderPipeline);
+        renderPass.setBindGroup(0, this.renderBindGroup);
+        renderPass.draw(6, this.particleCount, 0, 0); // 6 vertices per instance
 
-        gl.enableVertexAttribArray(partAttribs.basePos);
-        gl.vertexAttribPointer(partAttribs.basePos, 2, gl.FLOAT, false, stride, 8);
+        renderPass.end();
 
-        gl.enableVertexAttribArray(partAttribs.params);
-        gl.vertexAttribPointer(partAttribs.params, 4, gl.FLOAT, false, stride, 16);
+        this.device.queue.submit([encoder.finish()]);
 
-        gl.uniform1f(partUniforms.time, tSec);
-        gl.uniform2f(partUniforms.res, canvas.width, canvas.height);
-        gl.uniform3fv(partUniforms.acc, cachedAcc);
-
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, flakeTexture);
-        gl.uniform1i(partUniforms.flakeTex, 1);
-
-        gl.drawArrays(gl.TRIANGLES, 0, particles.count);
-
-        requestAnimationFrame(render);
+        requestAnimationFrame((t) => this.loop(t));
     }
-    requestAnimationFrame(render);
 }
 
-document.addEventListener('DOMContentLoaded', initLightShader);
+document.addEventListener("DOMContentLoaded", () => {
+    const blizzard = new WebGPUBlizzard();
+    blizzard.start();
+});

@@ -1,6 +1,6 @@
-/* =========================================
-   1. FONTS & THEME VARIABLES
-   ========================================= */
+/* =========================================================
+   1. RESET, FONTS & THEME VARIABLES
+   ========================================================= */
 
 @font-face {
     font-family: 'JetBrainsMono NF';
@@ -9,7 +9,11 @@
     font-style: normal;
 }
 
-/* --- DRACULA DARK (DEFAULT) --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- DRACULA THEME (DEFAULT: DARK) --- */
 :root {
     --bg: #282a36;
     --text: #f8f8f2;
@@ -20,21 +24,10 @@
     --accent-faded: rgba(189, 147, 249, 0.15);
     --code-bg: #1e1f29;
     --success: #50fa7b;
+    --container-bg: rgba(40, 42, 54, 0.94);
 }
 
-/* Explicit Dark Mode */
-:root[data-mode="dark"] {
-    --bg: #282a36;
-    --text: #f8f8f2;
-    --accent: #bd93f9;
-    --secondary: #6272a4;
-    --border: #44475a;
-    --sidebar-bg: #21222c;
-    --accent-faded: rgba(189, 147, 249, 0.15);
-    --code-bg: #1e1f29;
-}
-
-/* Optional Light Mode (Dracula Light) */
+/* Optional Light Mode */
 :root[data-mode="light"] {
     --bg: #f8f8f2;
     --text: #282a36;
@@ -44,7 +37,12 @@
     --sidebar-bg: #e6e6dc;
     --accent-faded: rgba(149, 128, 255, 0.15);
     --code-bg: #f1f1ea;
+    --container-bg: rgba(248, 248, 242, 0.94);
 }
+
+/* =========================================================
+   2. BASE & PAGE LAYOUT
+   ========================================================= */
 
 html {
     background-color: var(--bg);
@@ -53,19 +51,16 @@ html {
     background-size: cover;
     background-attachment: fixed;
     background-repeat: no-repeat;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) var(--bg);
     transition: background-color 0.3s ease;
 }
-
-/* =========================================
-   2. BASE & LAYOUT
-   ========================================= */
-
 
 body {
     font-family: 'JetBrainsMono NF', monospace;
     line-height: 1.6;
     color: var(--text);
-    background-color: transparent !important;
+    background: transparent;
     margin: 0;
     padding: 0;
     display: flex;
@@ -80,70 +75,50 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* 3. Ensure it's between the HTML floor and the Body content */
-    z-index: -1; 
+    z-index: -1;
     pointer-events: none;
     display: block;
 }
 
 .container {
     max-width: 1100px;
-    /* Reduced from 1400px */
     width: 90%;
-    /* Allows 5% gutter on each side */
     margin: 2rem auto;
-    /* Centers it and adds space at top/bottom */
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: 3rem;
     padding: 3rem;
     border-radius: 20px;
-
-    perspective: 1200px;
-    transform-style: preserve-3d;
-
-    /* Hardware acceleration & Visibility */
-    background-color: color-mix(in srgb, var(--bg), transparent 15%);
-    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
+    background-color: var(--container-bg);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-
-    box-sizing: border-box;
 }
 
-/* Mobile: Stretch to edges again */
-@media (max-width: 950px) {
-    .container {
-        width: 100%;
-        margin: 0;
-        border-radius: 0;
-        grid-template-columns: 1fr;
-        padding: 1.5rem;
-    }
+.container > * {
+    min-width: 0;
 }
-
-
 
 section {
     margin-bottom: 2.5rem;
 }
 
-/* =========================================
-   3. TYPOGRAPHY & HEADER
-   ========================================= */
-header {
-    grid-column: 1 / -1;
-    text-align: center;
-    margin-bottom: 1rem;
+/* Global Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 4px;
+    border: 2px solid var(--bg);
 }
 
-.banner {
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    margin-bottom: 1.5rem;
-}
+/* =========================================================
+   3. TYPOGRAPHY & HEADINGS
+   ========================================================= */
 
 h1 {
     margin: 0;
@@ -169,14 +144,14 @@ h2 {
 .github-link {
     color: var(--accent);
     text-decoration: none;
-    font-family: monospace;
+    font-family: inherit;
     font-weight: bold;
     display: inline-block;
     margin-top: 0.5rem;
     padding: 4px 12px;
     border: 1px solid var(--accent);
     border-radius: 20px;
-    transition: all 0.2s;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .github-link:hover {
@@ -184,10 +159,13 @@ h2 {
     color: var(--bg);
 }
 
-/* --- Enhanced Terminal Header --- */
+/* =========================================================
+   4. HEADER & INSIGNIA
+   ========================================================= */
 
-/* Specific to the Main Page Header Container */
 header.terminal-header {
+    grid-column: 1 / -1;
+    text-align: center;
     margin-bottom: 3rem;
     display: flex;
     flex-direction: column;
@@ -202,52 +180,40 @@ header.terminal-header {
     background: var(--sidebar-bg);
     border-radius: 12px;
     overflow: hidden;
-    /* Aspect ratio prevents the layout from jumping while image loads */
-    aspect-ratio: 21 / 9; 
+    aspect-ratio: 21 / 9;
 }
 
 .banner {
     display: block;
     width: 100%;
     height: 100%;
-    /* KEY: This prevents squishing. It crops the image instead of stretching it. */
-    object-fit: cover; 
+    object-fit: cover;
     filter: contrast(1.1) saturate(0.9);
 }
 
-/* --- Mobile Layout Swap --- */
-@media (max-width: 650px) {
-    header.terminal-header {
-        margin-bottom: 2rem;
-        gap: 1rem;
-        text-align: center; /* Center text on mobile for better balance */
-    }
+.header-insignia {
+    display: flex;
+    justify-content: center;
+    /* Pull up slightly more to account for the larger vertical height */
+    margin: -2.5rem 0 1rem 0;
+    position: relative;
+    z-index: 2;
+}
 
-    .banner-frame {
-        /* Change the shape of the banner for mobile screens */
-        aspect-ratio: 16 / 9; 
-        border-width: 2px;
-        border-radius: 8px;
-    }
+.insignia-img {
+    /* Sized up from 72px to 130px (adjust between 120px - 160px to your taste) */
+    width: 130px; 
+    height: auto;
+    filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.75));
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
 
-    .glitch {
-        font-size: 2.2rem; /* Shrink title slightly */
-    }
-
-    .header-actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .status-badge {
-        margin-left: 0; /* Remove the desktop-only margin */
-    }
+.insignia-img:hover {
+    transform: translateY(-3px) scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(241, 250, 140, 0.45));
 }
 
 .prompt-container {
-    font-family: 'JetBrainsMono NF', monospace;
     color: var(--secondary);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
@@ -274,7 +240,7 @@ header.terminal-header {
     display: inline-block;
     margin-left: 15px;
     font-size: 0.7rem;
-    font-family: monospace;
+    font-family: inherit;
     background: var(--accent-faded);
     color: var(--accent);
     padding: 2px 8px;
@@ -291,51 +257,238 @@ header.terminal-header {
 }
 
 @keyframes glitch-anim {
-    0% { transform: translate(0) }
-    20% { transform: translate(-2px, 1px) }
-    40% { transform: translate(-2px, -1px) }
-    60% { transform: translate(2px, 1px) }
-    80% { transform: translate(2px, -1px) }
-    100% { transform: translate(0) }
+    0%   { transform: translate(0); }
+    20%  { transform: translate(-2px, 1px); }
+    40%  { transform: translate(-2px, -1px); }
+    60%  { transform: translate(2px, 1px); }
+    80%  { transform: translate(2px, -1px); }
+    100% { transform: translate(0); }
 }
 
-/* =========================================
-   4. MAIN CONTENT COMPONENTS
+/* =========================================================
+   5. UI COMPONENTS (TERMINAL & ABOUT)
    ========================================= */
-/* Tech Stack */
-.tech-stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 1rem;
+
+.terminal-window {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    margin-top: 1.5rem;
 }
 
-.tech-stack span {
-    font-family: 'JetBrainsMono NF', 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 500;
-    background: var(--sidebar-bg);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 10px;
+.terminal-header {
+    background: var(--border);
+    padding: 8px 15px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: default;
-    font-variant-ligatures: normal;
+    gap: 15px;
 }
 
-.tech-stack span:hover {
+.terminal-buttons { 
+    display: flex; 
+    gap: 6px; 
+}
+
+.terminal-buttons span {
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%;
+    background: var(--secondary); 
+    opacity: 0.5;
+}
+
+.terminal-title {
+    font-size: 0.75rem;
+    color: var(--text);
+    opacity: 0.7;
+}
+
+.terminal-content { 
+    padding: 1.5rem; 
+    font-size: 0.95rem; 
+}
+
+.about-grid { 
+    display: grid; 
+    grid-template-columns: 220px 1fr; 
+    gap: 2rem; 
+}
+
+.about-status {
+    border-right: 1px dashed var(--border);
+    padding-right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.status-item .label { 
+    font-size: 0.7rem; 
+    color: var(--secondary); 
+    font-weight: bold; 
+}
+
+.status-item .value { 
+    color: var(--accent); 
+    font-weight: bold; 
+}
+
+.about-text .prompt { 
+    color: var(--accent); 
+    font-weight: bold; 
+    margin-right: 8px; 
+}
+
+.inline-link { 
+    color: var(--accent); 
+    text-decoration: none; 
+    border-bottom: 1px solid transparent; 
+}
+
+.inline-link:hover { 
+    border-bottom-color: var(--accent); 
+}
+
+.pulse-text { 
+    animation: simple-pulse 2s infinite; 
+}
+
+@keyframes simple-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+}
+
+/* =========================================================
+   6. TECHNICAL CAPABILITIES (SHOWCASE PANELS)
+   ========================================================= */
+
+.capabilities-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.showcase-panel {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.showcase-panel:hover {
+    transform: translateX(4px);
     border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-faded);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
 }
 
-/* Project Cards */
+/* Subtle glowing edge marker on hover */
+.showcase-panel::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.showcase-panel:hover::before {
+    opacity: 1;
+}
+
+/* Logo Display Stage: gives full brand logos natural proportions */
+.showcase-logo-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 100%;
+}
+
+.showcase-logo {
+    max-width: 150px;
+    max-height: 70px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+    transition: transform 0.25s ease;
+}
+
+.showcase-panel:hover .showcase-logo {
+    transform: scale(1.05);
+}
+
+/* Text Content */
+.showcase-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.showcase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 0.5rem;
+}
+
+.showcase-header .spec-id {
+    font-size: 0.7rem;
+    color: var(--secondary);
+    letter-spacing: 1.5px;
+}
+
+.showcase-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text);
+}
+
+.showcase-body p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text);
+    opacity: 0.9;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 700px) {
+    .showcase-panel {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .showcase-header {
+        justify-content: center;
+    }
+
+    .showcase-panel:hover {
+        transform: translateY(-2px);
+    }
+}
+
+/* =========================================================
+   7. PROJECTS & LOGS
+   ========================================================= */
+
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -352,17 +505,15 @@ header.terminal-header {
     padding: 1rem;
     border: 1px solid var(--border);
     border-radius: 8px;
-    transition: transform 0.2s;
-    height: 100%;
-    box-sizing: border-box;
     background: var(--bg);
+    height: 100%;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .card-link:hover .card {
     border-color: var(--accent);
     background: var(--accent-faded);
     transform: translateY(-4px);
-    transition: all 0.2s ease-in-out;
 }
 
 .card-header {
@@ -377,7 +528,6 @@ header.terminal-header {
 }
 
 .star-badge {
-    font-family: 'JetBrainsMono NF', monospace;
     font-size: 0.85rem;
     color: var(--accent);
     background: var(--accent-faded);
@@ -386,9 +536,38 @@ header.terminal-header {
     border: 1px solid var(--border);
 }
 
-/* =========================================
-   Blog / Logs Section
-   ========================================= */
+/* Tech Stack Pills */
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 1rem;
+}
+
+.tech-stack span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--sidebar-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tech-stack span:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-faded);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Logs Section */
 .log-list {
     display: flex;
     flex-direction: column;
@@ -409,7 +588,6 @@ header.terminal-header {
     display: flex;
     gap: 1rem;
     font-size: 0.8rem;
-    font-family: 'JetBrainsMono NF', monospace;
     color: var(--secondary);
     margin-bottom: 0.5rem;
 }
@@ -444,7 +622,7 @@ header.terminal-header {
     color: var(--secondary);
 }
 
-/* Blog Post Styling (Markdown Output) */
+/* Markdown Prose */
 .prose {
     max-width: 800px;
     margin: 0 auto;
@@ -468,9 +646,8 @@ header.terminal-header {
     line-height: 1.8;
 }
 
-/* Code Block Styling */
 .prose pre {
-    background: var(--code-bg) !important;
+    background: var(--code-bg);
     padding: 1rem;
     border-radius: 8px;
     overflow-x: auto;
@@ -478,20 +655,20 @@ header.terminal-header {
 }
 
 .prose code {
-    font-family: 'JetBrainsMono NF', monospace;
     font-size: 0.9rem;
 }
 
-.prose :not(pre)>code {
+.prose :not(pre) > code {
     background: var(--sidebar-bg);
     padding: 2px 5px;
     border-radius: 4px;
     color: var(--accent);
 }
 
-/* =========================================
-   5. SIDEBAR WIDGETS
-   ========================================= */
+/* =========================================================
+   8. SIDEBAR WIDGETS (ASIDE)
+   ========================================================= */
+
 aside {
     display: flex;
     flex-direction: column;
@@ -547,7 +724,7 @@ aside {
     letter-spacing: 0.5px;
 }
 
-/* Contact Grid & Discord Copy */
+/* Contact Grid */
 .contact-grid {
     display: flex;
     flex-direction: column;
@@ -563,7 +740,7 @@ aside {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     cursor: pointer;
 }
 
@@ -573,7 +750,6 @@ aside {
 }
 
 .contact-value {
-    font-family: monospace;
     font-weight: 600;
     color: var(--accent);
 }
@@ -588,7 +764,7 @@ aside {
     color: var(--success);
 }
 
-/* PR List */
+/* Pull Requests */
 .pr-list {
     list-style: none;
     padding: 0;
@@ -619,164 +795,26 @@ aside {
 .pr-repo {
     color: var(--secondary);
     font-size: 0.75rem;
-    font-family: monospace;
 }
 
-/* =========================================
-   6. FOOTER
-   ========================================= */
-footer {
-    grid-column: 1 / -1;
-    margin-top: 5rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
+/* =========================================================
+   9. SIDE DRAWER NAVIGATION & SETTINGS
+   ========================================================= */
 
-.footer-telemetry {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    font-family: 'JetBrainsMono NF', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-}
-
-.telemetry-item {
-    display: flex;
-    gap: 8px;
-}
-
-.telemetry-item .label {
-    color: var(--secondary);
-}
-
-.telemetry-item .value {
-    color: var(--accent);
-    font-weight: bold;
-}
-
-.status-ok {
-    color: #22c55e !important;
-    /* Force green for "Ready" */
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px dashed var(--border);
-    padding-top: 1.5rem;
-    font-size: 0.8rem;
-}
-
-.source-code {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.source-code a {
-    color: var(--secondary);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.source-code a:hover {
-    color: var(--accent);
-}
-
-.copyright {
-    color: var(--secondary);
-    margin: 0;
-    font-family: monospace;
-}
-
-/* Mobile: Stack the telemetry */
-@media (max-width: 650px) {
-    .footer-telemetry {
-        gap: 0.5rem 1.5rem;
-        justify-content: flex-start;
-    }
-
-    .footer-bottom {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-}
-
-/* =========================================
-   7. RESPONSIVE QUERIES
-   ========================================= */
-@media (max-width: 950px) {
-    .container {
-        grid-template-columns: 1fr;
-        padding: 1.5rem;
-        border: none;
-    }
-
-    /* Assign explicit order to keep the stack correct */
-    header {
-        order: 1;
-    }
-    main {
-        order: 2;
-    }
-    aside {
-        order: 3;
-    }
-    footer {
-        order: 4;
-    }
-
-    header .banner {
-        border-radius: 0;
-    }
-}
-
-@media (max-width: 1100px) {
-    .container {
-        grid-template-columns: 1fr;
-        /* Stack sidebar below content */
-        max-width: 900px;
-        transform: none;
-        /* Disable 3D warp on mobile for readability */
-    }
-}
-
-/* This prevents grid items from pushing the parent container wider than 100% */
-.container>* {
-    min-width: 0;
-}
-
-/* Ensure box-sizing is applied everywhere to prevent padding from adding to width */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-/* =========================================
-   8. SIDEBAR (DRAWER) SYSTEM
-   ========================================= */
 .sidebar-toggle {
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 100;
+    z-index: 1000;
     background: var(--sidebar-bg);
     color: var(--accent);
     border: 1px solid var(--border);
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
-    font-family: 'JetBrainsMono NF', monospace;
+    font-family: inherit;
     font-size: 1.2rem;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .sidebar-toggle:hover {
@@ -792,7 +830,7 @@ footer {
     height: 100vh;
     background: var(--bg);
     border-right: 1px solid var(--border);
-    z-index: 1000;
+    z-index: 1001;
     transform: translateX(-100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -801,7 +839,7 @@ footer {
 
 .side-nav.active {
     transform: translateX(0);
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
 }
 
 .side-nav-header {
@@ -827,7 +865,7 @@ footer {
     color: var(--text);
     cursor: pointer;
     font-size: 1.2rem;
-    font-family: 'JetBrainsMono NF';
+    font-family: inherit;
 }
 
 .side-nav-links {
@@ -865,16 +903,12 @@ footer {
     margin: 1rem 1.5rem;
 }
 
-.side-nav-footer {
-    margin-top: auto;
-    padding: 1.5rem;
-    font-size: 0.75rem;
-    color: var(--secondary);
-    text-align: center;
-}
-
-/* Ensure the License button matches nav links */
 #licenseBtn {
+    width: 100%;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
     font-family: inherit;
     font-size: 0.95rem;
     padding: 12px 1.5rem;
@@ -882,12 +916,61 @@ footer {
     align-items: center;
     gap: 12px;
     transition: all 0.2s ease;
+    color: var(--text);
 }
 
 #licenseBtn:hover {
     background: var(--sidebar-bg);
     color: var(--accent);
     padding-left: 2rem;
+}
+
+.side-nav-settings {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--sidebar-bg);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    height: 32px;
+}
+
+.side-nav-settings button, 
+.custom-select {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+#modeToggle, #effectsToggle {
+    padding: 0 10px;
+    justify-content: center;
+    min-width: 40px;
+}
+
+#modeToggle:hover, #effectsToggle:hover {
+    border-color: var(--accent);
+    background: var(--accent-faded);
+}
+
+.side-nav-footer {
+    margin-top: auto;
+    padding: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--secondary);
+    text-align: center;
 }
 
 .overlay {
@@ -908,138 +991,24 @@ footer {
     pointer-events: auto;
 }
 
-/* =========================================
-   9. THEME SWITCHER UI (Cleaned & Aligned)
-   ========================================= */
+/* =========================================================
+   10. CRT VISUAL EFFECTS
+   ========================================================= */
 
-.side-nav-settings {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border);
-    background: var(--sidebar-bg);
-}
-
-.setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Ensures everything is perfectly centered vertically */
-    margin-top: 1rem;
-    height: 32px; /* Force consistent height for all items */
-}
-
-/* Common button/trigger reset for the settings section */
-.side-nav-settings button, 
-.custom-select {
-    height: 32px; /* Sync height with .setting-item */
-    display: flex;
-    align-items: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--accent);
-    cursor: pointer;
-    font-family: 'JetBrainsMono NF', monospace;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
-}
-
-/* Fix specific button styling */
-#modeToggle, #effectsToggle {
-    padding: 0 10px;
-    justify-content: center;
-    min-width: 40px;
-}
-
-#modeToggle:hover, #effectsToggle:hover {
-    border-color: var(--accent);
-    background: var(--accent-faded);
-}
-
-/* Custom Select Container */
-.custom-select {
-    position: relative;
-    width: 140px; /* Reduced from 160px to 140px */
-    font-size: 0.8rem;
-    user-select: none;
-    border: none;
-    background: none;
-}
-
-.select-trigger {
-    width: 100%;
-    justify-content: space-between;
-    padding: 0 10px;
-    border: 1px solid var(--border);
-}
-
-.select-trigger:hover {
-    border-color: var(--accent);
-}
-
-.select-trigger .arrow {
-    font-size: 0.7rem;
-    transition: transform 0.3s ease;
-    color: var(--secondary);
-}
-
-/* Options Menu */
-.select-options {
-    position: absolute;
-    top: calc(100% + 5px);
-    left: 0;
-    width: 100%;
-    background: var(--sidebar-bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    z-index: 100;
-    display: none;
-    overflow: hidden;
-    animation: dropdownFade 0.2s ease-out;
-}
-
-.option {
-    padding: 8px 12px;
-    cursor: pointer;
-    color: var(--text);
-    width: 100%;
-    text-align: left;
-    border: none;
-    background: none;
-    font-family: inherit;
-    font-size: 0.8rem;
-}
-
-.option:hover {
-    background: var(--accent-faded);
-    color: var(--accent);
-}
-
-/* State Classes */
-.custom-select.active .select-options { display: block; }
-.custom-select.active .arrow { transform: rotate(180deg); }
-
-@keyframes dropdownFade {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* =========================================
-   10. HIGH-PERFORMANCE CRT EFFECTS
-   ========================================= */
-
-/* Use a simple brightness/contrast shift instead of SVG displacement */
 html[data-effects="on"] .container {
-    filter: contrast(1.05) brightness(1.05); 
+    filter: contrast(1.05) brightness(1.05);
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
 }
 
-/* 1. Keep the Scanline Mesh (CSS is GPU accelerated) */
 .crt-overlay {
     display: none;
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    z-index: 999;
+    z-index: 1500;
     background: repeating-linear-gradient(
         0deg,
         rgba(0, 0, 0, 0.1) 0px,
@@ -1054,165 +1023,30 @@ html[data-effects="on"] .crt-overlay {
     display: block;
 }
 
-/* 2. Remove the heavy WebGL background if effects are off */
 html[data-effects="off"] #bg-canvas {
     display: none !important;
 }
 
-/* 3. Text Glitch Effect (High Performance) */
-/* Replaces the heavy distortion with a simple shadow shift */
 h1, h2, .nav-item {
-    text-shadow: 1px 0 rgba(255, 0, 0, 0.3), -1px 0 rgba(0, 255, 255, 0.3);
+    text-shadow: 1px 0 rgba(255, 0, 0, 0.25), -1px 0 rgba(0, 255, 255, 0.25);
 }
 
-@media (max-width: 950px) {
-    .container {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-        border: none;
-    }
-    header .banner { border-radius: 0; }
-}
-
-
-/* =========================================
-   11. UI COMPONENTS (TERMINAL & GRID)
-   ========================================= */
-
-/* Terminal Window */
-.terminal-window {
-    background: var(--sidebar-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    margin-top: 1.5rem;
-}
-
-.terminal-header {
-    background: var(--border);
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.terminal-buttons { display: flex; gap: 6px; }
-.terminal-buttons span {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--secondary); opacity: 0.5;
-}
-
-.terminal-title {
-    font-size: 0.75rem;
-    font-family: monospace;
-    color: var(--text);
-    opacity: 0.7;
-}
-
-.terminal-content { padding: 1.5rem; font-size: 0.95rem; }
-
-/* About Section */
-.about-grid { display: grid; grid-template-columns: 220px 1fr; gap: 2rem; }
-.about-status {
-    border-right: 1px dashed var(--border);
-    padding-right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.status-item .label { font-size: 0.7rem; color: var(--secondary); font-weight: bold; }
-.status-item .value { color: var(--accent); font-weight: bold; }
-.about-text .prompt { color: var(--accent); font-weight: bold; margin-right: 8px; }
-
-.inline-link { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
-.inline-link:hover { border-bottom-color: var(--accent); }
-
-/* Animations */
-.pulse-text { animation: simple-pulse 2s infinite; }
-@keyframes simple-pulse {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.4; }
-}
-
-@media (max-width: 650px) {
-    .about-grid { grid-template-columns: 1fr; }
-    .about-status {
-        border-right: none;
-        border-bottom: 1px dashed var(--border);
-        padding-right: 0;
-        padding-bottom: 1rem;
-        flex-direction: row; flex-wrap: wrap; gap: 1rem;
-    }
-    .status-item { flex: 1 1 120px; }
-}
-
-/* Expertise Grid */
-.expertise-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-
-.expertise-card {
-    background: var(--sidebar-bg);
-    border: 1px solid var(--border);
-    padding: 1.5rem;
-    border-radius: 8px;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.expertise-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card-label {
-    font-size: 0.7rem;
-    font-family: monospace;
-    color: var(--secondary);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
-}
-
-.skill-list { list-style: none; padding: 0; margin: 0; }
-.skill-list li { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1rem; }
-.skill-list li .icon { color: var(--accent); font-size: 1.2rem; width: 24px; text-align: center; }
-.skill-list li small { display: block; font-size: 0.75rem; color: var(--secondary); font-family: monospace; }
-
-/* Expertise Card Indicator */
-.expertise-card::after {
-    content: "";
-    position: absolute;
-    top: 10px; right: 10px;
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 5px var(--accent);
-    opacity: 0.5;
-}
-.expertise-card:hover::after { opacity: 1; animation: blink 0.5s infinite alternate; }
-@keyframes blink { from { opacity: 0.3; } to { opacity: 1; } }
-
-@media (max-width: 650px) { .expertise-grid { grid-template-columns: 1fr; } }
-
-/* =========================================
+/* =========================================================
    11. UNIFIED MODAL SYSTEM
-   ========================================= */
+   ========================================================= */
+
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999999 !important ;
+    z-index: 2000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -1225,11 +1059,11 @@ h1, h2, .nav-item {
 
 .modal-window {
     width: 90%;
-    max-width: 500px; /* Default for system messages */
+    max-width: 500px;
     background: var(--sidebar-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1241,9 +1075,8 @@ h1, h2, .nav-item {
     transform: translateY(0);
 }
 
-/* Add this class via JS for wider content */
 .modal-window.large {
-    max-width: 700px;
+    max-width: 750px;
 }
 
 .modal-content {
@@ -1254,25 +1087,22 @@ h1, h2, .nav-item {
     padding: 1.5rem;
     font-size: 0.9rem;
     line-height: 1.6;
-    /* Add this line */
-    font-family: 'JetBrainsMono NF', monospace; 
 }
 
 #modalBody pre {
     margin: 0;
     white-space: pre-wrap;
-    font-family: 'JetBrainsMono NF', monospace;
     font-size: 0.85rem;
     color: var(--secondary);
 }
 
 .modal-close {
-    background: none !important; /* Forces the removal of the white/default background */
-    border: none !important;     /* Removes the box border */
+    background: none;
+    border: none;
     color: var(--text);
     cursor: pointer;
-    font-family: 'JetBrainsMono NF', monospace;
-    font-size: 1.2rem;           /* Adjust size to match the icon */
+    font-family: inherit;
+    font-size: 1.2rem;
     padding: 0 5px;
     display: flex;
     align-items: center;
@@ -1281,18 +1111,7 @@ h1, h2, .nav-item {
 }
 
 .modal-close:hover {
-    color: var(--accent); /* Changes color on hover to show interaction */
-}
-
-/* Force all elements inside the modal to use the Nerd Font */
-.modal-window, 
-.modal-window * {
-    font-family: 'JetBrainsMono NF', monospace !important;
-}
-
-.modal-content span {
-    font-family: 'JetBrainsMono NF', monospace !important;
-    font-weight: normal !important;
+    color: var(--accent);
 }
 
 .project-modal {
@@ -1319,29 +1138,10 @@ h1, h2, .nav-item {
     border: 1px solid var(--border);
 }
 
-/* Apply to the entire site */
-html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) var(--bg);
-}
+/* =========================================================
+   12. TERMINAL COMMAND BAR & EXPLORER
+   ========================================================= */
 
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--accent);
-    border-radius: 4px;
-    border: 2px solid var(--bg);
-}
-
-/* =========================================
-   12. TERMINAL EASTER EGG (CMD LINE)
-   ========================================= */
 .cmd-bar {
     position: fixed;
     bottom: 0;
@@ -1350,10 +1150,9 @@ html {
     background: var(--sidebar-bg);
     border-top: 1px solid var(--accent);
     padding: 8px 20px;
-    display: none; /* Hidden by default */
+    display: none;
     align-items: center;
-    z-index: 10000;
-    font-family: 'JetBrainsMono NF', monospace;
+    z-index: 3000;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
     animation: slideUp 0.2s ease-out;
 }
@@ -1382,15 +1181,14 @@ html {
 
 @keyframes slideUp {
     from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    to   { transform: translateY(0); }
 }
 
-/* File Explorer Styles */
+/* File Explorer */
 .explorer-tree {
     list-style: none;
     padding: 0;
     margin: 0;
-    font-family: 'JetBrainsMono NF', monospace;
 }
 
 .explorer-item {
@@ -1411,26 +1209,19 @@ html {
     color: var(--accent);
 }
 
-/* Update the explorer content block */
 .explorer-content {
-    background: #0d1117 !important; /* Matches GitHub's dark theme */
-    padding: 1.5rem !important;
+    background: #0d1117;
+    padding: 1.5rem;
     border-radius: 8px;
     overflow-x: auto;
     font-size: 0.85rem;
     border: 1px solid var(--border);
     margin: 0;
-    /* Remove the hardcoded 'color' property if it's there */
 }
 
 .explorer-content code {
-    font-family: 'JetBrainsMono NF', monospace !important;
-    white-space: pre !important;
+    white-space: pre;
 }
-
-/* Scrollbar for the code block */
-.explorer-content::-webkit-scrollbar { height: 8px; }
-.explorer-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .explorer-back-btn {
     background: var(--sidebar-bg);
@@ -1439,12 +1230,12 @@ html {
     padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
-    font-family: 'JetBrainsMono NF', monospace;
+    font-family: inherit;
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.2s;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .explorer-back-btn:hover {
@@ -1452,50 +1243,138 @@ html {
     border-color: var(--accent);
 }
 
-/* Styling for Markdown inside the Modal */
+/* Readme / Man Pages */
 .man-page {
     text-align: left;
     color: var(--text);
     padding-bottom: 2rem;
 }
 
-.man-page h1 { font-size: 1.8rem; margin-bottom: 1rem; border-bottom: 2px solid var(--accent); padding-bottom: 5px; }
-.man-page h2 { font-size: 1.4rem; margin-top: 1.5rem; color: var(--accent); border: none; }
-.man-page h3 { font-size: 1.1rem; margin-top: 1rem; }
-.man-page p { margin-bottom: 1rem; opacity: 0.9; }
+.man-page h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 5px;
+}
 
-/* Lists */
+.man-page h2 {
+    font-size: 1.4rem;
+    margin-top: 1.5rem;
+    color: var(--accent);
+    border: none;
+}
+
+.man-page h3 {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+.man-page p {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
 .man-page ul, .man-page ol {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
 }
 
-.man-page li { margin-bottom: 0.4rem; }
+.man-page li {
+    margin-bottom: 0.4rem;
+}
 
-/* Links in Readme */
 .man-page a {
     color: var(--accent);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
 
-/* Code blocks in Readme */
 .man-page pre {
-    margin: 1.5rem 0 !important;
-    background: #000 !important; /* True black for manual look */
+    margin: 1.5rem 0;
+    background: #000;
     border: 1px solid var(--border);
-    padding: 1rem !important;
+    padding: 1rem;
     border-radius: 6px;
 }
 
 .man-page code {
-    font-family: 'JetBrainsMono NF', monospace !important;
     font-size: 0.85rem;
 }
 
-/* =========================================
-   CUSTOM HARDWARE-ACCELERATED CURSOR
-   ========================================= */
+/* =========================================================
+   13. FOOTER & TELEMETRY
+   ========================================================= */
+
+footer {
+    grid-column: 1 / -1;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.footer-telemetry {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.telemetry-item {
+    display: flex;
+    gap: 8px;
+}
+
+.telemetry-item .label {
+    color: var(--secondary);
+}
+
+.telemetry-item .value {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.status-ok {
+    color: var(--success);
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed var(--border);
+    padding-top: 1.5rem;
+    font-size: 0.8rem;
+}
+
+.source-code {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.source-code a {
+    color: var(--secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.source-code a:hover {
+    color: var(--accent);
+}
+
+.copyright {
+    color: var(--secondary);
+    margin: 0;
+}
+
+/* =========================================================
+   14. CUSTOM HARDWARE-ACCELERATED CURSOR
+   ========================================================= */
 
 @media (pointer: fine) {
     *, *::before, *::after {
@@ -1508,7 +1387,7 @@ html {
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: 999999999;
+    z-index: 10000;
     will-change: transform;
     opacity: 0;
     transition: opacity 0.15s ease;
@@ -1516,7 +1395,6 @@ html {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-/* 1. Precision Triangle anchored exactly at (0, 0) */
 #cursor-triangle {
     position: absolute;
     top: 0;
@@ -1526,11 +1404,10 @@ html {
     transition: fill 0.15s ease;
 }
 
-/* 2. Scaled Icon Canvas (Offset to the upper-right of the triangle) */
 #custom-cursor-canvas {
     position: absolute;
-    top: 0px;       /* Shifted up from 5px */
-    left: 9px;      /* Shifted right from 5px */
+    top: 0px;
+    left: 9px;
     width: 24px;
     height: 24px;
     display: block;
@@ -1539,16 +1416,104 @@ html {
     z-index: 1;
 }
 
-/* 3. Full 360-degree spin on click */
 #custom-cursor-canvas.spin {
     animation: cursor-spin-revolution 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.15) forwards;
 }
 
 @keyframes cursor-spin-revolution {
-    0% {
-        transform: rotate(0deg);
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================================================
+   15. CONSOLIDATED RESPONSIVE BREAKPOINTS
+   ========================================================= */
+
+@media (max-width: 950px) {
+    .container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        padding: 1.5rem;
     }
-    100% {
-        transform: rotate(360deg);
+
+    header { order: 1; }
+    main   { order: 2; }
+    aside  { order: 3; }
+    footer { order: 4; }
+
+    header .banner {
+        border-radius: 0;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+    header.terminal-header {
+        margin-bottom: 2rem;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .banner-frame {
+        aspect-ratio: 16 / 9;
+        border-width: 2px;
+        border-radius: 8px;
+    }
+
+    .glitch {
+        font-size: 2.2rem;
+    }
+
+    .header-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-badge {
+        margin-left: 0;
+    }
+
+    .about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-status {
+        border-right: none;
+        border-bottom: 1px dashed var(--border);
+        padding-right: 0;
+        padding-bottom: 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .status-item {
+        flex: 1 1 120px;
+    }
+
+    .footer-telemetry {
+        gap: 0.5rem 1.5rem;
+        justify-content: flex-start;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .header-insignia {
+        margin: -1.8rem 0 0.8rem 0;
+    }
+
+    .insignia-img {
+        width: 95px;
     }
 }
