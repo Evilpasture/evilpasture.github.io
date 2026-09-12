@@ -4,7 +4,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initGitHubData();
     setupSidebar();
-    setupDiscordCopy();
+    setupCopy();
     setupUptimeCounter();
     setupThemeSystem();
     setupEffectsSystem();
@@ -105,24 +105,29 @@ function setupSidebar() {
 /**
  * 3. Utilities
  */
-function setupDiscordCopy() {
-    const handle = document.querySelector('.discord-handle');
-    if (!handle) return;
+function setupCopy() {
+    // Select all elements marked as copyable
+    const copyables = document.querySelectorAll('.copyable-contact');
+    if (!copyables.length) return;
 
-    handle.addEventListener('click', async () => {
-        const valSpan = handle.querySelector('.contact-value');
-        const textToCopy = handle.getAttribute('data-handle') || valSpan.innerText.replace('@', '');
+    copyables.forEach(handle => {
+        handle.addEventListener('click', async () => {
+            const valSpan = handle.querySelector('.contact-value');
+            const textToCopy = handle.getAttribute('data-copy');
 
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            const originalText = valSpan.innerText;
-            valSpan.innerText = 'Copied!';
-            handle.classList.add('copied');
-            setTimeout(() => {
-                valSpan.innerText = originalText;
-                handle.classList.remove('copied');
-            }, 2000);
-        } catch (err) { console.error('Copy failed', err); }
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                const originalText = valSpan.innerText;
+                valSpan.innerText = 'Copied!';
+                handle.classList.add('copied');
+                setTimeout(() => {
+                    valSpan.innerText = originalText;
+                    handle.classList.remove('copied');
+                }, 2000);
+            } catch (err) { 
+                console.error('Copy failed', err); 
+            }
+        });
     });
 }
 

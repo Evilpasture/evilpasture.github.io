@@ -840,7 +840,7 @@ aside {
     transform: translateX(4px);
 }
 
-.discord-handle.copied .contact-value {
+.contact-row.copied .contact-value {
     color: var(--success);
 }
 
