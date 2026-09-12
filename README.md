@@ -1,10 +1,10 @@
 # evilpasture.github.io
 
-My personal portfolio and technical log — a terminal-inspired site built with a focus on performance, minimal dependencies, and hardware-sympathetic design. No frameworks, no bundler, no client-side API scraping: static files, a hand-rolled C++→WebAssembly particle engine behind a WebGPU renderer, and a nightly data pipeline.
+My personal portfolio... or more like a bio page, and technical log — a terminal-inspired site built with a focus on performance, minimal dependencies, and hardware-sympathetic design. No frameworks, no bundler, no client-side API scraping: static files, a hand-rolled C++→WebAssembly particle engine behind a WebGPU renderer, and a nightly data pipeline.
 
 **Live site:** [evilpasture.github.io](https://evilpasture.github.io)
 
-## 🏗️ Architecture
+## Architecture
 
 ### Frontend
 
@@ -17,7 +17,7 @@ My personal portfolio and technical log — a terminal-inspired site built with 
 
 The animated blizzard background is a from-scratch GPU pipeline:
 
-- **`src-wasm/`** — a freestanding **C++17** particle engine (`BlizzardEngine`): bump allocator over WASM linear memory, Xorshift PRNG, and structs laid out to exactly match the WGSL buffers (enforced with `static_assert`). No libc, no Emscripten.
+- **`src-wasm/`** — a freestanding **C++17** particle engine (`BlizzardEngine`, name after because I want blizzards): bump allocator over WASM linear memory, Xorshift PRNG, and structs laid out to exactly match the WGSL buffers (enforced with `static_assert`). No libc, no Emscripten.
 - **`Makefile`** — compiles it with plain `clang++ --target=wasm32-unknown-unknown` (`-O3`, LTO, `-nostdlib`, stripped) into `blizzard.wasm`.
 - **`shader.js`** — the WebGPU orchestrator: a compute pass advances 220 GPU-resident particles, an instanced draw call renders them, with volumetric fog layered on top. If WebGPU is unavailable, it degrades gracefully to a static background.
 
@@ -33,7 +33,7 @@ The frontend never hits the GitHub REST API for stats, so there are no rate limi
 
 **`.github/workflows/deploy.yml`** builds `blizzard.wasm` with clang/LLD on every push to `main` and deploys the site to **GitHub Pages**.
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 ├── index.html            # Main landing page
@@ -53,7 +53,7 @@ The frontend never hits the GitHub REST API for stats, so there are no rate limi
 └── .github/workflows/    # Pages deploy + nightly data refresh
 ```
 
-## 🛠️ Local Development
+## Local Development
 
 The site is fully static — any web server will do. (A server is required so `fetch()` works for `data.json` and the Markdown logs; `file://` won't.)
 
@@ -83,6 +83,6 @@ USE_MOCK=true uv run --with requests update_data.py           # from mock_data.j
 
 CI does this automatically every night; locally you only need it if you're hacking on the stats UI.
 
-## ⚖️ License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
