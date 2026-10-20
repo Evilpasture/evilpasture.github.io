@@ -1,0 +1,15 @@
+CompileFlags:
+  Add:
+    - "--target=wasm32-unknown-unknown"
+    - "-std=c++17"
+    - "-nostdlib"
+    - "-fno-builtin"
+    - "-fno-exceptions"
+    - "-fno-rtti"
+    - "-mbulk-memory"
+    - "-Wall"
+    - "-Wextra"
+
+Diagnostics:
+  ClangTidy:
+    Add: []

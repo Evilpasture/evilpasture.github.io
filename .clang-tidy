@@ -1,0 +1,9 @@
+---
+Checks: "-*,readability-identifier-naming"
+
+CheckOptions:
+  readability-identifier-naming.FunctionCase: UpperCamelCase
+  readability-identifier-naming.MethodCase: UpperCamelCase
+  readability-identifier-naming.MemberCase: lowerCamelCase
+  readability-identifier-naming.ParameterCase: lowerCamelCase
+...
