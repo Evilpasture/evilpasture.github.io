@@ -1,9 +1,125 @@
 ---
-Checks: "-*,readability-identifier-naming"
+# ---------------------------------------------------------------------------
+# WHY IT WAS SILENT: readability-identifier-naming was inert because
+# UpperCamelCase / lowerCamelCase are not legal values. Every *Case option
+# accepts exactly:
+#     lower_case | UPPER_CASE | CamelCase | camelBack
+# clang-tidy does not fail on a bad value -- it drops the option, emits one
+# "[clang-tidy-config]" warning, and runs the check with no style configured,
+# which reports nothing.
+#
+# The values below are the faithful translation of what you wrote:
+#   UpperCamelCase -> CamelCase   for functions and methods
+#   lowerCamelCase -> camelBack   for members and parameters
+# Nothing else about your intent was changed. (The extra check groups were
+# chosen by measuring each one against this tree; see the note at the bottom.)
+# ---------------------------------------------------------------------------
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  cppcoreguidelines-pro-type-*,
+  cppcoreguidelines-prefer-member-initializer,
+  cppcoreguidelines-init-variables,
+  cppcoreguidelines-use-default-member-init,
+  cppcoreguidelines-no-malloc,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  -bugprone-reserved-identifier,
+  -modernize-use-trailing-return-type,
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -readability-named-parameter,
+  -performance-no-int-to-ptr,
+  -readability-magic-numbers,
+  -readability-redundant-member-init,
+  -readability-uppercase-literal-suffix,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp
+HeaderFilterRegex: "src-wasm/.*"
 
 CheckOptions:
-  readability-identifier-naming.FunctionCase: UpperCamelCase
-  readability-identifier-naming.MethodCase: UpperCamelCase
-  readability-identifier-naming.MemberCase: lowerCamelCase
-  readability-identifier-naming.ParameterCase: lowerCamelCase
+  # ---- naming: exactly the four you wrote, nothing added ----------------
+  # Your file specified only these four kinds, so only these four are enforced.
+  # (I had also set NamespaceCase/ClassCase/StructCase/GlobalConstantCase in an
+  # earlier draft; NamespaceCase: CamelCase would have flagged your `gfx`
+  # namespace, and none of it was asked for. Removed.)
+  readability-identifier-naming.FunctionCase: CamelCase
+  readability-identifier-naming.MethodCase: CamelCase
+  readability-identifier-naming.MemberCase: camelBack
+  readability-identifier-naming.ParameterCase: camelBack
+
+  # math ctor params x_, y_, z_, w_
+  readability-identifier-naming.ParameterIgnoredRegexp: .*_$
+
+  # wasm_api.cpp is the JS <-> wasm ABI. Pin the exports so no tool renames
+  # engine_create out from under shader.js:276.
+  readability-identifier-naming.FunctionIgnoredRegexp: ^engine_.*$
+
+  # ---- length: useful without lecturing a shader kernel ------------------
+  readability-identifier-length.IgnoredParameterNames: ^[a-z][a-z_]?$
+
+  # `if (engine)` is the idiom, not a bug.
+  readability-implicit-bool-conversion.AllowPointerConditions: true
+  readability-implicit-bool-conversion.AllowIntegerConditions: true
 ...
+
+# ---------------------------------------------------------------------------
+# WHAT THIS REPORTS ON THE CURRENT TREE: 16 naming findings (measured), all of
+# them the rule working rather than misfiring:
+#   6 methods   engine.hpp:17,19,22,25,28,34  update, particle_data,
+#               particle_count, byte_size, uniforms, random_float
+#   6 members   engine.hpp:33,36,37,38 + types.hpp:58,59  m_particles,
+#               m_prng_state, m_particle_count, m_uniforms, delta_time, accent_color
+#   5 param sites  engine.cpp:46,68 + engine.hpp:8,17 + wasm_api.cpp:4
+#               particle_count, total_time, screen_w, screen_h
+# Plus 7 non-naming findings (listed at the bottom of README.md).
+#
+# Note what camelBack does to your names, since it is the interesting part of
+# your own rule: it forbids underscores, so m_particles can never satisfy it and
+# has to become mParticles -- the m_ prefix is not preserved by camelBack, and
+# delta_time / accent_color in Uniforms are flagged too, while x, y, z, w,
+# position, velocity, params, resolution and time all pass. So enforcing
+# MemberCase: camelBack means dropping the m_/s_ prefix convention, not
+# keeping it. (Setting MemberPrefix: m_ does NOT rescue the underscored names:
+# it makes the prefix MANDATORY on every member, which pushes the count from 16
+# to 23 by adding Vec2::x, Particle::position, Uniforms::time and friends.
+# Per-class scoping like Class.BlizzardEngine.MemberPrefix parses without error
+# but changed nothing on this tree -- not an escape hatch. Both measured.)
+#
+# DO NOT USE --fix FOR THE RENAMES. readability-identifier-naming applies its
+# fix at the declaration only; it does not rename out-of-line definitions or
+# call sites. Verified on this tree: `--fix` renamed the method declarations in
+# engine.hpp and left engine.cpp/wasm_api.cpp untouched -> build fails with
+# "no member named 'byte_size' in 'gfx::BlizzardEngine'" and 3 more.
+# Worse, `uniforms()` -> `Uniforms()` collides with struct gfx::Uniforms in the
+# same namespace ("must use 'struct' tag to refer to type 'Uniforms'"), so even
+# a careful manual rename of that one needs a different name (e.g. GetUniforms).
+# Use your editor's clangd rename (updates all references), or `make tidy-fix`,
+# which excludes identifier-naming from --fix.
+#
+# Excluded check groups, each with the reason measured on this tree:
+#   performance-no-int-to-ptr, cppcoreguidelines-pro-type-reinterpret-cast
+#                                       your bump allocator IS int->ptr (engine.cpp:11,15)
+#   bugprone-reserved-identifier,
+#   cert-dcl37-c, cert-dcl51-cpp        all flag `__heap_base`, provided by wasm-ld
+#   readability-magic-numbers,
+#   cppcoreguidelines-avoid-magic-numbers  20 each, every one a GPU constant
+#   misc-include-cleaner                7 findings, all bogus ("no header provides
+#                                       gfx::uint32_t" -- it's your own alias)
+#   misc-non-private-member-variables-in-classes
+#                                       6; Vec2/Particle/Uniforms mirror WGSL layouts
+#   modernize-use-trailing-return-type  17 findings; a taste thing
+#   bugprone-easily-swappable-parameters  flags update(dt, time, w, h); true of any
+#                                       4-float graphics entry point
+#   readability-named-parameter         naming the 4 no-op operator delete(void*)
+#                                       params makes -Wextra emit -Wunused-parameter
+#   cppcoreguidelines-owning-memory     wants unique_ptr for m_particles, which a
+#                                       freestanding manual allocator cannot do

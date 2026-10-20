@@ -30,4 +30,25 @@ $(OUTPUT): $(SOURCES)
 clean:
 	rm -f $(OUTPUT)
 
-.PHONY: all clean
+.PHONY: all clean tidy tidy-fix tidy-check
+
+CLANG_TIDY ?= clang-tidy
+TIDY_FIX_CHECKS = -*,modernize-avoid-c-style-cast,modernize-use-nullptr,\
+modernize-use-override,modernize-use-equals-default,modernize-use-emplace,\
+readability-braces-around-statements,readability-math-missing-parentheses,\
+readability-uppercase-literal-suffix,readability-redundant-member-init,\
+misc-const-correctness,cppcoreguidelines-prefer-member-initializer,\
+cppcoreguidelines-use-default-member-init,cppcoreguidelines-init-variables
+tidy:
+	$(CLANG_TIDY) --quiet $(SOURCES) -- $(CXXFLAGS) -fsyntax-only
+tidy-fix:
+	$(CLANG_TIDY) --quiet --fix --format-style=file \
+	  --checks='$(TIDY_FIX_CHECKS)' $(SOURCES) -- $(CXXFLAGS) -fsyntax-only
+tidy-check:
+	@out=$$($(CLANG_TIDY) --quiet $(firstword $(SOURCES)) -- $(CXXFLAGS) -fsyntax-only 2>&1); \
+	if echo "$$out" | grep -q 'invalid configuration value'; then \
+	  echo "$$out" | grep 'invalid configuration value'; \
+	  echo "ERROR: clang-tidy rejected the values above; those checks ran with no style configured."; \
+	  exit 1; \
+	fi; \
+	echo ".clang-tidy: all CheckOptions accepted."

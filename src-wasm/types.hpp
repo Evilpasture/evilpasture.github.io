@@ -54,9 +54,9 @@ static_assert(alignof(Particle) == 16, "Particle struct must be 16-byte aligned"
 // Matches WGSL Uniforms layout (32 bytes)
 struct alignas(16) Uniforms {
     Vec2  resolution;   // Offset 0,  Size 8
-    float time;         // Offset 8,  Size 4
-    float delta_time;   // Offset 12, Size 4
-    Vec4  accent_color; // Offset 16, Size 16
+    float time {};      // Offset 8,  Size 4
+    float deltaTime {}; // Offset 12, Size 4
+    Vec4  accentColor;  // Offset 16, Size 16
 };
 static_assert(sizeof(Uniforms) == 32, "Uniforms struct must be 32 bytes");
 

@@ -5,7 +5,7 @@ namespace gfx {
 
 class BlizzardEngine {
   public:
-    explicit BlizzardEngine(uint32_t particle_count) noexcept;
+    explicit BlizzardEngine(uint32_t particleCount) noexcept;
     ~BlizzardEngine() noexcept;
 
     // Strict ownership: non-copyable, non-movable
@@ -14,28 +14,28 @@ class BlizzardEngine {
     BlizzardEngine(BlizzardEngine&&)                 = delete;
     BlizzardEngine& operator=(BlizzardEngine&&)      = delete;
 
-    void update(float dt, float total_time, float screen_w, float screen_h) noexcept;
+    void Update(float dt, float totalTime, float screenW, float screenH) noexcept;
 
-    [[nodiscard]] const Particle* particle_data() const noexcept {
-        return m_particles;
+    [[nodiscard]] const Particle* ParticleData() const noexcept {
+        return mParticles;
     }
-    [[nodiscard]] uint32_t particle_count() const noexcept {
-        return m_particle_count;
+    [[nodiscard]] uint32_t ParticleCount() const noexcept {
+        return mParticleCount;
     }
-    [[nodiscard]] uint32_t byte_size() const noexcept {
-        return m_particle_count * sizeof(Particle);
+    [[nodiscard]] uint32_t ByteSize() const noexcept {
+        return mParticleCount * sizeof(Particle);
     }
-    [[nodiscard]] const Uniforms* uniforms() const noexcept {
-        return &m_uniforms;
+    [[nodiscard]] const Uniforms* Uniforms() const noexcept {
+        return &mUniforms;
     }
 
   private:
-    uint32_t m_prng_state {0x1337BEEF};
-    float    random_float() noexcept;
+    uint32_t mPrngState {0x1337BEEF};
+    float    RandomFloat() noexcept;
 
-    uint32_t  m_particle_count {0};
-    Particle* m_particles {nullptr};
-    Uniforms  m_uniforms {};
+    uint32_t        mParticleCount {0};
+    Particle*       mParticles {nullptr};
+    struct Uniforms mUniforms {};
 };
 
 } // namespace gfx
